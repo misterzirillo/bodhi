@@ -1,0 +1,13 @@
+/*
+*= require scss/note-column
+*= require scss/note-pane
+*/
+
+body {
+	font-family: 'Roboto', sans-serif;
+	/*margin: 0;*/
+}
+
+/**:focus {*/
+	/*outline: none;*/
+/*}*/

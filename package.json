@@ -1,0 +1,31 @@
+{
+  "name": "bodhi",
+  "version": "0.0.1",
+  "description": "A profile for creating applications with node-based frontends using webpack",
+  "main": "index.js",
+  "repository": {},
+  "scripts": {
+    "start": "webpack --progress --watch",
+    "bundle": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --watch --colors --progress"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.20.0",
+    "babel-loader": "^6.2.9",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "babel-relay-plugin": "^0.9.3",
+    "sync-request": "^3.0.1",
+    "webpack": "1.13.2"
+  },
+  "dependencies": {
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "react-hotkeys": "^0.9.0",
+    "react-relay": "^0.9.3",
+    "react-remarkable": "^1.1.1"
+  }
+}

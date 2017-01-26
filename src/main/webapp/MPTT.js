@@ -10,8 +10,7 @@ function resolveMPTT(root, nodes) {
 
 function resolveMPTT_Recurse(node, stack) {
 	if (node.rightBound - node.leftBound != 1) {
-		if (node.children == undefined)
-			node.children = [];
+		node.children = [];
 		while (stack.length && stack[0].leftBound < node.rightBound) {
 			node.children.push(resolveMPTT_Recurse(stack.shift(), stack));
 		}

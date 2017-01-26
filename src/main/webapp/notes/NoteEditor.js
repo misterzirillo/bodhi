@@ -27,6 +27,7 @@ export default class Editor extends React.Component {
 	render() {
 		return (
 			<textarea
+				style={this.props.style}
 				className={this.props.className}
 				value={this.state.value}
 				onChange={this.handleChange}

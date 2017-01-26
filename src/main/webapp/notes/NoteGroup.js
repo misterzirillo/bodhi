@@ -16,7 +16,7 @@ class NoteGroup extends React.Component {
 	render() {
 		const { related } = this.props;
 		return (
-			<div className={related ? bemTool('NoteGroup', null, 'related') : bemTool('NoteGroup')}>
+			<div className={related ? bemTool('note-group', null, 'related') : bemTool('NoteGroup')}>
 				{this.props.children}
 			</div>
 		);

@@ -21,11 +21,8 @@ class AppRoot extends React.Component {
 		};
 
 		this.handlerProxy = {
-			'close-open-editor': () => {
-				console.log('open close');
-				this.selectedPane.showHideEditor();
-			},
-			'save-node': () => { this.selectedPane.doSave() }
+			'close-open-editor': () => this.selectedPane.showHideEditor(),
+			'save-node': () => this.selectedPane.doSave()
 		}
 	}
 
@@ -52,7 +49,7 @@ class AppRoot extends React.Component {
 			<div className={bemTool('note-columns', 'column', 'level-1')}>
 				{heirarchy[0].map((node) => {
 					const related = levelOneRelation(node, lastSelectedNode);
-					const selected = node.id === lastSelectedNode.id;
+					const selected = node.id == lastSelectedNode.id;
 					return (
 						<NoteGroup key={node.id} related={related}>
 							<NotePane
@@ -73,7 +70,7 @@ class AppRoot extends React.Component {
 					if (nodeGroup && nodeGroup[0]) {
 						return <NoteGroup key={i} related={levelTwoRelation(nodeGroup[0], lastSelectedNode)}>
 							{nodeGroup.map(node => {
-								const selected = node.id === lastSelectedNode.id;
+								const selected = node.id == lastSelectedNode.id;
 								return <NotePane
 									key={node.id} // TODO study node move
 									note={node}
@@ -94,7 +91,7 @@ class AppRoot extends React.Component {
 					if (nodeGroup && nodeGroup[0]) {
 						return <NoteGroup key={i} related={levelThreeRelation(nodeGroup[0], lastSelectedNode)}>
 							{nodeGroup.map(node => {
-								const selected = node.id === lastSelectedNode.id;
+								const selected = node.id == lastSelectedNode.id;
 								return <NotePane
 									key={node.id} // TODO study node move
 									note={node}

@@ -3,36 +3,50 @@
 @include block('note-pane') {
 
   padding: 0.1em 1em 0.1em 1em;
-  background-color: #3F51B5;
   border-radius: 2px;
   color: white;
+  background-color: #5C6BC0;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  margin: 1em;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  cursor: default;
+  position: relative;
+  min-height: 4em;
 
   @include modifier('selected') {
 	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-  }
-
-  @include modifier('editing') {
-	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+	background-color: #8E24AA;
   }
 
   @include modifier('related') {
-	box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+	box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+	background-color: #7E57C2;
   }
 
   @include modifier('dirty') {
-	background-color: #f44336;
+	background-color: #D81B60;
   }
 
   @include element('editor') {
-	width: 100%;
-	height: 78%;
 	resize: none;
 	background-color: inherit;
 	color: inherit;
 	border: none;
-	padding: 1em 0 1em 0;
+	padding: 0;
+	cursor: auto;
+	position: absolute;
+	top: 5%;
+	left: 5%;
+  }
+
+  @include element('viewer') {
+	visibility: visible;
+	opacity: 1;
+
+	@include modifier('hidden') {
+	  visibility: hidden;
+	  opacity: 0;
+	}
   }
 
 }

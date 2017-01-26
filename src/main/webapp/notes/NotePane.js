@@ -6,14 +6,12 @@ import Markdown from 'react-remarkable';
 import Editor from './NoteEditor';
 import NoteUpdateMutation from './NoteUpdateMutation';
 
-class NotePane extends React.Component {
+class NotePane extends React.PureComponent {
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			editing: false, // the editor for this note is enable/disabled
-			related: this.props.related, // this note tree is focused
-			selected: this.props.selected, // this node is focused
 			dirty: false
 		};
 
@@ -23,15 +21,16 @@ class NotePane extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.state.selected) {
+		if (this.props.selected) {
 			this.props.selectPane(this.props.note.id, this);
+			this.pane.focus();
 		}
 	}
 
 	clickHandler = () => {
-		if (!this.state.selected) {
+		if (!this.props.selected) {
 			this.props.relay.setVariables({ previewOnly: false });
-			this.props.selectPane(this.props.note.id, this.refs.component);
+			this.props.selectPane(this.props.note.id, this);
 		} else if (!this.state.editing) {
 			this.showHideEditor();
 		}
@@ -40,9 +39,11 @@ class NotePane extends React.Component {
 	showHideEditor = () => {
 		if (this.state.editing) {
 			this.doSave();
+			this.pane.focus();
 			this.setState({ editing: false, dirty: false });
 		} else {
-			this.paneHeight = this.pane.offsetHeight;
+			this.paneHeight = this.pane.clientHeight * .9;
+			this.paneWidth = this.pane.clientWidth *.9;
 			this.setState({ editing: true });
 		}
 	};
@@ -52,7 +53,7 @@ class NotePane extends React.Component {
 	};
 
 	doSave = () => {
-		if (this.state.editing) {
+		if (this.state.dirty) {
 			const newContent = this.editor.getValue();
 			if (this.props.note.content != newContent) {
 				const mutation = new NoteUpdateMutation({
@@ -67,27 +68,32 @@ class NotePane extends React.Component {
 	render() {
 		const { content } = this.props.note;
 		const states = [
-			this.state.selected ? 'selected' : null,
-			this.state.related ? 'related' : null,
+			this.props.selected ? 'selected' : null,
+			this.props.related ? 'related' : null,
 			this.state.editing ? 'editing' : null,
 			this.state.dirty ? 'dirty' : null
 		].filter(it => it);
 
-		let style = this.state.editing ? {height: this.paneHeight} : null;
+		let style = this.state.editing ? {height: this.paneHeight, width: this.paneWidth} : null;
 
 		return (
-			<div style={style}
+			<div
 			     className={bemTool('note-pane', null, states)}
 			     onClick={this.clickHandler}
+			     tabIndex="-2"
 			     ref={ref => this.pane = ref}>
-				{
-					this.state.editing
-						? <Editor
-							className={bemTool('note-pane', 'editor')}
-							content={content}
-							ref={ref => this.editor = ref}
-							notifyDirty={this.makeDirty}/>
-						: <Markdown source={content} />
+
+				<div className={bemTool('note-pane', 'viewer', this.state.editing ? 'hidden' : null)}>
+					<Markdown source={content} />
+				</div>
+
+				{this.state.editing &&
+					<Editor
+						style={style}
+						className={bemTool('note-pane', 'editor')}
+						content={content}
+						ref={ref => this.editor = ref}
+						notifyDirty={this.makeDirty} />
 				}
 			</div>
 		);

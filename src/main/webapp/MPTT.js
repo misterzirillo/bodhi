@@ -87,7 +87,7 @@ function areRelated(mpttNode1, mpttNode2) {
 		mutualParent = mutualParent.parent;
 	}
 
-	return mpttNode2.leftBound > mutualParent.leftBound && mpttNode2.rightBound < mutualParent.rightBound;
+	return mpttNode2.leftBound >= mutualParent.leftBound && mpttNode2.rightBound <= mutualParent.rightBound;
 }
 
 function pathToNode(root, leftBound, rightBound) {

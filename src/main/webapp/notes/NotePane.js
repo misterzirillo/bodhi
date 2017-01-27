@@ -1,7 +1,6 @@
 import React from 'react';
 import Relay from 'react-relay';
 import bemTool from '../BemTool';
-//let JsDiff = require('diff');
 import Markdown from 'react-remarkable';
 import Editor from './NoteEditor';
 import NoteUpdateMutation from './NoteUpdateMutation';
@@ -42,8 +41,8 @@ class NotePane extends React.PureComponent {
 			this.pane.focus();
 			this.setState({ editing: false, dirty: false });
 		} else {
-			this.paneHeight = this.pane.clientHeight * .9;
-			this.paneWidth = this.pane.clientWidth *.9;
+			this.paneHeight = this.pane.clientHeight * .8;
+			this.paneWidth = this.pane.clientWidth * .95;
 			this.setState({ editing: true });
 		}
 	};

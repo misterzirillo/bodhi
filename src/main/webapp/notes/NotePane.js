@@ -68,12 +68,16 @@ class NotePane extends React.Component {
 				</div>
 
 				{this.state.editing &&
-				<Editor
-					className={bemTool('note-pane', 'editor')}
-					content={content}
-					ref={ref => this.editor = ref}
-					notifyDirty={this.prop_makeDirty}
-				/>
+					<Editor
+						className={bemTool('note-pane', 'editor')}
+						content={content}
+						ref={ref => this.editor = ref}
+						notifyDirty={this.prop_makeDirty}
+					/>
+				}
+
+				{this.state.editing &&
+					<div onClick={this.showHideEditor} className={bemTool('note-pane', 'close-button')}><b>✖</b></div>
 				}
 			</div>
 		);

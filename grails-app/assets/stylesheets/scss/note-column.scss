@@ -1,11 +1,13 @@
 @import 'bem';
 
+/* note-columns */
 @include block('note-columns') {
   position: fixed;
   display: auto;
   width: 100%;
   height: 100vh;
 
+  /* note-columns__column */
   @include element('column') {
 	float: left;
 	width: 33.333333%;
@@ -14,13 +16,5 @@
 	min-height: 100vw;
 	align-content: center;
 	position: relative;
-
-	//> :first-child {
-	//  margin-top: 50vh;
-	//}
-	//
-	//> :last-child {
-	//  margin-bottom: 50vh;
-	//}
   }
 }

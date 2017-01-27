@@ -8,8 +8,8 @@ import bemTool from './BemTool';
 
 const keymap = {
 	'close-open-editor': 'ctrl+enter',
-	'save-node': 'ctrl+s',
-	'center-nodes': 'ctrl+space',
+	'save-all': 'ctrl+s',
+	//'center-nodes': 'ctrl+space',
 	'navigate-parent': 'left',
 	'navigate-child': 'right',
 	'navigate-sibling-above': 'up',
@@ -27,7 +27,7 @@ class AppRoot extends React.Component {
 
 		this.handlerProxy = {
 			'close-open-editor': () => this.selectedPane.showHideEditor(),
-			'save-node': () => this.selectedPane.doSave(),
+			'save-all': this._doSaveAll,
 			'navigate-parent': this._selectParent,
 			'navigate-child': this._selectChild,
 			'navigate-sibling-above': this._selectSiblingAbove,
@@ -35,6 +35,8 @@ class AppRoot extends React.Component {
 		};
 
 		this._refreshMPTT(props.user.lastSelectedRoot.nodes);
+		this.saveFns = {};
+		this.dirtyNodes = [];
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -76,6 +78,7 @@ class AppRoot extends React.Component {
 										selected={selected}
 										related={related}
 										selectPane={this.prop_selectPane}
+									    registerSaveFn={this.prop_registerSaveFn}
 									/>
 								</NoteGroup>
 							);
@@ -94,7 +97,9 @@ class AppRoot extends React.Component {
 											note={this.relayNodeMap[node.id]}
 											selected={selected}
 											related={selected ? false : related}
-											selectPane={this.prop_selectPane}/>;
+											selectPane={this.prop_selectPane}
+											registerSaveFn={this.prop_registerSaveFn}
+										/>;
 									})}
 								</NoteGroup>
 							);
@@ -113,7 +118,9 @@ class AppRoot extends React.Component {
 											note={this.relayNodeMap[node.id]}
 											selected={selected}
 											related={selected ? false : related}
-											selectPane={this.prop_selectPane}/>;
+											selectPane={this.prop_selectPane}
+											registerSaveFn={this.prop_registerSaveFn}
+										/>;
 									})}
 								</NoteGroup>
 							);
@@ -158,12 +165,26 @@ class AppRoot extends React.Component {
 		const below = this.mptt.nodeMap[this.state.selectedNoteId].siblingBelow;
 		this.setState({ selectedNoteId: below.id });
 	};
+
+	_doSaveAll = () => {
+		for (let id of this.dirtyNodes) {
+			this.saveFns[id]();
+		}
+		this.dirtyNodes = [];
+	};
 	//</editor-fold>
 
 	//<editor-fold desc="Props">
 	prop_selectPane = (noteId, pane) => {
 		this.selectedPane = pane;
 		this.setState({selectedNoteId: noteId});
+	};
+
+	prop_registerSaveFn = (id, fn) => {
+		if (!this.saveFns[id])
+			this.saveFns[id] = fn;
+
+		this.dirtyNodes.push(id);
 	};
 	//</editor-fold>
 

@@ -34,12 +34,9 @@ export default class Editor extends React.Component {
 
 	render() {
 		return (
-			<textarea
-				style={this.props.style}
-				className={this.props.className}
-				value={this.state.value}
-				onChange={this.handleChange}
-				ref={ref => this.focusMe = ref} />
+			<div className={this.props.className}>
+				<textarea onChange={this.handleChange} ref={ref => this.focusMe = ref} value={this.state.value}/>
+			</div>
 		);
 	}
 }

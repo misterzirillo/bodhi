@@ -56,8 +56,6 @@ class NotePane extends React.Component {
 			this.state.dirty ? 'dirty' : null
 		].filter(it => it);
 
-		let style = this.state.editing ? {height: this.paneHeight, width: this.paneWidth} : null;
-
 		return (
 			<div
 				className={bemTool('note-pane', null, states)}
@@ -71,11 +69,11 @@ class NotePane extends React.Component {
 
 				{this.state.editing &&
 				<Editor
-					style={style}
 					className={bemTool('note-pane', 'editor')}
 					content={content}
 					ref={ref => this.editor = ref}
-					notifyDirty={this.prop_makeDirty}/>
+					notifyDirty={this.prop_makeDirty}
+				/>
 				}
 			</div>
 		);
@@ -112,8 +110,6 @@ class NotePane extends React.Component {
 			this._doSave();
 			this.setState({ editing: false });
 		} else {
-			this.paneHeight = this.pane.clientHeight * .8;
-			this.paneWidth = this.pane.clientWidth * .95;
 			this.setState({ editing: true });
 		}
 	};

@@ -20,6 +20,14 @@ export default class Editor extends React.Component {
 		}
 	};
 
+	blur = () => {
+		this.focusMe.blur();
+	};
+
+	focus = () => {
+		this.focusMe.focus();
+	};
+
 	getValue = () => {
 		return this.state.value;
 	};

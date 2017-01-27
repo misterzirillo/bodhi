@@ -19,6 +19,20 @@ class NotePane extends React.PureComponent {
 		}
 	}
 
+	componentDidUpdate() {
+		if (this.props.selected) {
+			if (this.state.editing) {
+				this.editor.focus();
+			} else {
+				this.pane.focus();
+			}
+
+			this.props.selectPane(this.props.note.id, this);
+		} else if (this.state.editing) {
+			this.editor.blur();
+		}
+	}
+
 	componentDidMount() {
 		if (this.props.selected) {
 			this.props.selectPane(this.props.note.id, this);

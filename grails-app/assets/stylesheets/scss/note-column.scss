@@ -4,16 +4,16 @@
 @include block('note-columns') {
   position: fixed;
   display: auto;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
 
   /* note-columns__column */
   @include element('column') {
 	float: left;
 	width: 33.333333%;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
-	min-height: 100vw;
 	align-content: center;
 	position: relative;
   }

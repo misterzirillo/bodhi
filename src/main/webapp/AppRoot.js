@@ -5,6 +5,7 @@ import NotePane from './notes/NotePane';
 import { HotKeys, FocusTrap } from 'react-hotkeys';
 import { resolveMPTT, areRelated } from './MPTT';
 import bemTool from './BemTool';
+import InfinityPane from './InfinityPane';
 
 const keymap = {
 	'close-open-editor': 'ctrl+enter',
@@ -68,63 +69,69 @@ class AppRoot extends React.Component {
 				<div className={bemTool('note-columns')}>
 
 					<div className={bemTool('note-columns', 'column', 'level-1')}>
-						{levelOne.map((node) => {
-							const selected = node.id == selectedNodeMPTT.id;
-							const related = selected ? false : areRelated(node, selectedNodeMPTT);
-							return (
-								<NoteGroup key={node.id} related={related}>
-									<NotePane
-										note={this.relayNodeMap[node.id]}
-										selected={selected}
-										related={related}
-										selectPane={this.prop_selectPane}
-									    registerSaveFn={this.prop_registerSaveFn}
-									/>
-								</NoteGroup>
-							);
-						})}
+						<InfinityPane>
+							{levelOne.map((node) => {
+								const selected = node.id == selectedNodeMPTT.id;
+								const related = selected ? false : areRelated(node, selectedNodeMPTT);
+								return (
+									<NoteGroup key={node.id} related={related}>
+										<NotePane
+											note={this.relayNodeMap[node.id]}
+											selected={selected}
+											related={related}
+											selectPane={this.prop_selectPane}
+										    registerSaveFn={this.prop_registerSaveFn}
+										/>
+									</NoteGroup>
+								);
+							})}
+						</InfinityPane>
 					</div>
 
 					<div className={bemTool('note-columns', 'column', 'level-2')}>
-						{levelTwo.map((nodeGroup, i) => {
-							const related = areRelated(nodeGroup[0], selectedNodeMPTT);
-							return (
-								<NoteGroup key={i} related={related}>
-									{nodeGroup.map(node => {
-										const selected = node.id == selectedNodeMPTT.id;
-										return <NotePane
-											key={node.id}
-											note={this.relayNodeMap[node.id]}
-											selected={selected}
-											related={selected ? false : related}
-											selectPane={this.prop_selectPane}
-											registerSaveFn={this.prop_registerSaveFn}
-										/>;
-									})}
-								</NoteGroup>
-							);
-						})}
+						<InfinityPane>
+							{levelTwo.map((nodeGroup, i) => {
+								const related = areRelated(nodeGroup[0], selectedNodeMPTT);
+								return (
+									<NoteGroup key={i} related={related}>
+										{nodeGroup.map(node => {
+											const selected = node.id == selectedNodeMPTT.id;
+											return <NotePane
+												key={node.id}
+												note={this.relayNodeMap[node.id]}
+												selected={selected}
+												related={selected ? false : related}
+												selectPane={this.prop_selectPane}
+												registerSaveFn={this.prop_registerSaveFn}
+											/>;
+										})}
+									</NoteGroup>
+								);
+							})}
+						</InfinityPane>
 					</div>
 
 					<div className={bemTool('note-columns', 'column', 'level-3')}>
-						{levelThree.map((nodeGroup, i) => {
-							const related = areRelated(nodeGroup[0], selectedNodeMPTT);
-							return (
-								<NoteGroup key={i} related={related}>
-									{nodeGroup.map(node => {
-										const selected = node.id == selectedNodeMPTT.id;
-										return <NotePane
-											key={node.id}
-											note={this.relayNodeMap[node.id]}
-											selected={selected}
-											related={selected ? false : related}
-											selectPane={this.prop_selectPane}
-											registerSaveFn={this.prop_registerSaveFn}
-										/>;
-									})}
-								</NoteGroup>
-							);
-						})}
+						<InfinityPane>
+							{levelThree.map((nodeGroup, i) => {
+								const related = areRelated(nodeGroup[0], selectedNodeMPTT);
+								return (
+									<NoteGroup key={i} related={related}>
+										{nodeGroup.map(node => {
+											const selected = node.id == selectedNodeMPTT.id;
+											return <NotePane
+												key={node.id}
+												note={this.relayNodeMap[node.id]}
+												selected={selected}
+												related={selected ? false : related}
+												selectPane={this.prop_selectPane}
+												registerSaveFn={this.prop_registerSaveFn}
+											/>;
+										})}
+									</NoteGroup>
+								);
+							})}
+						</InfinityPane>
 					</div>
 
 				</div>

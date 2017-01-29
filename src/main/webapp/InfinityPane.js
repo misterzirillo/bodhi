@@ -14,10 +14,6 @@ class InfinityPane extends React.Component {
 		};
 	}
 
-	componentDidUpdate() {
-		console.log(this.state.pos);
-	}
-
 	_handleWheel = (event) => {
 		this.setState({ pos: this.state.pos + event.deltaY * 2 });
 	};

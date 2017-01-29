@@ -3,6 +3,7 @@ import React from 'react';
 import Relay from 'react-relay';
 import AppRoot from './AppRoot';
 import Route from './route';
+import MainLoadingSpinner from './other/MainLoadingSpinner2';
 
 window.startApp = () => {
 
@@ -22,8 +23,9 @@ window.startApp = () => {
 				return <div>Error</div>;
 			} else if (props) {
 				return <AppRoot { ...props } />;
+				//return <MainLoadingSpinner/>;
 			} else {
-				return <div>Loading</div>;
+				return <MainLoadingSpinner/>;
 			}
 		}}
 	/>,

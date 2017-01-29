@@ -1,13 +1,12 @@
 /*
-*= require scss/note-column
-*= require scss/note-pane
-*= require scss/infinity-pane
+*= require_tree scss
 */
 
 body {
 	font-family: 'Roboto', sans-serif;
 	margin: 0;
 	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAIUlEQVQoU2Ps2ffLmIEIwAhSWOLEdpaQ2lGFeEOI6OABADvZJoK0b4dwAAAAAElFTkSuQmCC) repeat;
+	background-color: #313134;
 }
 
 *:focus {

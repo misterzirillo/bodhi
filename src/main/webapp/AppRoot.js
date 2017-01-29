@@ -67,7 +67,6 @@ class AppRoot extends React.Component {
 		return (
 			<HotKeys keyMap={keymap} handlers={this.handlerProxy}>
 				<div className={bemTool('note-columns')}>
-
 					<div className={bemTool('note-columns', 'column', 'level-1')}>
 						<InfinityPane>
 							{levelOne.map((node) => {

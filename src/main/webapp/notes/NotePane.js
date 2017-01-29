@@ -24,10 +24,18 @@ class NotePane extends React.Component {
 		if (this.state.dirty && this.props.note.content != nextProps.note.content) {
 			this.setState({ dirty: false });
 		}
+
+		if (nextProps.selected) {
+			// this pane has become selected -- scroll to it
+			this._scrollToMe();
+		} else if (!this.props.related && nextProps.related && nextProps.couldScroll) {
+			this._scrollToMe();
+		}
 	}
 
 	componentDidUpdate() {
 		if (this.props.selected) {
+
 			if (this.state.editing) {
 				this.editor.focus();
 			} else {
@@ -61,7 +69,7 @@ class NotePane extends React.Component {
 				className={bemTool('note-pane', null, states)}
 				onClick={this._clickHandler}
 				tabIndex="-2"
-				ref={ref => this.pane = ref}>
+				ref={this._ref_pane}>
 
 				<div className={bemTool('note-pane', 'viewer', this.state.editing ? 'hidden' : null)}>
 					<Markdown source={content}/>
@@ -71,7 +79,7 @@ class NotePane extends React.Component {
 					<Editor
 						className={bemTool('note-pane', 'editor')}
 						content={content}
-						ref={ref => this.editor = ref}
+						ref={this._ref_editor}
 						notifyDirty={this.prop_makeDirty}
 					/>
 				}
@@ -106,15 +114,30 @@ class NotePane extends React.Component {
 			}
 		}
 	};
+
+	_ref_pane = (ref) => {
+		this.pane = ref;
+	};
+
+	_ref_editor = (ref) => {
+		this.editor = ref;
+	};
+
+	_scrollToMe = () => {
+		const here = this.pane.offsetTop + this.pane.offsetHeight / 2;
+		this.context.scrollToHere(here);
+	};
 	//</editor-fold>
 
+
+	//<editor-fold desc="shared">
 	showHideEditor = () => {
 		if (this.state.editing) {
 			this.pane.focus();
 			this._doSave();
-			this.setState({ editing: false });
+			this.setState({editing: false});
 		} else {
-			this.setState({ editing: true });
+			this.setState({editing: true});
 		}
 	};
 
@@ -124,7 +147,12 @@ class NotePane extends React.Component {
 			this.setState({dirty: true});
 		}
 	};
+	//</editor-fold>
 }
+
+NotePane.contextTypes = {
+	scrollToHere: React.PropTypes.func
+};
 
 export default Relay.createContainer(NotePane, {
 	initialVariables: {

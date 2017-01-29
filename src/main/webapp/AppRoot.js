@@ -67,13 +67,21 @@ class AppRoot extends React.Component {
 		return (
 			<HotKeys keyMap={keymap} handlers={this.handlerProxy}>
 				<div className={bemTool('note-columns')}>
+
+					<div style={{
+					    position: 'absolute',
+					    top: '50%',
+					    height: '4px',
+					    borderTop: '2px solid red',
+					    width:'100%'}}></div>
+
 					<div className={bemTool('note-columns', 'column', 'level-1')}>
 						<InfinityPane>
 							{levelOne.map((node) => {
 								const selected = node.id == selectedNodeMPTT.id;
 								const related = selected ? false : areRelated(node, selectedNodeMPTT);
 								return (
-									<NoteGroup key={node.id} related={related}>
+									<NoteGroup key={node.id}>
 										<NotePane
 											note={this.relayNodeMap[node.id]}
 											selected={selected}
@@ -90,16 +98,15 @@ class AppRoot extends React.Component {
 					<div className={bemTool('note-columns', 'column', 'level-2')}>
 						<InfinityPane>
 							{levelTwo.map((nodeGroup, i) => {
-								const related = areRelated(nodeGroup[0], selectedNodeMPTT);
 								return (
-									<NoteGroup key={i} related={related}>
+									<NoteGroup key={i}>
 										{nodeGroup.map(node => {
 											const selected = node.id == selectedNodeMPTT.id;
 											return <NotePane
 												key={node.id}
 												note={this.relayNodeMap[node.id]}
 												selected={selected}
-												related={selected ? false : related}
+												related={selected ? false : areRelated(node, selectedNodeMPTT)}
 												selectPane={this.prop_selectPane}
 												registerSaveFn={this.prop_registerSaveFn}
 											/>;
@@ -113,16 +120,15 @@ class AppRoot extends React.Component {
 					<div className={bemTool('note-columns', 'column', 'level-3')}>
 						<InfinityPane>
 							{levelThree.map((nodeGroup, i) => {
-								const related = areRelated(nodeGroup[0], selectedNodeMPTT);
 								return (
-									<NoteGroup key={i} related={related}>
+									<NoteGroup key={i}>
 										{nodeGroup.map(node => {
 											const selected = node.id == selectedNodeMPTT.id;
 											return <NotePane
 												key={node.id}
 												note={this.relayNodeMap[node.id]}
 												selected={selected}
-												related={selected ? false : related}
+												related={selected ? false : areRelated(node, selectedNodeMPTT)}
 												selectPane={this.prop_selectPane}
 												registerSaveFn={this.prop_registerSaveFn}
 											/>;
@@ -183,7 +189,8 @@ class AppRoot extends React.Component {
 	//<editor-fold desc="Props">
 	prop_selectPane = (noteId, pane) => {
 		this.selectedPane = pane;
-		this.setState({selectedNoteId: noteId});
+		if (this.state.selectedNoteId != noteId)
+			this.setState({selectedNoteId: noteId});
 	};
 
 	prop_registerSaveFn = (id, fn) => {

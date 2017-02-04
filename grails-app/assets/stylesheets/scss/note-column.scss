@@ -3,18 +3,21 @@
 /* note-columns */
 @include block('note-columns') {
   position: fixed;
-  display: auto;
+  display: flex;
+  justify-content: space-around;
   width: 100vw;
   height: 100vh;
+  z-index: 10;
 
   /* note-columns__column */
   @include element('column') {
 	float: left;
-	width: 33.333333%;
+	width: 30%;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-content: center;
 	position: relative;
+	z-index: 11;
   }
 }

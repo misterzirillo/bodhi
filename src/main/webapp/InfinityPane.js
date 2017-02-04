@@ -12,6 +12,14 @@ class InfinityPane extends React.PureComponent {
 		this.state = {
 			pos: 0,
 		};
+
+		this.deferredScroll = false;
+	}
+
+	componentDidMount() {
+		if (this.deferredScroll) {
+			this.context_scrollToHere(this.deferredScroll);
+		}
 	}
 
 	getChildContext() {
@@ -30,8 +38,12 @@ class InfinityPane extends React.PureComponent {
 	};
 
 	context_scrollToHere = (childMiddleY) => {
-		const location = this.pane.clientHeight / 2 - childMiddleY;
-		this.setState({ pos: location });
+		if (this.pane) {
+			const location = this.pane.clientHeight / 2 - childMiddleY;
+			this.setState({pos: location});
+		} else {
+			this.deferredScroll = childMiddleY;
+		}
 	};
 
 	ref_pane = (ref) => {

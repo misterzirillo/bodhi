@@ -4,32 +4,42 @@ import bemTool from '../BemTool';
 import Markdown from 'react-remarkable';
 import Editor from './NoteEditor';
 import NoteUpdateMutation from './NoteUpdateMutation';
+import { HotKeys } from 'react-hotkeys';
 
 class NotePane extends React.Component {
 
 	//<editor-fold desc="Component lifecycle">
 	constructor(props) {
 		super(props);
+
 		this.state = {
-			editing: false, // the editor for this note is enable/disabled
+			editing: !props.note, // the editor for this note is enable/disabled
 			dirty: false
 		};
 
-		if (this.props.selected) {
+		if (props.selected) {
 			this.props.relay.setVariables({previewOnly: false});
 		}
+
+		this.handlers = {
+			'close-open-editor': this._showHideEditor
+		};
+
+		this.scrollAfterUpdate = (props.related && props.couldScroll) || props.selected;
 	}
 
 	componentWillReceiveProps(nextProps) {
+
+		// was saved by parent element
 		if (this.state.dirty && this.props.note.content != nextProps.note.content) {
 			this.setState({ dirty: false });
 		}
 
-		if (nextProps.selected) {
-			// this pane has become selected -- scroll to it
-			this._scrollToMe();
+		// became related or selected - scroll to it
+		if (!this.props.selected && nextProps.selected) {
+			this.scrollAfterUpdate = true;
 		} else if (!this.props.related && nextProps.related && nextProps.couldScroll) {
-			this._scrollToMe();
+			this.scrollAfterUpdate = true;
 		}
 	}
 
@@ -42,53 +52,73 @@ class NotePane extends React.Component {
 				this.pane.focus();
 			}
 
-			this.props.selectPane(this.props.note.id, this);
-		} else if (this.state.editing) {
-			this.editor.blur();
+			this.props.selectPane(this.props.note.id);
+		}
+
+		if (this.scrollAfterUpdate) {
+			this.scrollAfterUpdate = false;
+			this._scrollToMe();
 		}
 	}
 
 	componentDidMount() {
 		if (this.props.selected) {
-			this.props.selectPane(this.props.note.id, this);
 			this.pane.focus();
+		}
+
+		if (this.scrollAfterUpdate) {
+			this.scrollAfterUpdate = false;
+			this._scrollToMe();
 		}
 	}
 
 	render() {
-		const {content} = this.props.note;
-		const states = [
-			this.props.selected ? 'selected' : null,
-			this.props.related ? 'related' : null,
-			this.state.editing ? 'editing' : null,
-			this.state.dirty ? 'dirty' : null
+		const { content } = this.props.note;
+		const { editing, dirty } = this.state;
+		const { selected, related } = this.props;
+
+		const bemStates = [
+			selected ? 'selected' : null,
+			related ? 'related' : null,
+			editing ? 'editing' : null,
+			dirty ? 'dirty' : null
 		].filter(it => it);
 
-		return (
+		const actualPane = (
 			<div
-				className={bemTool('note-pane', null, states)}
+				className={bemTool('note-pane', null, bemStates)}
 				onClick={this._clickHandler}
 				tabIndex="-2"
 				ref={this._ref_pane}>
 
-				<div className={bemTool('note-pane', 'viewer', this.state.editing ? 'hidden' : null)}>
+				<div className={bemTool('note-pane', 'viewer', editing ? 'hidden' : null)}>
 					<Markdown source={content}/>
 				</div>
 
-				{this.state.editing &&
-					<Editor
-						className={bemTool('note-pane', 'editor')}
-						content={content}
-						ref={this._ref_editor}
-						notifyDirty={this.prop_makeDirty}
-					/>
+				{editing &&
+				<Editor
+					className={bemTool('note-pane', 'editor')}
+					content={content}
+					ref={this._ref_editor}
+					notifyDirty={this.prop_makeDirty}
+				/>
 				}
 
-				{this.state.editing &&
-					<div onClick={this.showHideEditor} className={bemTool('note-pane', 'close-button')}><b>✖</b></div>
+				{editing &&
+				<div onClick={this._showHideEditor} className={bemTool('note-pane', 'close-button')}><b>✖</b></div>
 				}
 			</div>
 		);
+
+		if (selected) {
+			return (
+				<HotKeys handlers={this.handlers}>
+					{actualPane}
+				</HotKeys>
+			);
+		} else {
+			return actualPane;
+		}
 	}
 	//</editor-fold>
 
@@ -98,7 +128,7 @@ class NotePane extends React.Component {
 			this.props.relay.setVariables({previewOnly: false});
 			this.props.selectPane(this.props.note.id, this);
 		} else if (!this.state.editing) {
-			this.showHideEditor();
+			this._showHideEditor();
 		}
 	};
 
@@ -112,6 +142,16 @@ class NotePane extends React.Component {
 				});
 				this.props.relay.commitUpdate(mutation);
 			}
+		}
+	};
+
+	_showHideEditor = () => {
+		if (this.state.editing) {
+			this.pane.focus();
+			this._doSave();
+			this.setState({editing: false});
+		} else {
+			this.setState({editing: true});
 		}
 	};
 
@@ -129,18 +169,7 @@ class NotePane extends React.Component {
 	};
 	//</editor-fold>
 
-
 	//<editor-fold desc="shared">
-	showHideEditor = () => {
-		if (this.state.editing) {
-			this.pane.focus();
-			this._doSave();
-			this.setState({editing: false});
-		} else {
-			this.setState({editing: true});
-		}
-	};
-
 	prop_makeDirty = () => {
 		if (!this.state.dirty) {
 			this.props.registerSaveFn(this.props.note.id, this._doSave);

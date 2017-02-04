@@ -10,7 +10,7 @@
   transition: all 0.25s cubic-bezier(.25,.8,.25,1);
   cursor: pointer;
   min-height: 4em;
-  margin: 0 1.5em 1.5em 1.5em;
+  margin-bottom:1.5em;
   position: relative;
 
   /* note-pane--selected */
@@ -39,6 +39,10 @@
 	bottom: 0;
 	right: 0;
 	padding: 1em;
+	textarea {
+	  font-family: "Dohop-Mono", monospace;
+	  font-size: 0.9em;
+	}
 
 	textarea {
 	  background-color: inherit;
@@ -56,6 +60,10 @@
 	visibility: visible;
 	opacity: 1;
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+
+	h1, h2, h3, h4, h5, h6 {
+	  font-family: "Roboto Slab", Serif;
+	}
 
 	/* note-pane__viewer--hidden */
 	@include modifier('hidden') {

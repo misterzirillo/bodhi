@@ -21,6 +21,14 @@ class NoteGroup extends React.PureComponent {
 		}
 	}
 
+	componentDidMount() {
+		const shouldScrollToGroup = this._shouldScrollGroup(React.Children.map(this.props.children,
+			(child) => ({...child.props}))
+		);
+		if (shouldScrollToGroup)
+			this._scrollToMe();
+	}
+
 	//<editor-fold desc="private">
 	_scrollToMe = () => {
 		const here = this.el.offsetTop + this.el.offsetHeight / 2;
@@ -40,15 +48,16 @@ class NoteGroup extends React.PureComponent {
 	//</editor-fold>
 
 	render() {
-		const shouldScrollToGroup = this._shouldScrollGroup(React.Children.map(this.props.children,
-			(child) => ({...child.props}))
-		);
+		const nodeProps = React.Children.map(this.props.children, (child) => ({...child.props}));
+
+		const shouldScrollToGroup = this._shouldScrollGroup(nodeProps);
+		const anySelected = nodeProps.some(props => props.selected);
 
 		return (
 			<div className={bemTool('note-columns', 'note-group')} ref={this._ref_el}>
 				{React.Children.map(this.props.children, (child) => {
 					return React.cloneElement(child, {
-						couldScroll: !shouldScrollToGroup
+						couldScroll: (!shouldScrollToGroup && !anySelected)
 					});
 				})}
 			</div>

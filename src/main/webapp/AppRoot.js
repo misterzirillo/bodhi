@@ -27,7 +27,6 @@ class AppRoot extends React.Component {
 		};
 
 		this.handlerProxy = {
-			'close-open-editor': () => this.selectedPane.showHideEditor(),
 			'save-all': this._doSaveAll,
 			'navigate-parent': this._selectParent,
 			'navigate-child': this._selectChild,
@@ -187,8 +186,7 @@ class AppRoot extends React.Component {
 	//</editor-fold>
 
 	//<editor-fold desc="Props">
-	prop_selectPane = (noteId, pane) => {
-		this.selectedPane = pane;
+	prop_selectPane = (noteId) => {
 		if (this.state.selectedNoteId != noteId)
 			this.setState({selectedNoteId: noteId});
 	};

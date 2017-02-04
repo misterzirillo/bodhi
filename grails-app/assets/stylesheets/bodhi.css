@@ -1,12 +1,12 @@
 /*
+*= require dohop-mono
 *= require_tree scss
 */
 
 body {
 	font-family: 'Roboto', sans-serif;
 	margin: 0;
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAIUlEQVQoU2Ps2ffLmIEIwAhSWOLEdpaQ2lGFeEOI6OABADvZJoK0b4dwAAAAAElFTkSuQmCC) repeat;
-	background-color: #313134;
+	background: #313134 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAIUlEQVQoU2Ps2ffLmIEIwAhSWOLEdpaQ2lGFeEOI6OABADvZJoK0b4dwAAAAAElFTkSuQmCC) repeat;
 }
 
 *:focus {

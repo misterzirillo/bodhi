@@ -1,7 +1,12 @@
 package bodhi
 
+import grails.plugin.springsecurity.SpringSecurityService
+import grails.util.Holders
+import graphql.Scalars
 import io.cirill.relay.annotation.RelayField
+import io.cirill.relay.annotation.RelayMutation
 import io.cirill.relay.annotation.RelayType
+import io.cirill.relay.dsl.GQLMutationSpec
 
 /**
  * bodhi
@@ -30,39 +35,66 @@ class NoteRoot {
 	@RelayField
 	NoteNode lastEditedNote
 
-//	@RelayProxyField
-//	static childrenProxy = {
-//		GQLFieldSpec.field {
-//			name 'children'
-//			description 'All children on this node'
-//			type {
-//				ref 'NoteNode'
-//			}
-//			dataFetcher { env ->
-//				def source = env.source as NoteRoot
-//				def query = NoteNode.where {
-//					leftBound > source.leftBound && rightBound < source.rightBound
-//				}
-//				def eagerLoad = RelayHelpers.eagerFetchStrings(env).collect {["$it": 'eager' ]}
-//				def nodes = query.list fetch: eagerLoad, sort: 'leftBound'
-//				resolveMPTT(source, nodes)
-//				source.children
-//			}
-//		}
-//	}
+	@RelayMutation
+	static addNoteMutation = {
+		GQLMutationSpec.field {
+			name 'addNote'
 
+			inputType {
+				name 'AddNoteInput'
+				field {
+					name 'leftBound'
+					type {
+						nonNull Scalars.GraphQLInt
+					}
+				}
+			}
 
-//	static void resolveMPTT(NoteRoot root, List<NoteNode> nodes) {
-//		def stack = nodes.sort({ it.leftBound }) as Stack<NestedSetModel>
-//		root.children = []
-//		resolveMPTT_Recurse(root, stack)
-//	}
-//
-//	private static NestedSetModel resolveMPTT_Recurse(NestedSetModel node, Stack<NestedSetModel> stack) {
-//		if (node.rightBound - node.leftBound != 1) {
-//			while (!stack.empty() && stack.peek().leftBound < node.rightBound)
-//				node.children << resolveMPTT_Recurse(stack.pop(), stack)
-//		}
-//		node
-//	}
+			type {
+				name 'AddNotePayload'
+
+				field {
+					name 'clientMutationId'
+					type Scalars.GraphQLString
+				}
+
+				field {
+					name 'lastSelectedRoot'
+					type {
+						ref 'NoteRoot'
+					}
+				}
+			}
+
+			dataFetcher { env ->
+				def leftBound = env.arguments.input.leftBound as int
+
+				def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
+				def lsr = (sss.currentUser as User).lastSelectedRoot
+				lsr.addNoteToHere(leftBound)
+
+				return [
+				        lastSelectedRoot: lsr,
+						clientMutationId: env.arguments.input.clientMutationId
+				]
+			}
+		}
+	}
+
+	private void addNoteToHere(int leftBound) {
+		nodes.each { node ->
+			if (node.leftBound >= leftBound) {
+				node.leftBound += 2
+			}
+			if (node.rightBound >= leftBound) {
+				node.rightBound += 2
+			}
+		}
+
+		def newNode = new NoteNode(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this)
+		lastEditedNote = newNode
+		nodes << newNode
+		newNode.save(flush: true)
+		save()
+	}
 }

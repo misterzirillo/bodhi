@@ -7,6 +7,10 @@ import bemTool from '../BemTool';
 
 class NoteGroup extends React.PureComponent {
 
+	static contextTypes = {
+		scrollToHere: React.PropTypes.func
+	};
+
 	constructor(props) {
 		super(props);
 		this.lastSelectedNote = null;
@@ -64,9 +68,5 @@ class NoteGroup extends React.PureComponent {
 		);
 	}
 }
-
-NoteGroup.contextTypes = {
-	scrollToHere: React.PropTypes.func
-};
 
 export default NoteGroup;

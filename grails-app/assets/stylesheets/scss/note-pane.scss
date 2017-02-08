@@ -12,12 +12,13 @@
   min-height: 4em;
   margin-bottom:1.5em;
   position: relative;
+  font-size: 1.1em;
 
   /* note-pane--selected */
   @include modifier('selected') {
 	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 	background-color: #8E24AA;
-	//transform: scale(1.005);
+	//transform: scale(1.01);
   }
 
   /* note-pane--related */
@@ -39,10 +40,6 @@
 	bottom: 0;
 	right: 0;
 	padding: 1em;
-	textarea {
-	  font-family: "Dohop-Mono", monospace;
-	  font-size: 0.9em;
-	}
 
 	textarea {
 	  background-color: inherit;
@@ -52,6 +49,9 @@
 	  resize: none;
 	  height: 100%;
 	  width: 100%;
+
+	  font-family: "Bodhi-Serif", serif;
+	  font-size: inherit;
 	}
   }
 
@@ -62,7 +62,7 @@
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
 
 	h1, h2, h3, h4, h5, h6 {
-	  font-family: "Roboto Slab", Serif;
+	  font-family: "Roboto Slab", serif;
 	}
 
 	/* note-pane__viewer--hidden */

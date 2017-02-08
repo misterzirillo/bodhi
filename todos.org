@@ -1,0 +1,20 @@
+* High Priority
+** Note add
+** Note move
+** Note delete
+** Show when content is preview
+** Nav bar
+* Medium Priority
+** Search
+** Notebook switch
+** Notebook add/del
+** Nodegroup -> nodegroup skipping navigation
+   Pageup / pagedown??
+** Login screen when logged out
+* Low Priority
+** Node update is a diff/patch
+** Codemirror editor
+** Super sweet animations
+** Dynamic colors
+** Render optimizations
+** Login screen in-app

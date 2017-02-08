@@ -10,10 +10,11 @@ function resolveMPTT(relayNodes) {
 		id: false,
 		leftBound: 0,
 		rightBound: Math.max(...relayNodes.map(n => n.rightBound)) + 1,
+		level: 0
 	};
 
 	let nodeMap = {};
-	root = resolveMPTT_Recurse(root, stack, nodeMap);
+	root = resolveMPTT_Recurse(root, stack, nodeMap, 0);
 
 	// group by depth and relation
 	const levelOne = root.children;
@@ -56,19 +57,20 @@ function resolveMPTT(relayNodes) {
 	};
 }
 
-function resolveMPTT_Recurse(node, stack, map) {
+function resolveMPTT_Recurse(node, stack, map, level) {
 	const moddedNode = {
 		id: node.id,
 		leftBound: node.leftBound,
 		rightBound: node.rightBound,
-		children: []
+		children: [],
+		level: level
 	};
 
 	map[node.id] = moddedNode;
 
 	if (node.rightBound - node.leftBound != 1) {
 		while (stack.length && stack[0].leftBound < node.rightBound) {
-			const child = resolveMPTT_Recurse(stack.shift(), stack, map);
+			const child = resolveMPTT_Recurse(stack.shift(), stack, map, level + 1);
 			child.parent = moddedNode;
 			if (moddedNode.children.length) {
 				child.siblingAbove = moddedNode.children[moddedNode.children.length - 1];

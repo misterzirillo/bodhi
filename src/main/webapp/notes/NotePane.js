@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Relay from 'react-relay';
 import bemTool from '../BemTool';
 import Markdown from 'react-remarkable';
@@ -6,9 +6,15 @@ import Editor from './NoteEditor';
 import NoteUpdateMutation from './NoteUpdateMutation';
 import { HotKeys } from 'react-hotkeys';
 
-class NotePane extends React.Component {
+class NotePane extends Component {
 
-	//<editor-fold desc="Component lifecycle">
+	//<editor-fold desc="Static">
+	static contextTypes = {
+		scrollToHere: React.PropTypes.func
+	};
+	//</editor-fold>
+
+	//<editor-fold desc="Component Lifecycle">
 	constructor(props) {
 		super(props);
 
@@ -17,12 +23,12 @@ class NotePane extends React.Component {
 			dirty: false
 		};
 
-		if (props.selected) {
+		if (props.selected || props.related) {
 			this.props.relay.setVariables({previewOnly: false});
 		}
 
 		this.handlers = {
-			'close-open-editor': this._showHideEditor
+			'close-open-editor': () => this._showHideEditor
 		};
 
 		this.scrollAfterUpdate = (props.related && props.couldScroll) || props.selected;
@@ -33,6 +39,11 @@ class NotePane extends React.Component {
 		// was saved by parent element
 		if (this.state.dirty && this.props.note.content != nextProps.note.content) {
 			this.setState({ dirty: false });
+		}
+
+		// becoming selected/related
+		if (nextProps.related || nextProps.selected) {
+			this._getFullContentIfNeeded();
 		}
 
 		// became related or selected - scroll to it
@@ -73,9 +84,9 @@ class NotePane extends React.Component {
 	}
 
 	render() {
-		const { content } = this.props.note;
+		const { selected, related, note } = this.props;
 		const { editing, dirty } = this.state;
-		const { selected, related } = this.props;
+		const content = note ? note.content : '';
 
 		const bemStates = [
 			selected ? 'selected' : null,
@@ -87,7 +98,7 @@ class NotePane extends React.Component {
 		const actualPane = (
 			<div
 				className={bemTool('note-pane', null, bemStates)}
-				onClick={this._clickHandler}
+				onClick={this._event_onClick}
 				tabIndex="-2"
 				ref={this._ref_pane}>
 
@@ -123,12 +134,9 @@ class NotePane extends React.Component {
 	//</editor-fold>
 
 	//<editor-fold desc="Private">
-	_clickHandler = () => {
-		if (!this.props.selected) {
+	_getFullContentIfNeeded = () => {
+		if (this.props.relay.variables.previewOnly) {
 			this.props.relay.setVariables({previewOnly: false});
-			this.props.selectPane(this.props.note.id, this);
-		} else if (!this.state.editing) {
-			this._showHideEditor();
 		}
 	};
 
@@ -148,19 +156,10 @@ class NotePane extends React.Component {
 	_showHideEditor = () => {
 		if (this.state.editing) {
 			this.pane.focus();
-			this._doSave();
 			this.setState({editing: false});
 		} else {
 			this.setState({editing: true});
 		}
-	};
-
-	_ref_pane = (ref) => {
-		this.pane = ref;
-	};
-
-	_ref_editor = (ref) => {
-		this.editor = ref;
 	};
 
 	_scrollToMe = () => {
@@ -169,7 +168,25 @@ class NotePane extends React.Component {
 	};
 	//</editor-fold>
 
-	//<editor-fold desc="shared">
+	//<editor-fold desc="JSX Bindings (refs, events)">
+	_ref_pane = (ref) => {
+		this.pane = ref;
+	};
+
+	_ref_editor = (ref) => {
+		this.editor = ref;
+	};
+
+	_event_onClick = () => {
+		if (!this.props.selected) {
+			this.props.selectPane(this.props.note.id);
+		} else if (!this.state.editing) {
+			this._showHideEditor();
+		}
+	};
+	//</editor-fold>
+
+	//<editor-fold desc="Shared">
 	prop_makeDirty = () => {
 		if (!this.state.dirty) {
 			this.props.registerSaveFn(this.props.note.id, this._doSave);
@@ -178,10 +195,6 @@ class NotePane extends React.Component {
 	};
 	//</editor-fold>
 }
-
-NotePane.contextTypes = {
-	scrollToHere: React.PropTypes.func
-};
 
 export default Relay.createContainer(NotePane, {
 	initialVariables: {

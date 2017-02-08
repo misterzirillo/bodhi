@@ -6,15 +6,19 @@ import { HotKeys, FocusTrap } from 'react-hotkeys';
 import { resolveMPTT, areRelated } from './MPTT';
 import bemTool from './BemTool';
 import InfinityPane from './InfinityPane';
+import AddNoteMutation from './notes/AddNoteMutation';
 
 const keymap = {
 	'close-open-editor': 'ctrl+enter',
 	'save-all': 'ctrl+s',
 	//'center-nodes': 'ctrl+space',
-	'navigate-parent': 'left',
-	'navigate-child': 'right',
-	'navigate-sibling-above': 'up',
-	'navigate-sibling-below': 'down'
+	'navigate-parent': 'ctrl+left',
+	'navigate-child': 'ctrl+right',
+	'navigate-sibling-above': 'ctrl+up',
+	'navigate-sibling-below': 'ctrl+down',
+	'insert-sibling-below': 'ctrl+shift+down',
+	'insert-sibling-above': 'ctrl+shift+up',
+	'append-child': 'ctrl+shift+right'
 };
 
 class AppRoot extends React.Component {
@@ -31,7 +35,10 @@ class AppRoot extends React.Component {
 			'navigate-parent': this._selectParent,
 			'navigate-child': this._selectChild,
 			'navigate-sibling-above': this._selectSiblingAbove,
-			'navigate-sibling-below': this._selectSiblingBelow
+			'navigate-sibling-below': this._selectSiblingBelow,
+			'insert-sibling-below': this._addSiblingBelow,
+			'insert-sibling-above': this._addSiblingAbove,
+			'append-child': this._appendChild
 		};
 
 		this._refreshMPTT(props.user.lastSelectedRoot.nodes);
@@ -40,11 +47,14 @@ class AppRoot extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		// optimize the creation of the mptt structure
+		// root container really only receives props when relay returns data,
+		// so when we get new props from relay re-create the mptt structure
 		const lastNodes = this.props.user.lastSelectedRoot.nodes;
-		const nextNodes = nextProps.user.lastSelectedRoot.nodes;
+		const { nodes: nextNodes, lastEditedNote } = nextProps.user.lastSelectedRoot;
 		if (nextNodes.length != lastNodes.length) {
+			// node was added/removed
 			this._refreshMPTT(nextNodes);
+			this.setState({ selectedNoteId: lastEditedNote.id });
 		} else {
 			for (let i = 0; i < lastNodes.length; i++) {
 				const curr = lastNodes[i];
@@ -183,6 +193,35 @@ class AppRoot extends React.Component {
 		}
 		this.dirtyNodes = [];
 	};
+
+	_addSiblingBelow = () => {
+		const selectedNode = this.mptt.nodeMap[this.state.selectedNoteId];
+		const mutation = new AddNoteMutation({
+			leftBound: selectedNode.rightBound + 1,
+			lastSelectedRoot: this.props.user.lastSelectedRoot
+		});
+		this.props.relay.commitUpdate(mutation);
+	};
+
+	_addSiblingAbove = () => {
+		const selectedNode = this.mptt.nodeMap[this.state.selectedNoteId];
+		const mutation = new AddNoteMutation({
+			leftBound: selectedNode.leftBound,
+			lastSelectedRoot: this.props.user.lastSelectedRoot
+		});
+		this.props.relay.commitUpdate(mutation);
+	};
+
+	_appendChild = () => {
+		const selectedNode = this.mptt.nodeMap[this.state.selectedNoteId];
+		if (selectedNode.level < 3) {
+			const mutation = new AddNoteMutation({
+				leftBound: selectedNode.leftBound + 1,
+				lastSelectedRoot: this.props.user.lastSelectedRoot
+			});
+			this.props.relay.commitUpdate(mutation);
+		}
+	};
 	//</editor-fold>
 
 	//<editor-fold desc="Props">
@@ -198,7 +237,6 @@ class AppRoot extends React.Component {
 		this.dirtyNodes.push(id);
 	};
 	//</editor-fold>
-
 }
 
 export default Relay.createContainer(AppRoot, {
@@ -207,6 +245,9 @@ export default Relay.createContainer(AppRoot, {
 			fragment on User {
 			
 				lastSelectedRoot {
+				
+					${AddNoteMutation.getFragment('lastSelectedRoot')}
+				
 					name,
 					lastEditedNote {
 						id,

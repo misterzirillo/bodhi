@@ -42,10 +42,11 @@ class NoteNode {
 			dataFetcher { env ->
 				def doPreview = env.arguments.preview ?: false
 				def source = env.source as NoteNode
-				if (doPreview)
-					source.content.length() > 200 ? source.content.substring(0, 200) : source.content
-				else
-					source.content
+				if (doPreview) {
+					source.content?.readLines()?.take(10)?.join(System.lineSeparator()) ?: ''
+				} else {
+					source.content ?: ''
+				}
 			}
 		}
 	}

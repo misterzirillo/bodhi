@@ -25,7 +25,7 @@ class BootStrap {
 		    def testNote6 = new NoteNode(content: '# Hi\nI\'m an unrelated test note', root: testNoteRoot, leftBound: 8, rightBound: 9)
 		    testNoteRoot.nodes.addAll testNote, testNote2, testNote3, testNote4, testNote5, testNote6
 		    testUser.lastSelectedRoot = testNoteRoot
-		    testNoteRoot.lastEditedNote = testNote
+		    testNoteRoot.lastEditedNode = testNote
 		    [testUser, testNote, testNote2, testNote3, testNote4, testNote5, testNote6, testNoteRoot]*.save()
 
 		    UserRole.withSession {

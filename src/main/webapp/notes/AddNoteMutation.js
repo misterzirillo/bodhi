@@ -36,7 +36,7 @@ export default class AddNoteMutation extends Mutation {
 		fragment on AddNotePayload {
 			lastSelectedRoot {
 				id,
-				lastEditedNote {
+				lastEditedNode {
 					id
 				},
 				nodes {

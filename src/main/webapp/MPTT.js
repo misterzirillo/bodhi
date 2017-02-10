@@ -2,116 +2,124 @@
  * Created by mcirillo on 1/24/17.
  */
 
-function resolveMPTT(relayNodes) {
-	let stack = relayNodes.slice(0).sort((a,b) => a.leftBound - b.leftBound);
+class MPTTNode {
 
-	// create a fake "root" for the tree
-	let root = {
-		id: false,
-		leftBound: 0,
-		rightBound: Math.max(...relayNodes.map(n => n.rightBound)) + 1,
-		level: 0
-	};
-
-	let nodeMap = {};
-	root = resolveMPTT_Recurse(root, stack, nodeMap, 0);
-
-	// group by depth and relation
-	const levelOne = root.children;
-	const levelTwo = levelOne
-		.map(node => node.children) // [[nodegroup], [nodegroup]]
-		.filter(nodeGroup => nodeGroup.length);
-	const levelThree = levelTwo
-		.reduce((a, b) => a.concat(b), [])
-		.map(node => node.children)
-		.filter(nodeGroup => nodeGroup.length);
-
-	// associate each child group with the next/previous for column navigation
-	const firstBaseNode = root.children[0];
-	const lastBaseNode = root.children[root.children.length - 1];
-	firstBaseNode.siblingAbove = lastBaseNode;
-	lastBaseNode.siblingBelow = firstBaseNode;
-
-	for (let i = 0; i < levelTwo.length; i++) {
-		let nodeGroup = levelTwo[i];
-		let lastOfThisGroup = nodeGroup[nodeGroup.length - 1];
-		let nextOfNextGroup = levelTwo[(i + 1) % levelTwo.length][0];
-		lastOfThisGroup.siblingBelow = nextOfNextGroup;
-		nextOfNextGroup.siblingAbove = lastOfThisGroup;
+	constructor(id, leftBound, rightBound, level, containingNodeGroup, relayNode, parentNode) {
+		this.id = id;
+		this.leftBound = leftBound;
+		this.rightBound = rightBound;
+		this.level = level;
+		this.containingNodeGroup = containingNodeGroup;
+		this.relayNode = relayNode;
+		this.parentNode = parentNode;
+		this.childNodeGroup = null;
+		this.siblingAbove = null;
+		this.siblingBelow = null;
 	}
 
-	for (let i = 0; i < levelThree.length; i++) {
-		let nodeGroup = levelThree[i];
-		let lastOfThisGroup = nodeGroup[nodeGroup.length - 1];
-		let nextOfNextGroup = levelThree[(i + 1) % levelThree.length][0];
-		lastOfThisGroup.siblingBelow = nextOfNextGroup;
-		nextOfNextGroup.siblingAbove = lastOfThisGroup;
-	}
-
-	return {
-		root,
-		nodeMap,
-		levelOne,
-		levelTwo,
-		levelThree
-	};
 }
 
-function resolveMPTT_Recurse(node, stack, map, level) {
-	const moddedNode = {
-		id: node.id,
-		leftBound: node.leftBound,
-		rightBound: node.rightBound,
-		children: [],
-		level: level
+class MPTTNodeGroup {
+
+	constructor(parent, level) {
+		this.level = level;
+		this.parentNode = parent;
+		this.nodes = [];
+		this.groupAbove = null;
+		this.groupBelow = null;
+	}
+
+	containsNodeWithId = (id) => {
+		return this.nodes.some(n => n.id == id);
 	};
 
-	map[node.id] = moddedNode;
+}
 
-	if (node.rightBound - node.leftBound != 1) {
-		while (stack.length && stack[0].leftBound < node.rightBound) {
-			const child = resolveMPTT_Recurse(stack.shift(), stack, map, level + 1);
-			child.parent = moddedNode;
-			if (moddedNode.children.length) {
-				child.siblingAbove = moddedNode.children[moddedNode.children.length - 1];
-				child.siblingAbove.siblingBelow = child;
-			}
-			moddedNode.children.push(child);
+class MPTT {
+
+	constructor(relayNodes) {
+
+		let stack = relayNodes.slice(0).sort((a,b) => a.leftBound - b.leftBound);
+		this._nodeMap = {};
+		this._nodeGroups = [];
+
+		while (stack.length) {
+			const levelOneNodeGroup = new MPTTNodeGroup(null, 1);
+			this._nodeGroups.push(levelOneNodeGroup);
+			const levelOneNode = this._resolveMPTT(stack.shift(), stack, 1, levelOneNodeGroup);
+			levelOneNodeGroup.nodes.push(levelOneNode);
+		}
+
+		// associate each node group with the next/previous for column navigation
+		const levelOne = this.nodeGroupsByLevel(1);
+		for (let i = 0; i < levelOne.length; i++) {
+			let nodeGroup = levelOne[i];
+			let nextGroup = levelOne[(i + 1) % levelOne.length];
+			nodeGroup.groupBelow = nextGroup;
+			nextGroup.groupAbove = nodeGroup;
+		}
+
+		const levelTwo = this.nodeGroupsByLevel(2);
+		for (let i = 0; i < levelTwo.length; i++) {
+			let nodeGroup = levelTwo[i];
+			let nextGroup = levelTwo[(i + 1) % levelTwo.length];
+			nodeGroup.groupBelow = nextGroup;
+			nextGroup.groupAbove = nodeGroup;
+		}
+
+		const levelThree = this.nodeGroupsByLevel(3);
+		for (let i = 0; i < levelThree.length; i++) {
+			let nodeGroup = levelThree[i];
+			let nextGroup = levelThree[(i + 1) % levelThree.length];
+			nodeGroup.groupBelow = nextGroup;
+			nextGroup.groupAbove = nodeGroup;
 		}
 	}
-	return moddedNode;
-}
 
-function areRelated(mpttNode1, mpttNode2) {
+	getNodeById = (id) => {
+		return this._nodeMap[id];
+	};
 
-	let mutualParent = mpttNode1;
-	while (mutualParent.parent.id) {
-		mutualParent = mutualParent.parent;
+	nodeGroupsByLevel = (level) => {
+		return this._nodeGroups.filter(group => group.level == level);
+	};
+
+	 _resolveMPTT = (relayNode, stack, level, nodeGroup, parentNode) => {
+		const currentRoot = new MPTTNode(
+			relayNode.id,
+			relayNode.leftBound,
+			relayNode.rightBound,
+			level,
+			nodeGroup,
+			relayNode,
+			parentNode
+		);
+
+		this._nodeMap[relayNode.id] = currentRoot;
+
+		if (relayNode.rightBound - relayNode.leftBound != 1) {
+
+			// if this node has children then set up a node group
+			const newNodeGroup = new MPTTNodeGroup(currentRoot, level + 1);
+			currentRoot.childNodeGroup = newNodeGroup;
+			this._nodeGroups.push(newNodeGroup);
+
+			// since the stack is in order we can pop out all the children like so
+			while (stack.length && stack[0].leftBound < relayNode.rightBound) {
+				const child = this._resolveMPTT(stack.shift(), stack, level + 1, newNodeGroup, currentRoot);
+
+				// link the nodes together if they aren't first node
+				// first/last nodes lack siblingAbove/siblingBelow, respectively
+				if (newNodeGroup.nodes.length) {
+					child.siblingAbove = newNodeGroup.nodes[newNodeGroup.nodes.length - 1];
+					child.siblingAbove.siblingBelow = child;
+				}
+				newNodeGroup.nodes.push(child);
+			}
+		}
+
+		return currentRoot;
 	}
-
-	return mpttNode2.leftBound >= mutualParent.leftBound && mpttNode2.rightBound <= mutualParent.rightBound;
 }
 
-function pathToNode(root, leftBound, rightBound) {
-	return pathToNode_Recurse(root, leftBound, rightBound, []);
-}
-
-function pathToNode_Recurse(root, leftBound, rightBound, stack) {
-
-	if (!root)
-		return stack;
-	else
-		stack.push(root);
-
-	const newRoot = root.children.find(function (child) {
-		return child.rightBound >= rightBound && child.leftBound <= leftBound;
-	});
-
-	return pathToNode_Recurse(newRoot, leftBound, rightBound, stack);
-}
-
-function flattenOneLevel(arr) {
-	return arr.reduce((a, b) => a.concat(b), []);
-}
-
-export { resolveMPTT, areRelated, pathToNode, flattenOneLevel };
+export default MPTT;

@@ -19,7 +19,7 @@ class NotePane extends Component {
 		super(props);
 
 		this.state = {
-			editing: !props.note, // the editor for this note is enable/disabled
+			editing: !props.node, // the editor for this note is enable/disabled
 			dirty: false
 		};
 
@@ -31,13 +31,13 @@ class NotePane extends Component {
 			'close-open-editor': () => this._showHideEditor
 		};
 
-		this.scrollAfterUpdate = (props.related && props.couldScroll) || props.selected;
+		this.scrollAfterUpdate = props.selected;
 	}
 
 	componentWillReceiveProps(nextProps) {
 
 		// was saved by parent element
-		if (this.state.dirty && this.props.note.content != nextProps.note.content) {
+		if (this.state.dirty && this.props.node.content != nextProps.node.content) {
 			this.setState({ dirty: false });
 		}
 
@@ -49,7 +49,7 @@ class NotePane extends Component {
 		// became related or selected - scroll to it
 		if (!this.props.selected && nextProps.selected) {
 			this.scrollAfterUpdate = true;
-		} else if (!this.props.related && nextProps.related && nextProps.couldScroll) {
+		} else if (!this.props.related && nextProps.related) {
 			this.scrollAfterUpdate = true;
 		}
 	}
@@ -63,7 +63,7 @@ class NotePane extends Component {
 				this.pane.focus();
 			}
 
-			this.props.selectPane(this.props.note.id);
+			//this.props.selectNode(this.props.node.id);
 		}
 
 		if (this.scrollAfterUpdate) {
@@ -84,9 +84,9 @@ class NotePane extends Component {
 	}
 
 	render() {
-		const { selected, related, note } = this.props;
+		const { selected, related, node } = this.props;
 		const { editing, dirty } = this.state;
-		const content = note ? note.content : '';
+		const content = node ? node.content : '';
 
 		const bemStates = [
 			selected ? 'selected' : null,
@@ -143,9 +143,9 @@ class NotePane extends Component {
 	_doSave = () => {
 		if (this.state.dirty) {
 			const newContent = this.editor.getValue();
-			if (this.props.note.content != newContent) {
+			if (this.props.node.content != newContent) {
 				const mutation = new NoteUpdateMutation({
-					nodeId: this.props.note.id,
+					nodeId: this.props.node.id,
 					patch: this.editor.getValue()
 				});
 				this.props.relay.commitUpdate(mutation);
@@ -179,7 +179,7 @@ class NotePane extends Component {
 
 	_event_onClick = () => {
 		if (!this.props.selected) {
-			this.props.selectPane(this.props.note.id);
+			this.props.selectNode(this.props.node.id);
 		} else if (!this.state.editing) {
 			this._showHideEditor();
 		}
@@ -189,7 +189,7 @@ class NotePane extends Component {
 	//<editor-fold desc="Shared">
 	prop_makeDirty = () => {
 		if (!this.state.dirty) {
-			this.props.registerSaveFn(this.props.note.id, this._doSave);
+			this.props.registerSaveFn(this.props.node.id, this._doSave);
 			this.setState({dirty: true});
 		}
 	};
@@ -201,6 +201,6 @@ export default Relay.createContainer(NotePane, {
 		previewOnly: true
 	},
 	fragments: {
-		note: () => Relay.QL`fragment on NoteNode { id, content(preview: $previewOnly) }`
+		node: () => Relay.QL`fragment on NoteNode { id, content(preview: $previewOnly) }`
 	}
 });

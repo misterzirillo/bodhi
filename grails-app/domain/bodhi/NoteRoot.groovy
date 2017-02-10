@@ -20,7 +20,7 @@ class NoteRoot {
 
 	static constraints = {
 		description nullable: true
-		lastEditedNote nullable: true
+		lastEditedNode nullable: true
 	}
 
 	@RelayField
@@ -33,7 +33,7 @@ class NoteRoot {
 	String description
 
 	@RelayField
-	NoteNode lastEditedNote
+	NoteNode lastEditedNode
 
 	@RelayMutation
 	static addNoteMutation = {
@@ -92,7 +92,7 @@ class NoteRoot {
 		}
 
 		def newNode = new NoteNode(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this)
-		lastEditedNote = newNode
+		lastEditedNode = newNode
 		nodes << newNode
 		newNode.save(flush: true)
 		save()

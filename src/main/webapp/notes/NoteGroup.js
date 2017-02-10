@@ -4,6 +4,7 @@
 
 import React from 'react';
 import bemTool from '../BemTool';
+import NotePane from './NotePane';
 
 class NoteGroup extends React.PureComponent {
 
@@ -11,26 +12,41 @@ class NoteGroup extends React.PureComponent {
 		scrollToHere: React.PropTypes.func
 	};
 
+	static _groupIsRelated = (nodeGroup, selectedNode) => {
+		let groupIsRelated = false;
+		if (nodeGroup.parentNode) {
+			if (nodeGroup.parentNode === selectedNode) {
+				groupIsRelated = true;
+			} else if (nodeGroup.parentNode.parentNode === selectedNode) {
+				groupIsRelated = true;
+			}
+		}
+		return groupIsRelated;
+	};
+
 	constructor(props) {
 		super(props);
 		this.lastSelectedNote = null;
+		this.scrollAfterUpdate = NoteGroup._groupIsRelated(props.nodeGroup, props.selectedNode);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const nodeProps = React.Children.map(nextProps.children, (child) => ({...child.props}));
-		if (nodeProps.some(props => props.selected)) {
-			this.lastSelectedNote = nodeProps.find(props => props.selected).note.id;
-		} else if (this._shouldScrollGroup(nodeProps)) {
+		const { selectedNode: nextSelected, nodeGroup: nextGroup } = nextProps;
+		const { selectedNode: currSelected, nodeGroup: currGroup } = this.props;
+
+		this.scrollAfterUpdate = !NoteGroup._groupIsRelated(currGroup, currSelected) && NoteGroup._groupIsRelated(nextGroup, nextSelected);
+	}
+
+	componentDidUpdate() {
+		if (this.scrollAfterUpdate) {
 			this._scrollToMe();
 		}
 	}
 
 	componentDidMount() {
-		const shouldScrollToGroup = this._shouldScrollGroup(React.Children.map(this.props.children,
-			(child) => ({...child.props}))
-		);
-		if (shouldScrollToGroup)
+		if (this.scrollAfterUpdate) {
 			this._scrollToMe();
+		}
 	}
 
 	//<editor-fold desc="private">
@@ -42,28 +58,40 @@ class NoteGroup extends React.PureComponent {
 	_ref_el = (ref) => {
 		this.el = ref;
 	};
-
-	_shouldScrollGroup = (nodeProps) => {
-		const anyHaveBeenSelectedBefore = nodeProps.some(props => props.note.id == this.lastSelectedNote);
-		const allAreRelated = nodeProps.every(props => props.related);
-		const onlyOne = nodeProps.length == 1;
-		return !onlyOne && allAreRelated && !anyHaveBeenSelectedBefore;
-	};
 	//</editor-fold>
 
 	render() {
-		const nodeProps = React.Children.map(this.props.children, (child) => ({...child.props}));
+		const { nodeGroup, selectedNode, selectNode, registerSaveFn } = this.props;
+		const groupIsRelated = NoteGroup._groupIsRelated(nodeGroup, selectedNode);
 
-		const shouldScrollToGroup = this._shouldScrollGroup(nodeProps);
-		const anySelected = nodeProps.some(props => props.selected);
+		const notePanes = nodeGroup.nodes.map((node, i) => {
+
+			let nodeIsRelated = false;
+			if (!groupIsRelated) {
+				if (selectedNode.parentNode) {
+					if (selectedNode.parentNode === node) {
+						nodeIsRelated = true;
+					} else if (selectedNode.parentNode.parentNode === node) {
+						nodeIsRelated = true;
+					}
+				}
+			} else {
+				nodeIsRelated = true;
+			}
+
+			return <NotePane
+				key={i}
+				node={node.relayNode}
+				selected={node === selectedNode}
+				related={nodeIsRelated}
+				selectNode={selectNode}
+				registerSaveFn={registerSaveFn}
+			/>
+		});
 
 		return (
 			<div className={bemTool('note-columns', 'note-group')} ref={this._ref_el}>
-				{React.Children.map(this.props.children, (child) => {
-					return React.cloneElement(child, {
-						couldScroll: (!shouldScrollToGroup && !anySelected)
-					});
-				})}
+				{notePanes}
 			</div>
 		);
 	}

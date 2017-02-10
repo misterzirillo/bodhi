@@ -3,7 +3,7 @@ import Relay from 'react-relay';
 import NoteGroup from './notes/NoteGroup';
 import NotePane from './notes/NotePane';
 import { HotKeys, FocusTrap } from 'react-hotkeys';
-import { resolveMPTT, areRelated } from './MPTT';
+import MPTT from './MPTT';
 import bemTool from './BemTool';
 import InfinityPane from './InfinityPane';
 import AddNoteMutation from './notes/AddNoteMutation';
@@ -26,9 +26,6 @@ class AppRoot extends React.Component {
 	//<editor-fold desc="Component lifecycle">
 	constructor(props) {
 		super(props);
-		this.state = {
-			selectedNoteId: props.user.lastSelectedRoot.lastEditedNote.id,
-		};
 
 		this.handlerProxy = {
 			'save-all': this._doSaveAll,
@@ -42,6 +39,11 @@ class AppRoot extends React.Component {
 		};
 
 		this._refreshMPTT(props.user.lastSelectedRoot.nodes);
+		const lastSelectedNodeId = props.user.lastSelectedRoot.lastEditedNode.id;
+		this.state = {
+			selectedNodeId: lastSelectedNodeId
+		};
+
 		this.saveFns = {};
 		this.dirtyNodes = [];
 	}
@@ -50,11 +52,11 @@ class AppRoot extends React.Component {
 		// root container really only receives props when relay returns data,
 		// so when we get new props from relay re-create the mptt structure
 		const lastNodes = this.props.user.lastSelectedRoot.nodes;
-		const { nodes: nextNodes, lastEditedNote } = nextProps.user.lastSelectedRoot;
+		const { nodes: nextNodes, lastEditedNode } = nextProps.user.lastSelectedRoot;
 		if (nextNodes.length != lastNodes.length) {
 			// node was added/removed
 			this._refreshMPTT(nextNodes);
-			this.setState({ selectedNoteId: lastEditedNote.id });
+			this.setState({ selectedNodeId: lastEditedNode.id });
 		} else {
 			for (let i = 0; i < lastNodes.length; i++) {
 				const curr = lastNodes[i];
@@ -70,8 +72,7 @@ class AppRoot extends React.Component {
 	}
 
 	render() {
-		const { nodeMap, levelOne, levelTwo, levelThree } = this.mptt;
-		const selectedNodeMPTT = nodeMap[this.state.selectedNoteId];
+		const selectedNodeMPTT = this.mptt.getNodeById(this.state.selectedNodeId);
 
 		return (
 			<HotKeys keyMap={keymap} handlers={this.handlerProxy}>
@@ -84,69 +85,21 @@ class AppRoot extends React.Component {
 					    borderTop: '2px solid red',
 					    width:'100%'}}></div>
 
-					<div className={bemTool('note-columns', 'column', 'level-1')}>
-						<InfinityPane>
-							{levelOne.map((node) => {
-								const selected = node.id == selectedNodeMPTT.id;
-								const related = selected ? false : areRelated(node, selectedNodeMPTT);
-								return (
-									<NoteGroup key={node.id}>
-										<NotePane
-											note={this.relayNodeMap[node.id]}
-											selected={selected}
-											related={related}
-											selectPane={this.prop_selectPane}
-										    registerSaveFn={this.prop_registerSaveFn}
-										/>
-									</NoteGroup>
-								);
-							})}
-						</InfinityPane>
-					</div>
-
-					<div className={bemTool('note-columns', 'column', 'level-2')}>
-						<InfinityPane>
-							{levelTwo.map((nodeGroup, i) => {
-								return (
-									<NoteGroup key={i}>
-										{nodeGroup.map(node => {
-											const selected = node.id == selectedNodeMPTT.id;
-											return <NotePane
-												key={node.id}
-												note={this.relayNodeMap[node.id]}
-												selected={selected}
-												related={selected ? false : areRelated(node, selectedNodeMPTT)}
-												selectPane={this.prop_selectPane}
-												registerSaveFn={this.prop_registerSaveFn}
-											/>;
-										})}
-									</NoteGroup>
-								);
-							})}
-						</InfinityPane>
-					</div>
-
-					<div className={bemTool('note-columns', 'column', 'level-3')}>
-						<InfinityPane>
-							{levelThree.map((nodeGroup, i) => {
-								return (
-									<NoteGroup key={i}>
-										{nodeGroup.map(node => {
-											const selected = node.id == selectedNodeMPTT.id;
-											return <NotePane
-												key={node.id}
-												note={this.relayNodeMap[node.id]}
-												selected={selected}
-												related={selected ? false : areRelated(node, selectedNodeMPTT)}
-												selectPane={this.prop_selectPane}
-												registerSaveFn={this.prop_registerSaveFn}
-											/>;
-										})}
-									</NoteGroup>
-								);
-							})}
-						</InfinityPane>
-					</div>
+					{[1, 2, 3].map(level => {
+						return <div key={level} className={bemTool('note-columns', 'column', `level-${level}`)}>
+							<InfinityPane>
+								{this.mptt.nodeGroupsByLevel(level).map((nodeGroup, i) => (
+									<NoteGroup
+										key={i}
+										nodeGroup={nodeGroup}
+										selectedNode={selectedNodeMPTT}
+										selectNode={this.prop_selectNode}
+										registerSaveFn={this.prop_registerSaveFn}
+									/>
+								))}
+							</InfinityPane>
+						</div>
+					})}
 
 				</div>
 			</HotKeys>
@@ -156,35 +109,35 @@ class AppRoot extends React.Component {
 
 	//<editor-fold desc="Private">
 	_refreshMPTT = (nextNodes) => {
-		this.mptt = resolveMPTT(nextNodes);
-		this.relayNodeMap = nextNodes.reduce(function(map, node) {
-			map[node.id] = node;
-			return map;
-		}, {});
+		this.mptt = new MPTT(nextNodes);
+		// this.relayNodeMap = nextNodes.reduce(function(map, node) {
+		// 	map[node.id] = node;
+		// 	return map;
+		// }, {});
 	};
 
 	_selectParent = () => {
-		const selected = this.mptt.nodeMap[this.state.selectedNoteId];
+		const selected = this.mptt._nodeMap[this.state.selectedNodeId];
 		if (selected.parent.id) {
-			this.setState({ selectedNoteId: selected.parent.id });
+			this.setState({ selectedNodeId: selected.parent.id });
 		}
 	};
 
 	_selectChild = () => {
-		const selected = this.mptt.nodeMap[this.state.selectedNoteId];
+		const selected = this.mptt._nodeMap[this.state.selectedNodeId];
 		if (selected.children.length) {
-			this.setState({ selectedNoteId: selected.children[0].id });
+			this.setState({ selectedNodeId: selected.children[0].id });
 		}
 	};
 
 	_selectSiblingAbove = () => {
-		const above = this.mptt.nodeMap[this.state.selectedNoteId].siblingAbove;
-		this.setState({ selectedNoteId: above.id });
+		const above = this.mptt._nodeMap[this.state.selectedNodeId].siblingAbove;
+		this.setState({ selectedNodeId: above.id });
 	};
 
 	_selectSiblingBelow = () => {
-		const below = this.mptt.nodeMap[this.state.selectedNoteId].siblingBelow;
-		this.setState({ selectedNoteId: below.id });
+		const below = this.mptt._nodeMap[this.state.selectedNodeId].siblingBelow;
+		this.setState({ selectedNodeId: below.id });
 	};
 
 	_doSaveAll = () => {
@@ -195,7 +148,7 @@ class AppRoot extends React.Component {
 	};
 
 	_addSiblingBelow = () => {
-		const selectedNode = this.mptt.nodeMap[this.state.selectedNoteId];
+		const selectedNode = this.mptt._nodeMap[this.state.selectedNodeId];
 		const mutation = new AddNoteMutation({
 			leftBound: selectedNode.rightBound + 1,
 			lastSelectedRoot: this.props.user.lastSelectedRoot
@@ -204,7 +157,7 @@ class AppRoot extends React.Component {
 	};
 
 	_addSiblingAbove = () => {
-		const selectedNode = this.mptt.nodeMap[this.state.selectedNoteId];
+		const selectedNode = this.mptt._nodeMap[this.state.selectedNodeId];
 		const mutation = new AddNoteMutation({
 			leftBound: selectedNode.leftBound,
 			lastSelectedRoot: this.props.user.lastSelectedRoot
@@ -213,7 +166,7 @@ class AppRoot extends React.Component {
 	};
 
 	_appendChild = () => {
-		const selectedNode = this.mptt.nodeMap[this.state.selectedNoteId];
+		const selectedNode = this.mptt._nodeMap[this.state.selectedNodeId];
 		if (selectedNode.level < 3) {
 			const mutation = new AddNoteMutation({
 				leftBound: selectedNode.leftBound + 1,
@@ -225,9 +178,9 @@ class AppRoot extends React.Component {
 	//</editor-fold>
 
 	//<editor-fold desc="Props">
-	prop_selectPane = (noteId) => {
-		if (this.state.selectedNoteId != noteId)
-			this.setState({selectedNoteId: noteId});
+	prop_selectNode = (noteId) => {
+		if (this.state.selectedNodeId != noteId)
+			this.setState({selectedNodeId: noteId});
 	};
 
 	prop_registerSaveFn = (id, fn) => {
@@ -249,7 +202,7 @@ export default Relay.createContainer(AppRoot, {
 					${AddNoteMutation.getFragment('lastSelectedRoot')}
 				
 					name,
-					lastEditedNote {
+					lastEditedNode {
 						id,
 						leftBound,
 						rightBound,
@@ -260,7 +213,7 @@ export default Relay.createContainer(AppRoot, {
 						id,
 						leftBound,
 						rightBound,
-						${NotePane.getFragment('note')}
+						${NotePane.getFragment('node')}
 					}
 				}
 			}`

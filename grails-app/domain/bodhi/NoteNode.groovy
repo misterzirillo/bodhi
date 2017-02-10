@@ -92,7 +92,7 @@ class NoteNode {
 				long nodeId = RelayHelpers.fromGlobalId(env.arguments.input.nodeId as String).id as long
 				NoteNode node = NoteNode.get(nodeId)
 				node.content = env.arguments.input.patch
-				node.root.lastEditedNote = node
+				node.root.lastEditedNode = node
 				node.save()
 
 				return [

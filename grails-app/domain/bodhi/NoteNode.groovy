@@ -75,7 +75,7 @@ class NoteNode {
 			type {
 				name 'PatchContentPayload'
 				field {
-					name 'note'
+					name 'updatedNode'
 					type {
 						ref 'NoteNode'
 					}
@@ -97,7 +97,7 @@ class NoteNode {
 
 				return [
 				        clientMutationId: env.arguments.input.clientMutationId,
-						note: node
+						updatedNode: node
 				]
 			}
 		}

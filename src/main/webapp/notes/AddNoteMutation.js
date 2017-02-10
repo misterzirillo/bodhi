@@ -37,7 +37,8 @@ export default class AddNoteMutation extends Mutation {
 			lastSelectedRoot {
 				id,
 				lastEditedNode {
-					id
+					id,
+					content(preview: false)
 				},
 				nodes {
 					leftBound, rightBound

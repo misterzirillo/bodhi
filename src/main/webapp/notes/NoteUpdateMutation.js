@@ -19,7 +19,7 @@ export default class NoteUpdateMutation extends Mutation {
 			{
 				type: 'FIELDS_CHANGE',
 				fieldIDs: {
-					note: this.props.nodeId
+					updatedNode: this.props.nodeId
 				}
 			},
 		];
@@ -28,7 +28,7 @@ export default class NoteUpdateMutation extends Mutation {
 	getFatQuery() {
 		return Relay.QL`
 		fragment on PatchContentPayload { 
-			note { content }
+			updatedNode { content(preview: false) }
 		}`;
 	}
 }

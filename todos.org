@@ -1,19 +1,20 @@
 * High Priority
-** Note add
+** DONE Note add
+   CLOSED: [2017-02-10 Fri 08:52]
 ** Note move
 ** Note delete
 ** Show when content is preview
 ** Nav bar
-* Medium Priority
-** Search
 ** Notebook switch
 ** Notebook add/del
+* Medium Priority
+** Search
 ** Nodegroup -> nodegroup skipping navigation
    Pageup / pagedown??
 ** Login screen when logged out
+** Codemirror editor
 * Low Priority
 ** Node update is a diff/patch
-** Codemirror editor
 ** Super sweet animations
 ** Dynamic colors
 ** Render optimizations

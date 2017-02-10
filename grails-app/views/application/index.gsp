@@ -10,6 +10,7 @@
 		<asset:javascript src="wp-bundle-prod.js" />
 	</g:else>
 	<asset:stylesheet src="bodhi.css" />
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
 <body>
 

@@ -61,33 +61,20 @@ class NoteGroup extends React.PureComponent {
 	//</editor-fold>
 
 	render() {
-		const { nodeGroup, selectedNode, selectNode, registerSaveFn } = this.props;
-		const groupIsRelated = NoteGroup._groupIsRelated(nodeGroup, selectedNode);
+		const { nodeGroup, selectedNode, selectNode, registerSaveFn, relayNodeMap, getMpttNodeById } = this.props;
+		const groupIsRelated = nodeGroup.isChildOf(selectedNode);
 
-		const notePanes = nodeGroup.nodes.map((node, i) => {
-
-			let nodeIsRelated = false;
-			if (!groupIsRelated) {
-				if (selectedNode.parentNode) {
-					if (selectedNode.parentNode === node) {
-						nodeIsRelated = true;
-					} else if (selectedNode.parentNode.parentNode === node) {
-						nodeIsRelated = true;
-					}
-				}
-			} else {
-				nodeIsRelated = true;
-			}
-
-			return <NotePane
+		const notePanes = nodeGroup.nodes.map((node, i) => (
+			<NotePane
 				key={i}
-				node={node.relayNode}
+				node={relayNodeMap[node.id]}
 				selected={node === selectedNode}
-				related={nodeIsRelated}
+				getMpttNodeById={getMpttNodeById}
+				related={groupIsRelated || node.isParentOf(selectedNode)}
 				selectNode={selectNode}
 				registerSaveFn={registerSaveFn}
 			/>
-		});
+		));
 
 		return (
 			<div className={bemTool('note-columns', 'note-group')} ref={this._ref_el}>

@@ -4,18 +4,21 @@
 
 class MPTTNode {
 
-	constructor(id, leftBound, rightBound, level, containingNodeGroup, relayNode, parentNode) {
+	constructor(id, leftBound, rightBound, level, containingNodeGroup, parentNode) {
 		this.id = id;
 		this.leftBound = leftBound;
 		this.rightBound = rightBound;
 		this.level = level;
 		this.containingNodeGroup = containingNodeGroup;
-		this.relayNode = relayNode;
 		this.parentNode = parentNode;
 		this.childNodeGroup = null;
 		this.siblingAbove = null;
 		this.siblingBelow = null;
 	}
+
+	isParentOf = (node) => {
+		return this.leftBound < node.leftBound && this.rightBound > node.rightBound;
+	};
 
 }
 
@@ -32,6 +35,17 @@ class MPTTNodeGroup {
 	containsNodeWithId = (id) => {
 		return this.nodes.some(n => n.id == id);
 	};
+
+	isChildOf = (node) => {
+		switch (this.level - node.level) {
+			case 1:
+				return this.parentNode === node;
+			case 2:
+				return this.parentNode.parentNode === node;
+			default:
+				return false;
+		}
+	}
 
 }
 
@@ -91,7 +105,6 @@ class MPTT {
 			relayNode.rightBound,
 			level,
 			nodeGroup,
-			relayNode,
 			parentNode
 		);
 

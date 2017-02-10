@@ -19,7 +19,7 @@ class NotePane extends Component {
 		super(props);
 
 		this.state = {
-			editing: !props.node, // the editor for this note is enable/disabled
+			editing: false,
 			dirty: false
 		};
 
@@ -28,10 +28,14 @@ class NotePane extends Component {
 		}
 
 		this.handlers = {
-			'close-open-editor': () => this._showHideEditor
+			'close-open-editor': this._showHideEditor,
+			'navigate-sibling-above': () => this._doIfNotEditing(this._selectSiblingAbove),
+			'navigate-sibling-below': () => this._doIfNotEditing(this._selectSiblingBelow),
+			'navigate-parent': () => this._doIfNotEditing(this._selectParent),
+			'navigate-child': () => this._doIfNotEditing(this._selectChild)
 		};
 
-		this.scrollAfterUpdate = props.selected;
+		this.scrollAfterUpdate = props.selected || props.related;
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -62,8 +66,6 @@ class NotePane extends Component {
 			} else {
 				this.pane.focus();
 			}
-
-			//this.props.selectNode(this.props.node.id);
 		}
 
 		if (this.scrollAfterUpdate) {
@@ -95,41 +97,33 @@ class NotePane extends Component {
 			dirty ? 'dirty' : null
 		].filter(it => it);
 
-		const actualPane = (
-			<div
-				className={bemTool('note-pane', null, bemStates)}
-				onClick={this._event_onClick}
-				tabIndex="-2"
-				ref={this._ref_pane}>
+		return (
+			<HotKeys handlers={this.handlers}>
+				<div
+					className={bemTool('note-pane', null, bemStates)}
+					onClick={this._event_onClick}
+					tabIndex="-2"
+					ref={this._ref_pane}>
 
-				<div className={bemTool('note-pane', 'viewer', editing ? 'hidden' : null)}>
-					<Markdown source={content}/>
+					<div className={bemTool('note-pane', 'viewer', editing ? 'hidden' : null)}>
+						<Markdown source={content}/>
+					</div>
+
+					{editing &&
+					<Editor
+						className={bemTool('note-pane', 'editor')}
+						content={content}
+						ref={this._ref_editor}
+						notifyDirty={this.prop_makeDirty}
+					/>
+					}
+
+					{editing &&
+					<div onClick={this._showHideEditor} className={bemTool('note-pane', 'close-button')}><b>✖</b></div>
+					}
 				</div>
-
-				{editing &&
-				<Editor
-					className={bemTool('note-pane', 'editor')}
-					content={content}
-					ref={this._ref_editor}
-					notifyDirty={this.prop_makeDirty}
-				/>
-				}
-
-				{editing &&
-				<div onClick={this._showHideEditor} className={bemTool('note-pane', 'close-button')}><b>✖</b></div>
-				}
-			</div>
+			</HotKeys>
 		);
-
-		if (selected) {
-			return (
-				<HotKeys handlers={this.handlers}>
-					{actualPane}
-				</HotKeys>
-			);
-		} else {
-			return actualPane;
-		}
 	}
 	//</editor-fold>
 
@@ -155,6 +149,7 @@ class NotePane extends Component {
 
 	_showHideEditor = () => {
 		if (this.state.editing) {
+			this._doSave();
 			this.pane.focus();
 			this.setState({editing: false});
 		} else {
@@ -165,6 +160,49 @@ class NotePane extends Component {
 	_scrollToMe = () => {
 		const here = this.pane.offsetTop + this.pane.offsetHeight / 2;
 		this.context.scrollToHere(here);
+	};
+
+	_getMptt = () => {
+		return this.props.getMpttNodeById(this.props.node.id);
+	};
+
+	_selectSiblingAbove = () => {
+		const mptt = this._getMptt();
+		let above = mptt.siblingAbove;
+		if (above == null) {
+			const nextGroup = mptt.containingNodeGroup.groupAbove.nodes;
+			above = nextGroup[nextGroup.length - 1];
+		}
+		this.props.selectNode(above.id);
+	};
+
+	_selectSiblingBelow = () => {
+		const mptt = this._getMptt();
+		let below = mptt.siblingBelow;
+		if (below == null) {
+			const nextGroup = mptt.containingNodeGroup.groupBelow.nodes;
+			below = nextGroup[0];
+		}
+		this.props.selectNode(below.id);
+	};
+
+	_selectParent = () => {
+		const mptt = this._getMptt();
+		if (mptt.parentNode) {
+			this.props.selectNode(mptt.parentNode.id);
+		}
+	};
+
+	_selectChild = () => {
+		const mptt = this._getMptt();
+		if (mptt.childNodeGroup) {
+			this.props.selectNode(mptt.childNodeGroup.nodes[0].id);
+		}
+	};
+
+	_doIfNotEditing = (fn) => {
+		if (!this.state.editing)
+			fn();
 	};
 	//</editor-fold>
 

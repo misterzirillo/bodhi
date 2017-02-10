@@ -12,13 +12,13 @@ const keymap = {
 	'close-open-editor': 'ctrl+enter',
 	'save-all': 'ctrl+s',
 	//'center-nodes': 'ctrl+space',
-	'navigate-parent': 'ctrl+left',
-	'navigate-child': 'ctrl+right',
-	'navigate-sibling-above': 'ctrl+up',
-	'navigate-sibling-below': 'ctrl+down',
 	'insert-sibling-below': 'ctrl+shift+down',
 	'insert-sibling-above': 'ctrl+shift+up',
-	'append-child': 'ctrl+shift+right'
+	'append-child': 'ctrl+shift+right',
+	'navigate-parent': 'left',
+	'navigate-child': 'right',
+	'navigate-sibling-above': 'up',
+	'navigate-sibling-below': 'down',
 };
 
 class AppRoot extends React.Component {
@@ -29,10 +29,6 @@ class AppRoot extends React.Component {
 
 		this.handlerProxy = {
 			'save-all': this._doSaveAll,
-			'navigate-parent': this._selectParent,
-			'navigate-child': this._selectChild,
-			'navigate-sibling-above': this._selectSiblingAbove,
-			'navigate-sibling-below': this._selectSiblingBelow,
 			'insert-sibling-below': this._addSiblingBelow,
 			'insert-sibling-above': this._addSiblingAbove,
 			'append-child': this._appendChild
@@ -95,6 +91,8 @@ class AppRoot extends React.Component {
 										selectedNode={selectedNodeMPTT}
 										selectNode={this.prop_selectNode}
 										registerSaveFn={this.prop_registerSaveFn}
+									    relayNodeMap={this.relayNodeMap}
+									    getMpttNodeById={this.mptt.getNodeById}
 									/>
 								))}
 							</InfinityPane>
@@ -110,34 +108,10 @@ class AppRoot extends React.Component {
 	//<editor-fold desc="Private">
 	_refreshMPTT = (nextNodes) => {
 		this.mptt = new MPTT(nextNodes);
-		// this.relayNodeMap = nextNodes.reduce(function(map, node) {
-		// 	map[node.id] = node;
-		// 	return map;
-		// }, {});
-	};
-
-	_selectParent = () => {
-		const selected = this.mptt._nodeMap[this.state.selectedNodeId];
-		if (selected.parent.id) {
-			this.setState({ selectedNodeId: selected.parent.id });
-		}
-	};
-
-	_selectChild = () => {
-		const selected = this.mptt._nodeMap[this.state.selectedNodeId];
-		if (selected.children.length) {
-			this.setState({ selectedNodeId: selected.children[0].id });
-		}
-	};
-
-	_selectSiblingAbove = () => {
-		const above = this.mptt._nodeMap[this.state.selectedNodeId].siblingAbove;
-		this.setState({ selectedNodeId: above.id });
-	};
-
-	_selectSiblingBelow = () => {
-		const below = this.mptt._nodeMap[this.state.selectedNodeId].siblingBelow;
-		this.setState({ selectedNodeId: below.id });
+		this.relayNodeMap = nextNodes.reduce(function(map, node) {
+			map[node.id] = node;
+			return map;
+		}, {});
 	};
 
 	_doSaveAll = () => {

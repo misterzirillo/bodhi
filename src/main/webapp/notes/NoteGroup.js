@@ -12,29 +12,16 @@ class NoteGroup extends React.PureComponent {
 		scrollToHere: React.PropTypes.func
 	};
 
-	static _groupIsRelated = (nodeGroup, selectedNode) => {
-		let groupIsRelated = false;
-		if (nodeGroup.parentNode) {
-			if (nodeGroup.parentNode === selectedNode) {
-				groupIsRelated = true;
-			} else if (nodeGroup.parentNode.parentNode === selectedNode) {
-				groupIsRelated = true;
-			}
-		}
-		return groupIsRelated;
-	};
-
 	constructor(props) {
 		super(props);
-		this.lastSelectedNote = null;
-		this.scrollAfterUpdate = NoteGroup._groupIsRelated(props.nodeGroup, props.selectedNode);
+		this.scrollAfterUpdate = props.nodeGroup.isChildOf(props.selectedNode);
 	}
 
 	componentWillReceiveProps(nextProps) {
 		const { selectedNode: nextSelected, nodeGroup: nextGroup } = nextProps;
 		const { selectedNode: currSelected, nodeGroup: currGroup } = this.props;
 
-		this.scrollAfterUpdate = !NoteGroup._groupIsRelated(currGroup, currSelected) && NoteGroup._groupIsRelated(nextGroup, nextSelected);
+		this.scrollAfterUpdate = !currGroup.isChildOf(currSelected) && nextGroup.isChildOf(nextSelected);
 	}
 
 	componentDidUpdate() {

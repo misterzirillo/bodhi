@@ -35,7 +35,19 @@ class NotePane extends Component {
 			'navigate-child': () => this._doIfNotEditing(this._selectChild)
 		};
 
-		this.scrollAfterUpdate = props.selected || props.related;
+		this.scrollAfterUpdate = (props.selected || props.related) && props.shouldScroll;
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		const becameSelected = this.props.selected != nextProps.selected;
+		const becameRelated = this.props.related != nextProps.related;
+
+		const differentContent = this.props.relay.variables.previewOnly != nextProps.relay.variables.previewOnly;
+
+		const editing = this.state.editing != nextState.editing;
+		const dirty = this.state.dirty != nextState.dirty;
+
+		return becameRelated || becameSelected || differentContent || editing || dirty;
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -51,9 +63,7 @@ class NotePane extends Component {
 		}
 
 		// became related or selected - scroll to it
-		if (!this.props.selected && nextProps.selected) {
-			this.scrollAfterUpdate = true;
-		} else if (!this.props.related && nextProps.related) {
+		if (nextProps.shouldScroll) {
 			this.scrollAfterUpdate = true;
 		}
 	}
@@ -68,7 +78,7 @@ class NotePane extends Component {
 			}
 		}
 
-		if (this.scrollAfterUpdate) {
+		if (this.scrollAfterUpdate && (this.props.selected || this.props.related)) {
 			this.scrollAfterUpdate = false;
 			this._scrollToMe();
 		}
@@ -107,6 +117,9 @@ class NotePane extends Component {
 
 					<div className={bemTool('note-pane', 'viewer', editing ? 'hidden' : null)}>
 						<Markdown source={content}/>
+						{this.props.relay.variables.previewOnly &&
+							<span>...</span>
+						}
 					</div>
 
 					{editing &&

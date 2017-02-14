@@ -1,21 +1,22 @@
 * High Priority
 ** DONE Note add
    CLOSED: [2017-02-10 Fri 08:52]
-** Note move
-** Note delete
-** Show when content is preview
-** Nav bar
-** Notebook switch
-** Notebook add/del
+** TODO Note move
+** TODO Note delete
+** TODO Show when content is preview
+** TODO Nav bar
+** TODO Notebook switch
+** TODO Notebook add/del
 * Medium Priority
 ** Search
 ** Nodegroup -> nodegroup skipping navigation
    Pageup / pagedown??
 ** Login screen when logged out
-** Codemirror editor
+** TODO Codemirror editor
+** TODO Editor grow when it is too small
 * Low Priority
 ** Node update is a diff/patch
 ** Super sweet animations
 ** Dynamic colors
 ** Render optimizations
-** Login screen in-app
+** TODO Login screen in-app

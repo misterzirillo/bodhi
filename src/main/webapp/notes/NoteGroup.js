@@ -26,6 +26,7 @@ class NoteGroup extends React.PureComponent {
 
 	componentDidUpdate() {
 		if (this.scrollAfterUpdate) {
+			this.scrollAfterUpdate = false;
 			this._scrollToMe();
 		}
 	}
@@ -51,17 +52,25 @@ class NoteGroup extends React.PureComponent {
 		const { nodeGroup, selectedNode, selectNode, registerSaveFn, relayNodeMap, getMpttNodeById } = this.props;
 		const groupIsRelated = nodeGroup.isChildOf(selectedNode);
 
-		const notePanes = nodeGroup.nodes.map((node, i) => (
-			<NotePane
-				key={i}
-				node={relayNodeMap[node.id]}
-				selected={node === selectedNode}
-				getMpttNodeById={getMpttNodeById}
-				related={groupIsRelated || node.isParentOf(selectedNode)}
-				selectNode={selectNode}
-				registerSaveFn={registerSaveFn}
-			/>
-		));
+		const notePanes = nodeGroup.nodes.map((node, i) => {
+
+			const nodeIsRelated = groupIsRelated || node.isParentOf(selectedNode);
+			const nodeIsSelected = !nodeIsRelated && node === selectedNode;
+			const nodeShouldScrollToSelf = groupIsRelated ? false : nodeIsRelated || nodeIsSelected;
+
+			return (
+				<NotePane
+					key={i}
+					node={relayNodeMap[node.id]}
+					selected={nodeIsSelected}
+					getMpttNodeById={getMpttNodeById}
+					related={nodeIsRelated}
+					shouldScroll={nodeShouldScrollToSelf}
+					selectNode={selectNode}
+					registerSaveFn={registerSaveFn}
+				/>
+			);
+		});
 
 		return (
 			<div className={bemTool('note-columns', 'note-group')} ref={this._ref_el}>

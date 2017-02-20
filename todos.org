@@ -9,6 +9,8 @@
 ** TODO Notebook add/del
 * Medium Priority
 ** Search
+   https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/
+   http://plugins.grails.org/plugin/lgrignon/hibernate-search
 ** Nodegroup -> nodegroup skipping navigation
    Pageup / pagedown??
 ** Login screen when logged out

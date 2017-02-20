@@ -1,0 +1,60 @@
+@import 'bem';
+@import 'constants';
+
+/* nav-bar */
+@include block('nav-bar') {
+
+  position: fixed;
+  height: 3em;
+  z-index: $z-nav;
+  width: 100vw;
+  background-color: #607D8B;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+
+  /* nav-bar__container */
+  @include element('container') {
+	position: relative;
+	display: flex;
+	align-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+
+	font-size: 1.4em;
+	color: $primary-color-text;
+	font-family: Roboto Slab, sans-serif;
+	text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+
+	> *:first-child {
+	  margin-left: 1em;
+	}
+  }
+
+  /* nav-bar__title */
+  @include element('title') {
+	margin-right: auto;
+	margin-left: 0.5em;
+	display: inline-block;
+	letter-spacing: 0.1em;
+  }
+}
+
+/* root-picker */
+@include block('root-picker') {
+
+  cursor: pointer;
+  margin-right: auto;
+  margin-left: -10%;
+  padding: .1em 0.3em .1em .3em;
+  border-radius: 2px;
+
+  .fa {
+	margin-left: .5em;
+  }
+
+  /* root-picker--selecting */
+  @include modifier('selecting') {
+	background-color: #B0BEC5;
+  }
+
+}

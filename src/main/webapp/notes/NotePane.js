@@ -98,28 +98,31 @@ class NotePane extends Component {
 	render() {
 		const { selected, related, node } = this.props;
 		const { editing, dirty } = this.state;
+		const { previewOnly } = this.props.relay.variables;
 		const content = node ? node.content : '';
 
-		const bemStates = [
+		const blockModifiers = [
 			selected ? 'selected' : null,
 			related ? 'related' : null,
 			editing ? 'editing' : null,
 			dirty ? 'dirty' : null
 		].filter(it => it);
 
+		const viewerModifiers = [
+			editing ? 'hidden' : null,
+			previewOnly ? 'preview' : null
+		].filter(it => it);
+
 		return (
 			<HotKeys handlers={this.handlers}>
 				<div
-					className={bemTool('note-pane', null, bemStates)}
+					className={bemTool('note-pane', null, blockModifiers)}
 					onClick={this._event_onClick}
 					tabIndex="-2"
 					ref={this._ref_pane}>
 
-					<div className={bemTool('note-pane', 'viewer', editing ? 'hidden' : null)}>
+					<div className={bemTool('note-pane', 'viewer', viewerModifiers)}>
 						<Markdown source={content}/>
-						{this.props.relay.variables.previewOnly &&
-							<span>...</span>
-						}
 					</div>
 
 					{editing &&
@@ -132,7 +135,9 @@ class NotePane extends Component {
 					}
 
 					{editing &&
-					<div onClick={this._showHideEditor} className={bemTool('note-pane', 'close-button')}><b>✖</b></div>
+					<div onClick={this._showHideEditor} className={bemTool('note-pane', 'close-button')}>
+						<i className="fa fa-check"/>
+					</div>
 					}
 				</div>
 			</HotKeys>

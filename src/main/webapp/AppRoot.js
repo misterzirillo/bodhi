@@ -1,11 +1,15 @@
 import React from 'react';
 import Relay from 'react-relay';
+
 import NoteGroup from './notes/NoteGroup';
 import NotePane from './notes/NotePane';
+import InfinityPane from './InfinityPane';
 import { HotKeys, FocusTrap } from 'react-hotkeys';
+import NavBar from './nav/NavBar';
+import NoteRootPicker from './nav/NoteRootPicker';
+
 import MPTT from './MPTT';
 import bemTool from './BemTool';
-import InfinityPane from './InfinityPane';
 import AddNoteMutation from './notes/AddNoteMutation';
 
 const keymap = {
@@ -72,6 +76,11 @@ class AppRoot extends React.Component {
 
 		return (
 			<HotKeys keyMap={keymap} handlers={this.handlerProxy}>
+
+				<NavBar>
+					<NoteRootPicker user={this.props.user} />
+				</NavBar>
+
 				<div className={bemTool('note-columns')}>
 
 					<div style={{
@@ -171,11 +180,12 @@ export default Relay.createContainer(AppRoot, {
 		user: () => Relay.QL`
 			fragment on User {
 			
+				${NoteRootPicker.getFragment('user')}
+			
 				lastSelectedRoot {
 				
 					${AddNoteMutation.getFragment('lastSelectedRoot')}
-				
-					name,
+
 					lastEditedNode {
 						id,
 						leftBound,

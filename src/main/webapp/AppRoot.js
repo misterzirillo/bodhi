@@ -93,9 +93,9 @@ class AppRoot extends React.Component {
 					{[1, 2, 3].map(level => {
 						return <div key={level} className={bemTool('note-columns', 'column', `level-${level}`)}>
 							<InfinityPane>
-								{this.mptt.nodeGroupsByLevel(level).map((nodeGroup, i) => (
+								{this.mptt.nodeGroupsByLevel(level).map(nodeGroup => (
 									<NoteGroup
-										key={i}
+										key={nodeGroup.nodes.map(node => node.id).join()}
 										nodeGroup={nodeGroup}
 										selectedNode={selectedNodeMPTT}
 										selectNode={this.prop_selectNode}

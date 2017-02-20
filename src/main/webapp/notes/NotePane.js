@@ -42,12 +42,13 @@ class NotePane extends Component {
 		const becameSelected = this.props.selected != nextProps.selected;
 		const becameRelated = this.props.related != nextProps.related;
 
-		const differentContent = this.props.relay.variables.previewOnly != nextProps.relay.variables.previewOnly;
+		const differentRelay = this.props.relay.variables.previewOnly != nextProps.relay.variables.previewOnly;
+		const differentId = this.props.node.id != nextProps.node.id;
 
 		const editing = this.state.editing != nextState.editing;
 		const dirty = this.state.dirty != nextState.dirty;
 
-		return becameRelated || becameSelected || differentContent || editing || dirty;
+		return becameRelated || becameSelected || differentRelay || editing || dirty || differentId;
 	}
 
 	componentWillReceiveProps(nextProps) {

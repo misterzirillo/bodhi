@@ -57,4 +57,42 @@
 	background-color: #B0BEC5;
   }
 
+  /* root-picker__modal */
+  @include element('modal') {
+	cursor: default;
+	min-height: 30vh;
+	min-width: 30vw;
+  }
+
+  /* root-picker__root-selection */
+  @include element('root-selection') {
+	cursor: pointer;
+	text-align: center;
+
+	&:hover {
+	  text-decoration: underline;
+	}
+  }
+
+}
+
+/* modal */
+@include block('modal') {
+
+  font-size: 1em;
+  background-color: #607D8B;
+  position: fixed;
+  margin: auto auto auto -10%;
+  top: 10vh;
+  z-index: $z-modal;
+  border-radius: 2px;
+  visibility: hidden;
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  padding: 1em;
+
+  /* modal--visible */
+  @include modifier('visible') {
+	visibility: visible;
+  }
+
 }

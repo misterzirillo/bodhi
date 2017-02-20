@@ -5,7 +5,8 @@
 ** TODO Note delete
 ** TODO Show when content is preview
 ** TODO Nav bar
-** TODO Notebook switch
+** DONE Notebook switch
+   CLOSED: [2017-02-19 Sun 23:05]
 ** TODO Notebook add/del
 * Medium Priority
 ** Search

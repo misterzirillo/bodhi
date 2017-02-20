@@ -28,6 +28,11 @@ class BootStrap {
 		    testNoteRoot.lastEditedNode = testNote
 		    [testUser, testNote, testNote2, testNote3, testNote4, testNote5, testNote6, testNoteRoot]*.save()
 
+		    def testNoteRoot2 = new NoteRoot(owner: testUser, name: 'Other notebook').save()
+		    def testNote20 = new NoteNode(content: 'other note', root: testNoteRoot2, leftBound: 0, rightBound: 1)
+		    testNoteRoot2.lastEditedNode = testNote20
+		    [testNoteRoot2, testNote20]*.save()
+
 		    UserRole.withSession {
 			    it.flush()
 			    it.clear()

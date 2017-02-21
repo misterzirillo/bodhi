@@ -1,0 +1,59 @@
+* Features
+** High Priority
+*** DONE Note add
+    CLOSED: [2017-02-10 Fri 08:52]
+*** TODO Note move
+*** TODO Note delete
+*** TODO Show when content is loading
+*** TODO Show when content is preview
+*** DONE Nav bar
+    CLOSED: [2017-02-21 Tue 12:34]
+*** DONE Notebook switch
+    CLOSED: [2017-02-19 Sun 23:05]
+*** TODO Notebook add/del
+*** TODO "Reader" mode concatenation 
+** Medium Priority
+*** TODO Search
+    https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/
+    http://plugins.grails.org/plugin/lgrignon/hibernate-search
+*** TODO Nodegroup -> nodegroup skipping navigation
+    Pageup / pagedown??
+*** TODO Login screen when logged out
+*** TODO Codemirror editor
+*** TODO Editor grow when it is too small
+*** TODO "Save all" functionality
+*** TODO Tutorial
+    (Level 1)
+    # Welcome to Bodhi
+    The most premier-est note taking app. The most efficient way to control Bodhi is with the keyboard (clicking is allowed too).
+
+    The up and down arrow keys navigate between this note and its siblings. The left and right arrow keys move between a note and it's children/parent. Move to this note's child with the right arrow key.
+
+    (Level 2)
+    ## Controls
+    - **Ctrl+Enter:** Edit the currently selected note or save it if you are currently editing.
+
+    - **Ctrl+Shift+Up:** Create a sibling above the currently selected node.
+
+    - **Ctrl+Shift+Down:** Create a sibling below the currently selected node.
+
+    - **Ctrl+Shift+Right:** Append child to the selected node.
+
+    ### Try it
+    Create a child of this note with Ctrl+Shift+Right. Edit the note with Ctrl-Enter.
+
+    ### Markdown
+    Markdown is a simple way to format plain text. Edit this note to see some example Markdown. A full Markdown tutorial can be found [here](https://guides.github.com/features/mastering-markdown/).
+** Low Priority
+*** TODO Node update is a diff/patch
+*** TODO Super sweet animations
+*** TODO Dynamic colors
+*** TODO Render optimizations
+*** TODO Login screen in-app
+* Bugs
+** DONE Smaller screen sizes have scroll bars
+   CLOSED: [2017-02-21 Tue 10:33]
+** TODO Pane focus issues after clicking away from any pane
+** TODO Editor isn't "dirty" until several character difference
+** TODO Don't toggle editor when link is clicked
+** TODO Change link colors

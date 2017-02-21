@@ -8,18 +8,22 @@
 ** DONE Notebook switch
    CLOSED: [2017-02-19 Sun 23:05]
 ** TODO Notebook add/del
+** TODO "Reader" mode concatenation
 * Medium Priority
-** Search
+** TODO Search
    https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/
    http://plugins.grails.org/plugin/lgrignon/hibernate-search
-** Nodegroup -> nodegroup skipping navigation
+** TODO Nodegroup -> nodegroup skipping navigation
    Pageup / pagedown??
-** Login screen when logged out
+** TODO Login screen when logged out
 ** TODO Codemirror editor
 ** TODO Editor grow when it is too small
 * Low Priority
-** Node update is a diff/patch
-** Super sweet animations
-** Dynamic colors
-** Render optimizations
+** TODO Node update is a diff/patch
+** TODO Super sweet animations
+** TODO Dynamic colors
+** TODO Render optimizations
 ** TODO Login screen in-app
+* Bugs
+** DONE Smaller screen sizes have scroll bars
+   CLOSED: [2017-02-21 Tue 10:33]

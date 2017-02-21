@@ -15,10 +15,10 @@
   @include element('container') {
 	position: relative;
 	display: flex;
-	align-content: center;
-	align-items: center;
+	align-items: baseline;
 	width: 100%;
 	height: 100%;
+	padding-top: 0.4em;
 
 	font-size: 1.4em;
 	color: $primary-color-text;
@@ -32,7 +32,6 @@
 
   /* nav-bar__title */
   @include element('title') {
-	margin-right: auto;
 	margin-left: 0.5em;
 	display: inline-block;
 	letter-spacing: 0.1em;
@@ -43,10 +42,11 @@
 @include block('root-picker') {
 
   cursor: pointer;
-  margin-right: auto;
-  margin-left: -4%;
+  margin-left: 1em;
   padding: .1em 0.3em .1em .3em;
   border-radius: 2px;
+  font-size: 0.8em;
+  position: relative;
 
   .fa {
 	margin-left: .5em;
@@ -57,17 +57,9 @@
 	background-color: #B0BEC5;
   }
 
-  /* root-picker__modal */
-  @include element('modal') {
-	cursor: default;
-	min-height: 30vh;
-	min-width: 30vw;
-  }
-
   /* root-picker__root-selection */
   @include element('root-selection') {
 	cursor: pointer;
-	text-align: center;
 
 	&:hover {
 	  text-decoration: underline;
@@ -76,23 +68,51 @@
 
 }
 
-/* modal */
-@include block('modal') {
+/* nav-modal-container */
+@include block('nav-modal-container') {
 
-  font-size: 1em;
   background-color: #607D8B;
-  position: fixed;
-  margin: auto auto auto -10%;
-  top: 10vh;
+  position: absolute;
   z-index: $z-modal;
   border-radius: 2px;
-  visibility: hidden;
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
   padding: 1em;
+  white-space: nowrap;
+  cursor: default;
+  top: 2.8em;
+
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-20px);
+
+  transition: all 0.25s cubic-bezier(.25,.8,.25,1);
 
   /* modal--visible */
   @include modifier('visible') {
 	visibility: visible;
+	opacity: 1;
+	transform: translateY(0);
   }
 
+  /* nav-modal-container__arrow */
+  @include element('arrow') {
+	width: 0;
+	height: 0;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	bottom: 100%;
+	position: absolute;
+
+	border-bottom: 7px solid #607D8B;
+  }
+
+  /* nav-modal-container--left */
+  @include modifier('left') {
+	left: 0;
+  }
+
+  /* nav-modal-container--right */
+  @include modifier('right') {
+	right: 0;
+  }
 }

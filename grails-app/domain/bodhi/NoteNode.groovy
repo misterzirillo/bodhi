@@ -18,17 +18,30 @@ class NoteNode {
 
     static mapping = {
 	    content sqlType: 'text' // text maps to clob sql type
+	    content nullable: true
     }
 
 	static belongsTo = [ root: NoteRoot ]
 
 	String content
+	Date dateCreated, lastUpdated
 
 	@RelayField
 	int leftBound
 
 	@RelayField
 	int rightBound
+
+	@RelayProxyField
+	static lastUpdatedProxy = {
+		GQLFieldSpec.field {
+			name 'lastUpdated'
+			type Scalars.GraphQLLong
+			dataFetcher { env ->
+				(env.source as NoteNode).lastUpdated.time
+			}
+		}
+	}
 
 	@RelayProxyField
 	static contentProxy = {

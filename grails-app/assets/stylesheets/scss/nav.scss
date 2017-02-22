@@ -20,7 +20,6 @@
 	height: 100%;
 	padding-top: 0.4em;
 
-	font-size: 1.4em;
 	color: $primary-color-text;
 	font-family: Roboto Slab, sans-serif;
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
@@ -32,9 +31,16 @@
 
   /* nav-bar__title */
   @include element('title') {
+	font-size: 1.4em;
 	margin-left: 0.5em;
 	display: inline-block;
 	letter-spacing: 0.1em;
+  }
+
+  /* nav-bar__username */
+  @include element('username') {
+	margin-left: auto;
+	margin-right: 1.5em;
   }
 }
 
@@ -45,7 +51,7 @@
   margin-left: 1em;
   padding: .1em 0.3em .1em .3em;
   border-radius: 2px;
-  font-size: 0.8em;
+  font-size: 1.2em;
   position: relative;
 
   .fa {
@@ -61,11 +67,17 @@
   @include element('root-selection') {
 	cursor: pointer;
 
-	&:hover {
+	&:hover .name {
 	  text-decoration: underline;
 	}
   }
 
+  /* root-picker__root-selection-last-update */
+  @include element('root-selection-last-update') {
+	font-size: .6em;
+	margin-left: .5em;
+	color: $divider-color;
+  }
 }
 
 /* nav-modal-container */

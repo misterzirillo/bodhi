@@ -77,7 +77,7 @@ class AppRoot extends React.Component {
 		return (
 			<HotKeys keyMap={keymap} handlers={this.handlerProxy}>
 
-				<NavBar>
+				<NavBar user={this.props.user}>
 					<NoteRootPicker user={this.props.user} />
 				</NavBar>
 
@@ -180,6 +180,7 @@ export default Relay.createContainer(AppRoot, {
 		user: () => Relay.QL`
 			fragment on User {
 			
+				${NavBar.getFragment('user')}
 				${NoteRootPicker.getFragment('user')}
 			
 				lastSelectedRoot {

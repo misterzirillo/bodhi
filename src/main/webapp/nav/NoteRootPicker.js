@@ -45,7 +45,10 @@ class NoteRootPicker extends React.Component {
 								key={i}
 								onClick={() => this.event_onClickRoot(node.id)}
 							>
-								{node.name}
+								<span className="name">{node.name}</span>
+								<span className={bem('root-picker', 'root-selection-last-update')}>
+									(last updated {new Date(node.lastUpdated).toLocaleString()})
+								</span>
 							</div>
 						))}
 					</div>
@@ -62,14 +65,16 @@ export default Relay.createContainer(NoteRootPicker, {
 		user: () => Relay.QL`
 			fragment on User {
 			
-				id
+				id,
 			
 				lastSelectedRoot {
 					name
-				}
+				},
+				
 				rootNodes {
 					id,
-					name
+					name,
+					lastUpdated
 				}
 			}
 		`

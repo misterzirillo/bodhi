@@ -3,7 +3,7 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, minimum-scale=1.0">
-
+	<base target="_blank">
 	<title>BodhiApp</title>
 	<g:if test="${Environment.current != Environment.PRODUCTION}">
 		<asset:javascript src="wp-bundle.js"/>

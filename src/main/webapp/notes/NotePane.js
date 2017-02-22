@@ -234,10 +234,10 @@ class NotePane extends Component {
 		this.editor = ref;
 	};
 
-	_event_onClick = () => {
+	_event_onClick = (e) => {
 		if (!this.props.selected) {
 			this.props.selectNode(this.props.node.id);
-		} else if (!this.state.editing) {
+		} else if (!this.state.editing && !e.target.href) {
 			this._showHideEditor();
 		}
 	};

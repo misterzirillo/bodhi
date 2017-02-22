@@ -6,7 +6,9 @@ import graphql.Scalars
 import io.cirill.relay.RelayHelpers
 import io.cirill.relay.annotation.RelayField
 import io.cirill.relay.annotation.RelayMutation
+import io.cirill.relay.annotation.RelayProxyField
 import io.cirill.relay.annotation.RelayType
+import io.cirill.relay.dsl.GQLFieldSpec
 import io.cirill.relay.dsl.GQLMutationSpec
 import org.hibernate.FetchMode
 
@@ -23,6 +25,19 @@ class NoteRoot {
 	static constraints = {
 		description nullable: true
 		lastEditedNode nullable: true
+	}
+
+	Date dateCreated, lastUpdated
+
+	@RelayProxyField
+	static lastUpdatedProxy = {
+		GQLFieldSpec.field {
+			name 'lastUpdated'
+			type Scalars.GraphQLLong
+			dataFetcher { env ->
+				(env.source as NoteRoot).lastUpdated.time
+			}
+		}
 	}
 
 	@RelayField

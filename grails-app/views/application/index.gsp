@@ -19,7 +19,10 @@
 
 <div id="app-root"></div>
 <script>
+if (window.startApp)
 	window.startApp();
+
+window.domready = true;
 </script>
 
 </body>

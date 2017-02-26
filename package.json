@@ -8,7 +8,8 @@
     "start": "webpack --progress --watch",
     "bundle": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --watch --colors --progress"
+    "watch": "webpack --watch --colors --progress",
+    "bundle-prod": "webpack --config webpack.production.config.js"
   },
   "license": "ISC",
   "devDependencies": {
@@ -26,6 +27,7 @@
     "react-dom": "^15.4.1",
     "react-hotkeys": "^0.9.0",
     "react-relay": "^0.9.3",
-    "react-remarkable": "^1.1.1"
+    "react-remarkable": "^1.1.1",
+    "react-scroll-box": "^0.3.3-beta"
   }
 }

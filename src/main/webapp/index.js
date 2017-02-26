@@ -32,3 +32,7 @@ window.startApp = () => {
 		document.getElementById('app-root')
 	);
 };
+
+if (window.domready) {
+	window.startApp();
+}

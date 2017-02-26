@@ -1886,7 +1886,7 @@ rc@~1.1.6:
     minimist "^1.2.0"
     strip-json-comments "~1.0.4"
 
-react-dom@^15.4.1:
+react-dom@>=0.13.0, react-dom@^15.4.1:
   version "15.4.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.4.1.tgz#d54c913261aaedb17adc20410d029dcc18a1344a"
   dependencies:
@@ -1915,11 +1915,18 @@ react-remarkable@^1.1.1:
   dependencies:
     remarkable "^1.4.1"
 
+react-scroll-box@^0.3.3-beta:
+  version "0.3.3-beta"
+  resolved "https://registry.yarnpkg.com/react-scroll-box/-/react-scroll-box-0.3.3-beta.tgz#8c526597f86a388431c4b327f2d46699e00f3052"
+  dependencies:
+    react ">=0.13.0"
+    react-dom ">=0.13.0"
+
 react-static-container@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-static-container/-/react-static-container-1.0.1.tgz#694c0dd68a896b879519afb548399cc1989c9ab0"
 
-react@^15.4.1:
+react@>=0.13.0, react@^15.4.1:
   version "15.4.1"
   resolved "https://registry.yarnpkg.com/react/-/react-15.4.1.tgz#498e918602677a3983cd0fd206dfe700389a0dd6"
   dependencies:

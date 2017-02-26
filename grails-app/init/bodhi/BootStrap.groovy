@@ -6,7 +6,7 @@ class BootStrap {
 
     def init = { servletContext ->
 
-	    if (Environment.current != Environment.PRODUCTION) {
+	    if (User.count() < 1) {
 		    def adminRole = new Role(authority: 'ROLE_ADMIN').save()
 		    def userRole = new Role(authority: 'ROLE_USER').save()
 

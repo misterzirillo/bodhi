@@ -6,7 +6,7 @@ import NotePane from './notes/NotePane';
 import { HotKeys, FocusTrap } from 'react-hotkeys';
 import NavBar from './nav/NavBar';
 import NoteRootPicker from './nav/NoteRootPicker';
-import NoteColumn from './notes/NoteColumn';
+import InfinityPane from './InfinityPane';
 
 import MPTT from './MPTT';
 import bem from './BemTool';
@@ -29,11 +29,18 @@ class AppRoot extends React.Component {
 
 	saveFns = {};
 	dirtyNodes = [];
+
+	// refs
+	_application; // refs the note-columns element
+	_selectedNotePane; // refs the currently selected notepane child element
+	_mptt; // the current mptt model for relay payload
+	relayNodeMap; // for finding relay information about a node by id
+
 	handlers = {
 		'save-all': this._doSaveAll,
-		'insert-sibling-below': this._addSiblingBelow,
-		'insert-sibling-above': this._addSiblingAbove,
-		'append-child': this._appendChild,
+		'insert-sibling-below': () => this._addSiblingBelow(),
+		'insert-sibling-above': () => this._addSiblingAbove(),
+		'append-child': () => this._appendChild(),
 		'close-open-editor': () => {
 			const editing = this._selectedNotePane._showHideEditor();
 			if (!editing) {
@@ -45,12 +52,6 @@ class AppRoot extends React.Component {
 		'navigate-parent': () => this._selectedNotePane._doIfNotEditing(this._selectParent),
 		'navigate-child': () => this._selectedNotePane._doIfNotEditing(this._selectChild)
 	};
-
-	// refs
-	_application; // refs the note-columns element
-	_selectedNotePane; // refs the currently selected notepane child element
-	_mptt; // the current mptt model for relay payload
-	relayNodeMap; // for finding relay information about a node by id
 
 	//<editor-fold desc="Component lifecycle">
 	constructor(props) {
@@ -100,34 +101,34 @@ class AppRoot extends React.Component {
 					<NoteRootPicker user={this.props.user} />
 				</NavBar>
 
-				<div autoFocus ref={this.ref_application} tabIndex="-1" className={bem('note-columns')}>
+				<div ref={this.ref_application} tabIndex="-1" className={bem('note-columns')}>
 
 					<div style={{
 					    position: 'absolute',
 					    top: '50%',
 					    height: '4px',
 					    borderTop: '2px solid red',
-					    width:'100%'}}></div>
+					    width:'100%'}}
+					/>
 
 					{[1, 2, 3].map(level => {
 						return (
-							<NoteColumn key={level} level={level}>
-								{this._mptt.nodeGroupsByLevel(level).map(nodeGroup => (
-									<NoteGroup
-										key={[
-											nodeGroup.nodes[0].leftBound, // lowest leftBound
-											nodeGroup.nodes[nodeGroup.nodes.length - 1]  // highest rightBound
-										]}
-										nodeGroup={nodeGroup}
-										selectedNode={selectedNodeMPTT}
-										selectNode={this._selectNode}
-										registerSaveFn={this.prop_registerSaveFn}
-									    relayNodeMap={this.relayNodeMap}
-									    getMpttNodeById={this._mptt.getNodeById}
-									    refForNoteNode={this.ref_selectedNotePane}
-									/>
-								))}
-							</NoteColumn>
+							<div key={level} className={bem('note-columns', 'column', `level-${level}`)}>
+								<InfinityPane>
+									{this._mptt.nodeGroupsByLevel(level).map(nodeGroup => (
+										<NoteGroup
+											key={level > 1 ? nodeGroup.parentNode.id : nodeGroup.nodes[0].id}
+											nodeGroup={nodeGroup}
+											selectedNode={selectedNodeMPTT}
+											selectNode={this._selectNode}
+											registerSaveFn={this.prop_registerSaveFn}
+										    relayNodeMap={this.relayNodeMap}
+										    getMpttNodeById={this._mptt.getNodeById}
+										    refForNoteNode={this.ref_selectedNotePane}
+										/>
+									))}
+								</InfinityPane>
+							</div>
 						);
 					})}
 
@@ -218,9 +219,8 @@ class AppRoot extends React.Component {
 		}
 	};
 
-	_selectNode = (noteId, ref) => {
+	_selectNode = (noteId) => {
 		if (this.state.selectedNodeId != noteId) {
-			this._selectedNotePane = ref;
 			this.setState({selectedNodeId: noteId});
 		}
 	};

@@ -27,7 +27,7 @@ class InfinityPane extends React.PureComponent {
 	}
 
 	_handleWheel = (event) => {
-		let proposedPos = this.state.pos + event.deltaY * 2;
+		let proposedPos = this.state.pos - event.deltaY * 2;
 
 		if (proposedPos > this.pane.clientHeight / 2)
 			proposedPos = this.pane.clientHeight / 2;

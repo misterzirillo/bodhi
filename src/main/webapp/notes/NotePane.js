@@ -58,6 +58,10 @@ class NotePane extends Component {
 		// became selected - pass ref to root
 		if (nextProps.selected) {
 			this.props.refWhenSelected(this);
+
+			if (this.state.editing) {
+				this.editor.focus();
+			}
 		}
 
 		// became related or selected - scroll to it
@@ -67,14 +71,7 @@ class NotePane extends Component {
 	}
 
 	componentDidUpdate() {
-		if (this.props.selected) {
-
-			if (this.state.editing) {
-				this.editor.focus();
-			}
-		}
-
-		if (this.scrollAfterUpdate && (this.props.selected || this.props.related)) {
+		if (this.scrollAfterUpdate && !this.props.relay.variables.previewOnly) {
 			this.scrollAfterUpdate = false;
 			this._scrollToMe();
 		}
@@ -192,7 +189,7 @@ class NotePane extends Component {
 
 	_event_onClick = (e) => {
 		if (!this.props.selected) {
-			this.props.selectNode(this.props.node.id, this);
+			this.props.selectNode(this.props.node.id);
 		} else if (!this.state.editing && !e.target.href) {
 			this._showHideEditor();
 		}

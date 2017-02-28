@@ -2,44 +2,58 @@
 ** High Priority
 *** DONE Note add
     CLOSED: [2017-02-10 Fri 08:52]
+
 *** TODO Note move
 *** TODO Note delete
 *** TODO Show when content is loading
 *** TODO Show when content is preview
 *** DONE Nav bar
     CLOSED: [2017-02-21 Tue 12:34]
+
 *** DONE Notebook switch
     CLOSED: [2017-02-19 Sun 23:05]
+
 *** TODO Notebook add
 *** TODO Notebook del
 *** TODO Display NodeGroups
     Need to create more visual intuition around node groups. Right now there is no visual relationship between a node and its siblings(node group). Should eliminate the space between sibling nodes and increase the size of selected node.
+
 *** TODO "Reader" mode concatenation
 ** Medium Priority
 *** TODO Search
     https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/
     http://plugins.grails.org/plugin/lgrignon/hibernate-search
+
 *** TODO Nodegroup -> nodegroup skipping navigation
     Pageup / pagedown??
+
 *** TODO Login screen when logged out
-*** TODO Codemirror editor & spellcheck
 *** TODO Editor grow when it is too small
 *** TODO "Save all" functionality
 *** DONE Tutorial
     CLOSED: [2017-02-26 Sun 22:39]
+
 ** Low Priority
+*** TODO Retrieve the full node content when the node is on screen
+    https://github.com/joshwnj/react-visibility-sensor
+
 *** TODO Node update is a diff/patch
 *** TODO Super sweet animations
 *** TODO Dynamic colors
 *** TODO Render optimizations
 *** TODO Login screen in-app
+
 * Bugs
 ** DONE Smaller screen sizes have scroll bars
    CLOSED: [2017-02-21 Tue 10:33]
-** TODO Pane focus issues 
+
+** DONE Pane focus issues 
+   CLOSED: [2017-02-28 Tue 11:17]
    When a pane becomes focused (like, input focused) and it is off screen at all the browser automatically scrolls it on screen. This wouldn't be a problem but it overrides the custom scrolling that I do. Will probably need to eliminate the tabindex and focus thing I have going on and move key event handlers to the app root :(
+
 ** TODO Editor isn't "dirty" until several character difference
 ** DONE Don't toggle editor when link is clicked
    CLOSED: [2017-02-21 Tue 16:45]
+
 ** DONE Change link colors
    CLOSED: [2017-02-26 Sun 19:35]

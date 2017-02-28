@@ -17,7 +17,7 @@ module.exports = {
 				include: path.join(__dirname, 'src/main/webapp'),
 				loader: 'babel-loader',
 				query: {
-					plugins: [babelRelayPlugin],
+					plugins: [babelRelayPlugin, 'transform-class-properties'],
 					presets: ['react', 'es2015', 'stage-0']
 				}
 			}

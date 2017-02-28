@@ -17,7 +17,7 @@
 
   /* note-pane--selected */
   @include modifier('selected') {
-	cursor: auto;
+	cursor: text;
 	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 	background-color: #8E24AA;
 	//transform: scale(1.01);

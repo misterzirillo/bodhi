@@ -15,7 +15,7 @@ try {
 	schema = JSON.parse(response.body.toString('utf-8'));
 	fs.writeFileSync("./schema.json", response.body.toString('utf-8'));
 } catch (e) {
-	console.warn('Introspection unavailable, falling back to schema.json');
+	console.warn('Server unavailable for introspection, falling back to schema.json');
 	schema = JSON.parse(fs.readFileSync('./schema.json'));
 }
 

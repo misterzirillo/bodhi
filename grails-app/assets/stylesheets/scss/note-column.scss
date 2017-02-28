@@ -3,11 +3,16 @@
 
 /* note-columns */
 @include block('note-columns') {
-  position: relative;
+  position: fixed;
+  top: 3em;
   width: 100vw;
   height: 100vh;
   z-index: $z-app;
-  overflow: hidden;
+
+  /* note-columns__spacer */
+  @include element('spacer') {
+	height: 50vh;
+  }
 
   /* note-columns__column */
   @include element('column') {

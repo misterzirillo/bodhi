@@ -49,7 +49,16 @@ class NoteGroup extends React.PureComponent {
 	//</editor-fold>
 
 	render() {
-		const { nodeGroup, selectedNode, selectNode, registerSaveFn, relayNodeMap, getMpttNodeById } = this.props;
+		const {
+			nodeGroup,
+			selectedNode,
+			selectNode,
+			registerSaveFn,
+			relayNodeMap,
+			getMpttNodeById,
+			refForNoteNode
+		} = this.props;
+
 		const groupIsRelated = nodeGroup.isChildOf(selectedNode);
 
 		const notePanes = nodeGroup.nodes.map((node, i) => {
@@ -60,7 +69,7 @@ class NoteGroup extends React.PureComponent {
 
 			return (
 				<NotePane
-					key={i}
+					key={node.id}
 					node={relayNodeMap[node.id]}
 					selected={nodeIsSelected}
 					getMpttNodeById={getMpttNodeById}
@@ -68,6 +77,7 @@ class NoteGroup extends React.PureComponent {
 					shouldScroll={nodeShouldScrollToSelf}
 					selectNode={selectNode}
 					registerSaveFn={registerSaveFn}
+				    refWhenSelected={refForNoteNode}
 				/>
 			);
 		});

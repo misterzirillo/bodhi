@@ -27,14 +27,6 @@ class NotePane extends Component {
 			this.props.relay.setVariables({previewOnly: false});
 		}
 
-		this.handlers = {
-			'close-open-editor': this._showHideEditor,
-			'navigate-sibling-above': () => this._doIfNotEditing(this._selectSiblingAbove),
-			'navigate-sibling-below': () => this._doIfNotEditing(this._selectSiblingBelow),
-			'navigate-parent': () => this._doIfNotEditing(this._selectParent),
-			'navigate-child': () => this._doIfNotEditing(this._selectChild)
-		};
-
 		this.scrollAfterUpdate = (props.selected || props.related) && props.shouldScroll;
 	}
 
@@ -63,6 +55,11 @@ class NotePane extends Component {
 			this._getFullContentIfNeeded();
 		}
 
+		// became selected - pass ref to root
+		if (nextProps.selected) {
+			this.props.refWhenSelected(this);
+		}
+
 		// became related or selected - scroll to it
 		if (nextProps.shouldScroll) {
 			this.scrollAfterUpdate = true;
@@ -74,8 +71,6 @@ class NotePane extends Component {
 
 			if (this.state.editing) {
 				this.editor.focus();
-			} else {
-				this.pane.focus();
 			}
 		}
 
@@ -87,7 +82,7 @@ class NotePane extends Component {
 
 	componentDidMount() {
 		if (this.props.selected) {
-			this.pane.focus();
+			this.props.refWhenSelected(this);
 		}
 
 		if (this.scrollAfterUpdate) {
@@ -115,33 +110,31 @@ class NotePane extends Component {
 		].filter(it => it);
 
 		return (
-			<HotKeys handlers={this.handlers}>
-				<div
-					className={bemTool('note-pane', null, blockModifiers)}
-					onClick={this._event_onClick}
-					tabIndex="-2"
-					ref={this._ref_pane}>
+			<div
+				className={bemTool('note-pane', null, blockModifiers)}
+				onClick={this._event_onClick}
+				ref={this._ref_pane}
+			>
 
-					<div className={bemTool('note-pane', 'viewer', viewerModifiers)}>
-						<Markdown source={content}/>
-					</div>
+				<div className={bemTool('note-pane', 'viewer', viewerModifiers)}>
+					<Markdown source={content}/>
+				</div>
 
-					{editing &&
+				{editing &&
 					<Editor
 						className={bemTool('note-pane', 'editor')}
 						content={content}
 						ref={this._ref_editor}
 						notifyDirty={this.prop_makeDirty}
 					/>
-					}
+				}
 
-					{editing &&
+				{editing &&
 					<div onClick={this._showHideEditor} className={bemTool('note-pane', 'close-button')}>
 						<i className="fa fa-check"/>
 					</div>
-					}
-				</div>
-			</HotKeys>
+				}
+			</div>
 		);
 	}
 	//</editor-fold>
@@ -169,54 +162,17 @@ class NotePane extends Component {
 	_showHideEditor = () => {
 		if (this.state.editing) {
 			this._doSave();
-			this.pane.focus();
 			this.setState({editing: false});
+			return false;
 		} else {
 			this.setState({editing: true});
+			return true;
 		}
 	};
 
 	_scrollToMe = () => {
 		const here = this.pane.offsetTop + this.pane.offsetHeight / 2;
 		this.context.scrollToHere(here);
-	};
-
-	_getMptt = () => {
-		return this.props.getMpttNodeById(this.props.node.id);
-	};
-
-	_selectSiblingAbove = () => {
-		const mptt = this._getMptt();
-		let above = mptt.siblingAbove;
-		if (above == null) {
-			const nextGroup = mptt.containingNodeGroup.groupAbove.nodes;
-			above = nextGroup[nextGroup.length - 1];
-		}
-		this.props.selectNode(above.id);
-	};
-
-	_selectSiblingBelow = () => {
-		const mptt = this._getMptt();
-		let below = mptt.siblingBelow;
-		if (below == null) {
-			const nextGroup = mptt.containingNodeGroup.groupBelow.nodes;
-			below = nextGroup[0];
-		}
-		this.props.selectNode(below.id);
-	};
-
-	_selectParent = () => {
-		const mptt = this._getMptt();
-		if (mptt.parentNode) {
-			this.props.selectNode(mptt.parentNode.id);
-		}
-	};
-
-	_selectChild = () => {
-		const mptt = this._getMptt();
-		if (mptt.childNodeGroup) {
-			this.props.selectNode(mptt.childNodeGroup.nodes[0].id);
-		}
 	};
 
 	_doIfNotEditing = (fn) => {
@@ -236,7 +192,7 @@ class NotePane extends Component {
 
 	_event_onClick = (e) => {
 		if (!this.props.selected) {
-			this.props.selectNode(this.props.node.id);
+			this.props.selectNode(this.props.node.id, this);
 		} else if (!this.state.editing && !e.target.href) {
 			this._showHideEditor();
 		}

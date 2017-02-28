@@ -3,13 +3,13 @@ import Relay from 'react-relay';
 
 import NoteGroup from './notes/NoteGroup';
 import NotePane from './notes/NotePane';
-import InfinityPane from './InfinityPane';
 import { HotKeys, FocusTrap } from 'react-hotkeys';
 import NavBar from './nav/NavBar';
 import NoteRootPicker from './nav/NoteRootPicker';
+import NoteColumn from './notes/NoteColumn';
 
 import MPTT from './MPTT';
-import bemTool from './BemTool';
+import bem from './BemTool';
 import AddNoteMutation from './notes/AddNoteMutation';
 
 const keymap = {
@@ -27,25 +27,44 @@ const keymap = {
 
 class AppRoot extends React.Component {
 
+	saveFns = {};
+	dirtyNodes = [];
+	handlers = {
+		'save-all': this._doSaveAll,
+		'insert-sibling-below': this._addSiblingBelow,
+		'insert-sibling-above': this._addSiblingAbove,
+		'append-child': this._appendChild,
+		'close-open-editor': () => {
+			const editing = this._selectedNotePane._showHideEditor();
+			if (!editing) {
+				this._application.focus();
+			}
+		},
+		'navigate-sibling-above': () => this._selectedNotePane._doIfNotEditing(this._selectSiblingAbove),
+		'navigate-sibling-below': () => this._selectedNotePane._doIfNotEditing(this._selectSiblingBelow),
+		'navigate-parent': () => this._selectedNotePane._doIfNotEditing(this._selectParent),
+		'navigate-child': () => this._selectedNotePane._doIfNotEditing(this._selectChild)
+	};
+
+	// refs
+	_application; // refs the note-columns element
+	_selectedNotePane; // refs the currently selected notepane child element
+	_mptt; // the current mptt model for relay payload
+	relayNodeMap; // for finding relay information about a node by id
+
 	//<editor-fold desc="Component lifecycle">
 	constructor(props) {
 		super(props);
-
-		this.handlerProxy = {
-			'save-all': this._doSaveAll,
-			'insert-sibling-below': this._addSiblingBelow,
-			'insert-sibling-above': this._addSiblingAbove,
-			'append-child': this._appendChild
-		};
 
 		this._refreshMPTT(props.user.lastSelectedRoot.nodes);
 		const lastSelectedNodeId = props.user.lastSelectedRoot.lastEditedNode.id;
 		this.state = {
 			selectedNodeId: lastSelectedNodeId
 		};
+	}
 
-		this.saveFns = {};
-		this.dirtyNodes = [];
+	componentDidMount() {
+		this._application.focus();
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -72,16 +91,16 @@ class AppRoot extends React.Component {
 	}
 
 	render() {
-		const selectedNodeMPTT = this.mptt.getNodeById(this.state.selectedNodeId);
+		const selectedNodeMPTT = this._getSelectedMpttNode();
 
 		return (
-			<HotKeys keyMap={keymap} handlers={this.handlerProxy}>
+			<HotKeys keyMap={keymap} handlers={this.handlers}>
 
 				<NavBar user={this.props.user}>
 					<NoteRootPicker user={this.props.user} />
 				</NavBar>
 
-				<div className={bemTool('note-columns')}>
+				<div autoFocus ref={this.ref_application} tabIndex="-1" className={bem('note-columns')}>
 
 					<div style={{
 					    position: 'absolute',
@@ -91,21 +110,25 @@ class AppRoot extends React.Component {
 					    width:'100%'}}></div>
 
 					{[1, 2, 3].map(level => {
-						return <div key={level} className={bemTool('note-columns', 'column', `level-${level}`)}>
-							<InfinityPane>
-								{this.mptt.nodeGroupsByLevel(level).map(nodeGroup => (
+						return (
+							<NoteColumn key={level} level={level}>
+								{this._mptt.nodeGroupsByLevel(level).map(nodeGroup => (
 									<NoteGroup
-										key={nodeGroup.nodes.map(node => node.id).join()}
+										key={[
+											nodeGroup.nodes[0].leftBound, // lowest leftBound
+											nodeGroup.nodes[nodeGroup.nodes.length - 1]  // highest rightBound
+										]}
 										nodeGroup={nodeGroup}
 										selectedNode={selectedNodeMPTT}
-										selectNode={this.prop_selectNode}
+										selectNode={this._selectNode}
 										registerSaveFn={this.prop_registerSaveFn}
 									    relayNodeMap={this.relayNodeMap}
-									    getMpttNodeById={this.mptt.getNodeById}
+									    getMpttNodeById={this._mptt.getNodeById}
+									    refForNoteNode={this.ref_selectedNotePane}
 									/>
 								))}
-							</InfinityPane>
-						</div>
+							</NoteColumn>
+						);
 					})}
 
 				</div>
@@ -116,7 +139,7 @@ class AppRoot extends React.Component {
 
 	//<editor-fold desc="Private">
 	_refreshMPTT = (nextNodes) => {
-		this.mptt = new MPTT(nextNodes);
+		this._mptt = new MPTT(nextNodes);
 		this.relayNodeMap = nextNodes.reduce(function(map, node) {
 			map[node.id] = node;
 			return map;
@@ -131,7 +154,7 @@ class AppRoot extends React.Component {
 	};
 
 	_addSiblingBelow = () => {
-		const selectedNode = this.mptt._nodeMap[this.state.selectedNodeId];
+		const selectedNode = this._getSelectedMpttNode();
 		const mutation = new AddNoteMutation({
 			leftBound: selectedNode.rightBound + 1,
 			lastSelectedRoot: this.props.user.lastSelectedRoot
@@ -140,7 +163,7 @@ class AppRoot extends React.Component {
 	};
 
 	_addSiblingAbove = () => {
-		const selectedNode = this.mptt._nodeMap[this.state.selectedNodeId];
+		const selectedNode = this._getSelectedMpttNode();
 		const mutation = new AddNoteMutation({
 			leftBound: selectedNode.leftBound,
 			lastSelectedRoot: this.props.user.lastSelectedRoot
@@ -149,7 +172,7 @@ class AppRoot extends React.Component {
 	};
 
 	_appendChild = () => {
-		const selectedNode = this.mptt._nodeMap[this.state.selectedNodeId];
+		const selectedNode = this._getSelectedMpttNode();
 		if (selectedNode.level < 3) {
 			const mutation = new AddNoteMutation({
 				leftBound: selectedNode.leftBound + 1,
@@ -158,20 +181,62 @@ class AppRoot extends React.Component {
 			this.props.relay.commitUpdate(mutation);
 		}
 	};
-	//</editor-fold>
 
-	//<editor-fold desc="Props">
-	prop_selectNode = (noteId) => {
-		if (this.state.selectedNodeId != noteId)
-			this.setState({selectedNodeId: noteId});
+	_getSelectedMpttNode = () => this._mptt.getNodeById(this.state.selectedNodeId);
+
+	_selectSiblingAbove = () => {
+		const mptt = this._getSelectedMpttNode();
+		let above = mptt.siblingAbove;
+		if (above == null) {
+			const nextGroup = mptt.containingNodeGroup.groupAbove.nodes;
+			above = nextGroup[nextGroup.length - 1];
+		}
+		this._selectNode(above.id);
 	};
 
+	_selectSiblingBelow = () => {
+		const mptt = this._getSelectedMpttNode();
+		let below = mptt.siblingBelow;
+		if (below == null) {
+			const nextGroup = mptt.containingNodeGroup.groupBelow.nodes;
+			below = nextGroup[0];
+		}
+		this._selectNode(below.id);
+	};
+
+	_selectParent = () => {
+		const mptt = this._getSelectedMpttNode();
+		if (mptt.parentNode) {
+			this._selectNode(mptt.parentNode.id);
+		}
+	};
+
+	_selectChild = () => {
+		const mptt = this._getSelectedMpttNode();
+		if (mptt.childNodeGroup) {
+			this._selectNode(mptt.childNodeGroup.nodes[0].id);
+		}
+	};
+
+	_selectNode = (noteId, ref) => {
+		if (this.state.selectedNodeId != noteId) {
+			this._selectedNotePane = ref;
+			this.setState({selectedNodeId: noteId});
+		}
+	};
+	//</editor-fold>
+
+	//<editor-fold desc="Bindings">
 	prop_registerSaveFn = (id, fn) => {
 		if (!this.saveFns[id])
 			this.saveFns[id] = fn;
 
 		this.dirtyNodes.push(id);
 	};
+
+	ref_selectedNotePane = (ref) => this._selectedNotePane = ref;
+
+	ref_application = (ref) => this._application = ref;
 	//</editor-fold>
 }
 
@@ -179,12 +244,12 @@ export default Relay.createContainer(AppRoot, {
 	fragments: {
 		user: () => Relay.QL`
 			fragment on User {
-			
+
 				${NavBar.getFragment('user')}
 				${NoteRootPicker.getFragment('user')}
-			
+
 				lastSelectedRoot {
-				
+
 					${AddNoteMutation.getFragment('lastSelectedRoot')}
 
 					lastEditedNode {
@@ -193,7 +258,7 @@ export default Relay.createContainer(AppRoot, {
 						rightBound,
 						content(preview: false)
 					},
-					
+
 					nodes {
 						id,
 						leftBound,

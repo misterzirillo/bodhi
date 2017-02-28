@@ -3,6 +3,7 @@ package bodhi
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.util.Holders
 import graphql.Scalars
+import graphql.schema.GraphQLTypeReference
 import io.cirill.relay.RelayHelpers
 import io.cirill.relay.annotation.RelayField
 import io.cirill.relay.annotation.RelayMutation
@@ -68,7 +69,7 @@ class NoteRoot {
 			}
 
 			type {
-				name 'AddNotePayload'
+				name 'AddDeleteNotePayload'
 
 				field {
 					name 'clientMutationId'
@@ -98,6 +99,64 @@ class NoteRoot {
 		}
 	}
 
+	@RelayMutation
+	static deleteNoteMutation = {
+		GQLMutationSpec.field {
+			name 'deleteNote'
+
+			inputType {
+				name 'DeleteNoteInput'
+				field {
+					name 'leftBound'
+					type {
+						nonNull Scalars.GraphQLInt
+					}
+				}
+			}
+
+			type {
+				ref 'AddDeleteNotePayload'
+			}
+
+			dataFetcher { env ->
+				def leftBound = env.arguments.input.leftBound as int
+
+				def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
+				def lsr = (sss.currentUser as User).lastSelectedRoot
+				lsr.deleteNoteFromHere(leftBound)
+
+				return [
+						lastSelectedRoot: lsr,
+						clientMutationId: env.arguments.input.clientMutationId
+				]
+			}
+		}
+	}
+
+	private void deleteNoteFromHere(int targetLeftBound) {
+		def toEdit = NoteNode.where {
+			root == this
+			rightBound >= targetLeftBound
+		}.list(fetch: ['rightBound', 'leftBound'])
+
+		def deletedNode = toEdit.find { it.leftBound == targetLeftBound }
+		def deletedNodes = toEdit.findAll { it.leftBound >= targetLeftBound && it.rightBound <= deletedNode.rightBound }
+		toEdit.removeAll(deletedNodes)
+
+		int removedRange = deletedNode.rightBound - deletedNode.leftBound + 1
+		toEdit.each { node ->
+			if ( node.leftBound >= targetLeftBound)
+				node.leftBound -= removedRange
+			if (node.rightBound >= targetLeftBound)
+				node.rightBound -= removedRange
+		}
+
+		lastEditedNode = toEdit.first()
+		deletedNodes.each { removeFromNodes(it) }
+		deletedNodes*.delete()
+		save()
+	}
+
 	private void addNoteToHere(int leftBound) {
 		nodes.each { node ->
 			if (node.leftBound >= leftBound) {
@@ -110,8 +169,7 @@ class NoteRoot {
 
 		def newNode = new NoteNode(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this)
 		lastEditedNode = newNode
-		nodes << newNode
-		newNode.save(flush: true)
+		addToNodes(newNode)
 		save()
 	}
 

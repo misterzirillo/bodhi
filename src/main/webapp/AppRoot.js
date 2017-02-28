@@ -10,7 +10,7 @@ import InfinityPane from './InfinityPane';
 
 import MPTT from './MPTT';
 import bem from './BemTool';
-import AddNoteMutation from './notes/AddNoteMutation';
+import AddDeleteNoteMutation from './notes/AddDeleteNoteMutation';
 
 const keymap = {
 	'close-open-editor': 'ctrl+enter',
@@ -23,6 +23,7 @@ const keymap = {
 	'navigate-child': 'right',
 	'navigate-sibling-above': 'up',
 	'navigate-sibling-below': 'down',
+	'delete-node': 'ctrl+backspace'
 };
 
 class AppRoot extends React.Component {
@@ -50,7 +51,8 @@ class AppRoot extends React.Component {
 		'navigate-sibling-above': () => this._selectedNotePane._doIfNotEditing(this._selectSiblingAbove),
 		'navigate-sibling-below': () => this._selectedNotePane._doIfNotEditing(this._selectSiblingBelow),
 		'navigate-parent': () => this._selectedNotePane._doIfNotEditing(this._selectParent),
-		'navigate-child': () => this._selectedNotePane._doIfNotEditing(this._selectChild)
+		'navigate-child': () => this._selectedNotePane._doIfNotEditing(this._selectChild),
+		'delete-node': () => this._deleteSelected()
 	};
 
 	//<editor-fold desc="Component lifecycle">
@@ -156,18 +158,20 @@ class AppRoot extends React.Component {
 
 	_addSiblingBelow = () => {
 		const selectedNode = this._getSelectedMpttNode();
-		const mutation = new AddNoteMutation({
+		const mutation = new AddDeleteNoteMutation({
 			leftBound: selectedNode.rightBound + 1,
-			lastSelectedRoot: this.props.user.lastSelectedRoot
+			lastSelectedRoot: this.props.user.lastSelectedRoot,
+			type: AddDeleteNoteMutation.ADD
 		});
 		this.props.relay.commitUpdate(mutation);
 	};
 
 	_addSiblingAbove = () => {
 		const selectedNode = this._getSelectedMpttNode();
-		const mutation = new AddNoteMutation({
+		const mutation = new AddDeleteNoteMutation({
 			leftBound: selectedNode.leftBound,
-			lastSelectedRoot: this.props.user.lastSelectedRoot
+			lastSelectedRoot: this.props.user.lastSelectedRoot,
+			type: AddDeleteNoteMutation.ADD
 		});
 		this.props.relay.commitUpdate(mutation);
 	};
@@ -175,12 +179,23 @@ class AppRoot extends React.Component {
 	_appendChild = () => {
 		const selectedNode = this._getSelectedMpttNode();
 		if (selectedNode.level < 3) {
-			const mutation = new AddNoteMutation({
+			const mutation = new AddDeleteNoteMutation({
 				leftBound: selectedNode.leftBound + 1,
-				lastSelectedRoot: this.props.user.lastSelectedRoot
+				lastSelectedRoot: this.props.user.lastSelectedRoot,
+				type: AddDeleteNoteMutation.ADD
 			});
 			this.props.relay.commitUpdate(mutation);
 		}
+	};
+
+	_deleteSelected = () => {
+		const selectedNode = this._getSelectedMpttNode();
+		const mutation = new AddDeleteNoteMutation({
+			leftBound: selectedNode.leftBound,
+			lastSelectedRoot: this.props.user.lastSelectedRoot,
+			type: AddDeleteNoteMutation.DELETE
+		});
+		this.props.relay.commitUpdate(mutation);
 	};
 
 	_getSelectedMpttNode = () => this._mptt.getNodeById(this.state.selectedNodeId);
@@ -250,7 +265,7 @@ export default Relay.createContainer(AppRoot, {
 
 				lastSelectedRoot {
 
-					${AddNoteMutation.getFragment('lastSelectedRoot')}
+					${AddDeleteNoteMutation.getFragment('lastSelectedRoot')}
 
 					lastEditedNode {
 						id,

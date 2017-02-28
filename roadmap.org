@@ -42,6 +42,7 @@
 *** TODO Dynamic colors
 *** TODO Render optimizations
 *** TODO Login screen in-app
+*** TODO Optimize mutation queries
 
 * Bugs
 ** DONE Smaller screen sizes have scroll bars

@@ -4,14 +4,28 @@
 
 import Relay, { Mutation } from 'react-relay';
 
-export default class AddNoteMutation extends Mutation {
+export default class AddDeleteNoteMutation extends Mutation {
+
+	static ADD = "addNote";
+	static DELETE = "deleteNote";
 
 	static fragments = {
 		lastSelectedRoot: () => Relay.QL`fragment on NoteRoot { id }`
 	};
 
 	getMutation() {
-		return Relay.QL`mutation { addNote }`;
+		switch (this.props.type) {
+			case AddDeleteNoteMutation.ADD:
+				return Relay.QL`mutation { addNote }`;
+				break;
+
+			case AddDeleteNoteMutation.DELETE:
+				return Relay.QL`mutation { deleteNote }`;
+				break;
+
+			default:
+				throw new Exception("Invalid mutation type");
+		}
 	}
 
 	getVariables() {
@@ -33,7 +47,7 @@ export default class AddNoteMutation extends Mutation {
 
 	getFatQuery() {
 		return Relay.QL`
-		fragment on AddNotePayload {
+		fragment on AddDeleteNotePayload {
 			lastSelectedRoot {
 				id,
 				lastEditedNode {

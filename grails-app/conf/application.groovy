@@ -4,6 +4,7 @@
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'bodhi.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'bodhi.UserRole'
 grails.plugin.springsecurity.authority.className = 'bodhi.Role'
+grails.plugin.springsecurity.logout.postOnly = false
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/',               access: ['permitAll']],
 	[pattern: '/error',          access: ['permitAll']],
@@ -17,10 +18,10 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/**/favicon.ico', access: ['permitAll']],
 	[pattern: '/graphql/introspect',     access: ['permitAll']],
 	[pattern: '/graphql**',     access: ['ROLE_USER']],
-		[pattern: '/application/**', access: ['ROLE_USER']],
+	[pattern: '/application/**', access: ['ROLE_USER']],
 	[pattern: "/console/**", access: ['ROLE_ADMIN']],
-	[pattern: "/plugins/console*/**", access: ['ROLE_ADMIN']], // Grails 2.x
 	[pattern: "/static/console/**", access:   ['ROLE_ADMIN']], // Grails 3.x
+	[pattern: '/user/**', access: ['ROLE_ADMIN']],
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [

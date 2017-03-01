@@ -1,3 +1,4 @@
+<%@ page import="grails.util.Holders" %>
 <!doctype html>
 <html lang="en" class="no-js">
 <head>
@@ -33,6 +34,11 @@
                 <ul class="nav navbar-nav navbar-right">
                     <g:pageProperty name="page.nav" />
                 </ul>
+	            <g:if test="${grails.util.Holders.applicationContext.getBean('springSecurityService').currentUser}">
+		            <div style="float: right">
+			            <g:link controller="logout">Logout</g:link>
+		            </div>
+	            </g:if>
             </div>
         </div>
     </div>

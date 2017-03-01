@@ -48,11 +48,11 @@ class AppRoot extends React.Component {
 				this._application.focus();
 			}
 		},
-		'navigate-sibling-above': () => this._selectedNotePane._doIfNotEditing(this._selectSiblingAbove),
-		'navigate-sibling-below': () => this._selectedNotePane._doIfNotEditing(this._selectSiblingBelow),
-		'navigate-parent': () => this._selectedNotePane._doIfNotEditing(this._selectParent),
-		'navigate-child': () => this._selectedNotePane._doIfNotEditing(this._selectChild),
-		'delete-node': () => this._deleteSelected()
+		'navigate-sibling-above': (e) => this.event_doIfNotTextArea(e, this._selectSiblingAbove),
+		'navigate-sibling-below': (e) => this.event_doIfNotTextArea(e, this._selectSiblingBelow),
+		'navigate-parent': (e) => this.event_doIfNotTextArea(e, this._selectParent),
+		'navigate-child': (e) => this.event_doIfNotTextArea(e, this._selectChild),
+		'delete-node': (e) => this.event_doIfNotTextArea(e, this._deleteSelected)
 	};
 
 	//<editor-fold desc="Component lifecycle">
@@ -242,6 +242,11 @@ class AppRoot extends React.Component {
 	//</editor-fold>
 
 	//<editor-fold desc="Bindings">
+	event_doIfNotTextArea = (event, fn) => {
+		if (event.srcElement.type != 'textarea')
+			fn();
+	};
+
 	prop_registerSaveFn = (id, fn) => {
 		if (!this.saveFns[id])
 			this.saveFns[id] = fn;

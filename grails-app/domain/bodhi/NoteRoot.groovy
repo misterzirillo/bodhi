@@ -167,7 +167,7 @@ class NoteRoot {
 			}
 		}
 
-		def newNode = new NoteNode(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this)
+		def newNode = new NoteNode(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this).save()
 		lastEditedNode = newNode
 		addToNodes(newNode)
 		save()

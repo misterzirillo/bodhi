@@ -73,7 +73,7 @@ class User implements Serializable {
 			dataFetcher { env ->
 				def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
 				def eagerLoad = RelayHelpers.eagerFetchStrings(env)
-				def result = User.withCriteria {
+				User.withCriteria {
 					idEq(sss.currentUserId)
 					for (def str : eagerLoad) {
 						fetchMode str, FetchMode.JOIN
@@ -138,7 +138,7 @@ A __big__ thanks to the authors of the following technologies for making this pr
 - [react-remarkable](https://github.com/acdlite/react-remarkable)
 - [react-hotkeys](https://github.com/chrisui/react-hotkeys)
 - [grails](https://github.com/grails)
-- [relay-gorm-connector](https://github.com/mrcirillo/relay-gorm-connector) - shameless plug of my supporting project for Grails<->GraphQL<->Relay communication""",
+- [relay-gorm-connector](https://github.com/mrcirillo/relay-gorm-connector) - shameless plug of my supporting project for Grails and GraphQL/Relay""",
 				root: root,
 				leftBound: 4,
 				rightBound: 5

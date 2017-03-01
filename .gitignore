@@ -1,3 +1,5 @@
+/grails-app/assets/javascripts/wp-bundle-prod.js.map
+/grails-app/assets/javascripts/wp-bundle-prod.js
 /grails-app/assets/javascripts/wp-bundle.js
 Thumbs.db
 .DS_Store
@@ -35,6 +37,7 @@ coverage
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
+/.asscache
 
 # Dependency directories
 node_modules

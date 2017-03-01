@@ -12,8 +12,10 @@
 		<asset:javascript src="wp-bundle-prod.js" />
 	</g:else>
 	<asset:stylesheet src="bodhi.css" />
-	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
+
+	<style>
+	@import url('https://fonts.googleapis.com/css?family=Open+Sans|Merriweather:300|Inconsolata');
+	</style>
 </head>
 <body>
 

@@ -27,14 +27,16 @@ class InfinityPane extends React.PureComponent {
 	}
 
 	_handleWheel = (event) => {
-		let proposedPos = this.state.pos - event.deltaY * 2;
+		if (event.target.type != 'textarea') {
+			let proposedPos = this.state.pos - event.deltaY * 2;
 
-		if (proposedPos > this.pane.clientHeight / 2)
-			proposedPos = this.pane.clientHeight / 2;
-		else if (proposedPos < -this.mover.clientHeight + this.pane.clientHeight / 2)
-			proposedPos = -this.mover.clientHeight + this.pane.clientHeight / 2;
+			if (proposedPos > this.pane.clientHeight / 2)
+				proposedPos = this.pane.clientHeight / 2;
+			else if (proposedPos < -this.mover.clientHeight + this.pane.clientHeight / 2)
+				proposedPos = -this.mover.clientHeight + this.pane.clientHeight / 2;
 
-		this.setState({ pos: proposedPos });
+			this.setState({pos: proposedPos});
+		}
 	};
 
 	context_scrollToHere = (childMiddleY) => {

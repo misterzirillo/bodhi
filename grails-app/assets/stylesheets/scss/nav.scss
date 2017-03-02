@@ -11,21 +11,18 @@
   background-color: $nav-color;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 
-  /* nav-bar__container */
-  @include element('container') {
-	position: relative;
-	display: flex;
-	align-items: center;
-	width: 100%;
-	padding-top: 0.4em;
+  display: flex;
+  align-items: center;
+  color: $primary-color-text;
+  font-family: 'Open Sans', sans-serif;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
 
-	color: $primary-color-text;
-	font-family: 'Open Sans', sans-serif;
-	text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+  > *:first-child {
+	margin-left: 1em;
+  }
 
-	> *:first-child {
-	  margin-left: 1em;
-	}
+  > *:last-child {
+	margin-right: 1em;
   }
 
   /* nav-bar__title */
@@ -36,12 +33,6 @@
 	letter-spacing: 0.1em;
 	font-family: "Open Sans Condensed", serif;
 
-  }
-
-  /* nav-bar__username */
-  @include element('username') {
-	margin-left: auto;
-	margin-right: 1.5em;
   }
 
   /* nav-bar__modal-trigger */
@@ -58,37 +49,10 @@
   }
 }
 
-/* root-picker */
-@include block('root-picker') {
+/* nav-modal */
+@include block('nav-modal') {
 
-  margin-left: 1em;
-  font-size: 1.2em;
-
-  .fa {
-	margin-left: .5em;
-  }
-
-  /* root-picker__root-selection */
-  @include element('root-selection') {
-	cursor: pointer;
-
-	&:hover .name {
-	  text-decoration: underline;
-	}
-  }
-
-  /* root-picker__root-selection-last-update */
-  @include element('root-selection-last-update') {
-	font-size: .6em;
-	margin-left: .5em;
-	color: $divider-color;
-  }
-}
-
-/* nav-modal-container */
-@include block('nav-modal-container') {
-
-  background-color: #607D8B;
+  background-color: $nav-color;
   position: absolute;
   z-index: $z-modal;
   border-radius: 2px;
@@ -104,14 +68,14 @@
 
   transition: all 0.25s cubic-bezier(.25,.8,.25,1);
 
-  /* modal--visible */
+  /* nav-modal--visible */
   @include modifier('visible') {
 	visibility: visible;
 	opacity: 1;
 	transform: translateY(0);
   }
 
-  /* nav-modal-container__arrow */
+  /* nav-modal */
   @include element('arrow') {
 	width: 0;
 	height: 0;
@@ -121,14 +85,24 @@
 	position: absolute;
 
 	border-bottom: 7px solid $nav-color;
+
+	/* nav-modal__arrow--right */
+	@include modifier('right') {
+	  right: 1em;
+	}
+
+	/* nav-modal__arrow--left */
+	@include modifier('left') {
+	  left: 1em;
+	}
   }
 
-  /* nav-modal-container--left */
+  /* nav-modal--left */
   @include modifier('left') {
 	left: 0;
   }
 
-  /* nav-modal-container--right */
+  /* nav-modal--right */
   @include modifier('right') {
 	right: 0;
   }

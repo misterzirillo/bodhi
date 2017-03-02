@@ -5,7 +5,8 @@
 import React from 'react';
 import Relay from 'react-relay';
 import bem from '../BemTool';
-import NavModal, { LEFT } from '../modal/NavModal';
+
+import NavModal, { Position } from './NavModal';
 import SwitchRootMutation from './SwitchRootMutation';
 
 class NoteRootPicker extends React.Component {
@@ -46,12 +47,12 @@ class NoteRootPicker extends React.Component {
 
 				<i className="fa fa-angle-down"/>
 
-				<NavModal visible={selecting} position={LEFT}>
+				<NavModal visible={selecting} position={Position.LEFT}>
 					<div className={bem('root-picker', 'modal')}>
-						{rootNodes.map((node, i) => (
+						{rootNodes.map(node => (
 							<div
 								className={bem('root-picker', 'root-selection')}
-								key={i}
+								key={node.id}
 								onClick={() => this.event_onClickRoot(node.id)}
 							>
 								<span className="name">{node.name}</span>

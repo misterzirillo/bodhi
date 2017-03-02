@@ -5,23 +5,34 @@ import React from 'react';
 import Relay from 'react-relay';
 import bem from '../BemTool';
 
-const NavBar = ({ children, user }) => {
+import NoteRootPicker from './NoteRootPicker';
+import UserMenu from './UserMenu';
+
+const NavBar = ({ user }) => {
 	return (
 		<div className={bem('nav-bar')}>
-			<div className={bem('nav-bar', 'container')}>
-				<div className={bem('nav-bar', 'title')}>
-					<i className="fa fa-cubes"/>
-					Bodhi
-				</div>
-				{children}
-				<div className={bem('nav-bar', 'username')}>{user.username}</div>
+
+			<div className={bem('nav-bar', 'title')}>
+				<i className="fa fa-cubes"/>
+				Bodhi
 			</div>
+
+			<NoteRootPicker user={user}/>
+			<UserMenu user={user}/>
+
 		</div>
 	);
 };
 
 export default Relay.createContainer(NavBar, {
 	fragments: {
-		user: () => Relay.QL`fragment on User { username }`
+		user: () => Relay.QL`
+			fragment on User { 
+			
+				username,
+				
+				${NoteRootPicker.getFragment('user')}
+				${UserMenu.getFragment('user')}
+			}`
 	}
 });

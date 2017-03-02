@@ -1,0 +1,24 @@
+@import 'constants';
+@import 'bem';
+
+/* user-menu */
+@include block('user-menu') {
+  margin-left: auto;
+  font-size: 1.2em;
+
+  .fa {
+	margin-left: .5em;
+  }
+
+  /* user-menu__modal */
+  @include element('modal') {
+	a {
+	  color: $primary-color-text;
+	  text-decoration: none;
+
+	  &:hover {
+		text-decoration: underline;
+	  }
+	}
+  }
+}

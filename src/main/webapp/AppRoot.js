@@ -5,7 +5,6 @@ import NoteGroup from './notes/NoteGroup';
 import NotePane from './notes/NotePane';
 import { HotKeys, FocusTrap } from 'react-hotkeys';
 import NavBar from './nav/NavBar';
-import NoteRootPicker from './nav/NoteRootPicker';
 import InfinityPane from './InfinityPane';
 
 import MPTT from './MPTT';
@@ -99,9 +98,7 @@ class AppRoot extends React.Component {
 		return (
 			<HotKeys keyMap={keymap} handlers={this.handlers}>
 
-				<NavBar user={this.props.user}>
-					<NoteRootPicker user={this.props.user} />
-				</NavBar>
+				<NavBar user={this.props.user}/>
 
 				<div ref={this.ref_application} tabIndex="-1" className={bem('note-columns')}>
 
@@ -266,7 +263,6 @@ export default Relay.createContainer(AppRoot, {
 			fragment on User {
 
 				${NavBar.getFragment('user')}
-				${NoteRootPicker.getFragment('user')}
 
 				lastSelectedRoot {
 

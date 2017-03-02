@@ -1,0 +1,29 @@
+@import 'constants';
+@import 'bem';
+
+/* root-picker */
+@include block('root-picker') {
+
+  margin-left: 1em;
+  font-size: 1.2em;
+
+  .fa {
+	margin-left: .5em;
+  }
+
+  /* root-picker__root-selection */
+  @include element('root-selection') {
+	cursor: pointer;
+
+	&:hover .name {
+	  text-decoration: underline;
+	}
+  }
+
+  /* root-picker__root-selection-last-update */
+  @include element('root-selection-last-update') {
+	font-size: .6em;
+	margin-left: .5em;
+	color: $divider-color;
+  }
+}

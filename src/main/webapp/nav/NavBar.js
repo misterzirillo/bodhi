@@ -11,7 +11,7 @@ const NavBar = ({ children, user }) => {
 			<div className={bem('nav-bar', 'container')}>
 				<div className={bem('nav-bar', 'title')}>
 					<i className="fa fa-cubes"/>
-					<b>Bodhi</b>
+					Bodhi
 				</div>
 				{children}
 				<div className={bem('nav-bar', 'username')}>{user.username}</div>

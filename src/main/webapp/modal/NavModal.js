@@ -5,6 +5,8 @@
 import React from 'react';
 import bem from '../BemTool';
 
+const LEFT = 'left', RIGHT = 'right', CENTER = 'center';
+
 export default ({ visible, children, position }) => {
 
 	const modifiers = [
@@ -18,4 +20,6 @@ export default ({ visible, children, position }) => {
 			{children}
 		</div>
 	);
-}
+};
+
+export { LEFT, RIGHT, CENTER };

@@ -5,10 +5,10 @@
 @include block('nav-bar') {
 
   position: fixed;
-  height: 3em;
+  height: $nav-height;
   z-index: $z-nav;
   width: 100vw;
-  background-color: #607D8B;
+  background-color: $nav-color;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 
   /* nav-bar__container */
@@ -43,25 +43,29 @@
 	margin-left: auto;
 	margin-right: 1.5em;
   }
+
+  /* nav-bar__modal-trigger */
+  @include element('modal-toggle') {
+	cursor: pointer;
+	padding: .1em 0.3em .1em .3em;
+	border-radius: 2px;
+	position: relative;
+
+	/* nav-bar__modal-trigger--toggled */
+	@include modifier('toggled') {
+	  background-color: $accent-color;
+	}
+  }
 }
 
 /* root-picker */
 @include block('root-picker') {
 
-  cursor: pointer;
   margin-left: 1em;
-  padding: .1em 0.3em .1em .3em;
-  border-radius: 2px;
   font-size: 1.2em;
-  position: relative;
 
   .fa {
 	margin-left: .5em;
-  }
-
-  /* root-picker--selecting */
-  @include modifier('selecting') {
-	background-color: #B0BEC5;
   }
 
   /* root-picker__root-selection */
@@ -116,7 +120,7 @@
 	bottom: 100%;
 	position: absolute;
 
-	border-bottom: 7px solid #607D8B;
+	border-bottom: 7px solid $nav-color;
   }
 
   /* nav-modal-container--left */

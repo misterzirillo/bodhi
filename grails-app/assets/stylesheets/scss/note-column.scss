@@ -3,16 +3,12 @@
 
 /* note-columns */
 @include block('note-columns') {
-  position: fixed;
-  top: 3em;
-  width: 100vw;
-  height: 100vh;
-  z-index: $z-app;
 
-  /* note-columns__spacer */
-  @include element('spacer') {
-	height: 50vh;
-  }
+  position: fixed;
+  top: $nav-height;
+  width: 100vw;
+  bottom: 0;
+  z-index: $z-app;
 
   /* note-columns__column */
   @include element('column') {
@@ -25,19 +21,19 @@
 
 	/* column--level-1 */
 	@include modifier('level-1') {
-	  z-index: 1;
+	  z-index: $z-app + 1;
 	  left: 0;
 	}
 
 	/* column--level-2 */
 	@include modifier('level-2') {
-	  z-index: 2;
+	  z-index: $z-app + 2;
 	  left: 33.3333vw;
 	}
 
 	/* column--level-3 */
 	@include modifier('level-3') {
-	  z-index: 3;
+	  z-index: $z-app + 3;
 	  left: 66.6666vw;
 	}
   }

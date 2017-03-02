@@ -59,7 +59,8 @@ class AppRoot extends React.Component {
 		super(props);
 
 		this._refreshMPTT(props.user.lastSelectedRoot.nodes);
-		const lastSelectedNodeId = props.user.lastSelectedRoot.lastEditedNode.id;
+		let lastSelectedNodeId;
+		try { lastSelectedNodeId= props.user.lastSelectedRoot.lastEditedNode.id } catch (e) {}
 		this.state = {
 			selectedNodeId: lastSelectedNodeId
 		};
@@ -74,21 +75,26 @@ class AppRoot extends React.Component {
 		// so when we get new props from relay re-create the mptt structure
 		const lastNodes = this.props.user.lastSelectedRoot.nodes;
 		const { nodes: nextNodes, lastEditedNode } = nextProps.user.lastSelectedRoot;
-		if (nextNodes.length != lastNodes.length) {
-			// node was added/removed
-			this._refreshMPTT(nextNodes);
-			this.setState({ selectedNodeId: lastEditedNode.id });
-		} else {
-			for (let i = 0; i < lastNodes.length; i++) {
-				const curr = lastNodes[i];
-				const next = nextNodes[i];
+		if (nextNodes.length > 0) {
+			if (nextNodes.length != lastNodes.length) {
+				// node was added/removed
+				this._refreshMPTT(nextNodes);
+				this.setState({ selectedNodeId: lastEditedNode.id });
+			} else {
+				for (let i = 0; i < lastNodes.length; i++) {
+					const curr = lastNodes[i];
+					const next = nextNodes[i];
 
-				// if we detect a change in node order then re-create the tree
-				if (curr.leftBound != next.leftBound || curr.rightBound != next.rightBound) {
-					this._refreshMPTT(nextNodes);
-					break;
+					// if we detect a change in node order then re-create the tree
+					if (curr.leftBound != next.leftBound || curr.rightBound != next.rightBound) {
+						this._refreshMPTT(nextNodes);
+						break;
+					}
 				}
 			}
+		} else {
+			this._refreshMPTT([]);
+			this.setState({ selectedNodeId: null });
 		}
 	}
 
@@ -127,6 +133,15 @@ class AppRoot extends React.Component {
 										/>
 									))}
 								</InfinityPane>
+
+								{level == 1 && this._mptt.nodeGroupsByLevel(1).length == 0 &&
+									<div onClick={this.event_createFirstLeaf} className={[
+										bem('note-columns', 'add-first-note'), bem('note-pane', null, 'dirty')
+									].join(' ')}>
+										<h2><i className="fa fa-plus-circle"/> Create Leaf</h2>
+									</div>
+								}
+
 							</div>
 						);
 					})}
@@ -155,27 +170,31 @@ class AppRoot extends React.Component {
 
 	_addSiblingBelow = () => {
 		const selectedNode = this._getSelectedMpttNode();
-		const mutation = new AddDeleteNoteMutation({
-			leftBound: selectedNode.rightBound + 1,
-			lastSelectedRoot: this.props.user.lastSelectedRoot,
-			type: AddDeleteNoteMutation.ADD
-		});
-		this.props.relay.commitUpdate(mutation);
+		if (selectedNode) {
+			const mutation = new AddDeleteNoteMutation({
+				leftBound: selectedNode.rightBound + 1,
+				lastSelectedRoot: this.props.user.lastSelectedRoot,
+				type: AddDeleteNoteMutation.ADD
+			});
+			this.props.relay.commitUpdate(mutation);
+		}
 	};
 
 	_addSiblingAbove = () => {
 		const selectedNode = this._getSelectedMpttNode();
-		const mutation = new AddDeleteNoteMutation({
-			leftBound: selectedNode.leftBound,
-			lastSelectedRoot: this.props.user.lastSelectedRoot,
-			type: AddDeleteNoteMutation.ADD
-		});
-		this.props.relay.commitUpdate(mutation);
+		if (selectedNode) {
+			const mutation = new AddDeleteNoteMutation({
+				leftBound: selectedNode.leftBound,
+				lastSelectedRoot: this.props.user.lastSelectedRoot,
+				type: AddDeleteNoteMutation.ADD
+			});
+			this.props.relay.commitUpdate(mutation);
+		}
 	};
 
 	_appendChild = () => {
 		const selectedNode = this._getSelectedMpttNode();
-		if (selectedNode.level < 3) {
+		if (selectedNode && selectedNode.level < 3) {
 			const mutation = new AddDeleteNoteMutation({
 				leftBound: selectedNode.leftBound + 1,
 				lastSelectedRoot: this.props.user.lastSelectedRoot,
@@ -187,46 +206,52 @@ class AppRoot extends React.Component {
 
 	_deleteSelected = () => {
 		const selectedNode = this._getSelectedMpttNode();
-		const mutation = new AddDeleteNoteMutation({
-			leftBound: selectedNode.leftBound,
-			lastSelectedRoot: this.props.user.lastSelectedRoot,
-			type: AddDeleteNoteMutation.DELETE
-		});
-		this.props.relay.commitUpdate(mutation);
+		if (selectedNode) {
+			const mutation = new AddDeleteNoteMutation({
+				leftBound: selectedNode.leftBound,
+				lastSelectedRoot: this.props.user.lastSelectedRoot,
+				type: AddDeleteNoteMutation.DELETE
+			});
+			this.props.relay.commitUpdate(mutation);
+		}
 	};
 
 	_getSelectedMpttNode = () => this._mptt.getNodeById(this.state.selectedNodeId);
 
 	_selectSiblingAbove = () => {
 		const mptt = this._getSelectedMpttNode();
-		let above = mptt.siblingAbove;
-		if (above == null) {
-			const nextGroup = mptt.containingNodeGroup.groupAbove.nodes;
-			above = nextGroup[nextGroup.length - 1];
+		if (mptt) {
+			let above = mptt.siblingAbove;
+			if (above == null) {
+				const nextGroup = mptt.containingNodeGroup.groupAbove.nodes;
+				above = nextGroup[nextGroup.length - 1];
+			}
+			this._selectNode(above.id);
 		}
-		this._selectNode(above.id);
 	};
 
 	_selectSiblingBelow = () => {
 		const mptt = this._getSelectedMpttNode();
-		let below = mptt.siblingBelow;
-		if (below == null) {
-			const nextGroup = mptt.containingNodeGroup.groupBelow.nodes;
-			below = nextGroup[0];
+		if (mptt) {
+			let below = mptt.siblingBelow;
+			if (below == null) {
+				const nextGroup = mptt.containingNodeGroup.groupBelow.nodes;
+				below = nextGroup[0];
+			}
+			this._selectNode(below.id);
 		}
-		this._selectNode(below.id);
 	};
 
 	_selectParent = () => {
 		const mptt = this._getSelectedMpttNode();
-		if (mptt.parentNode) {
+		if (mptt && mptt.parentNode) {
 			this._selectNode(mptt.parentNode.id);
 		}
 	};
 
 	_selectChild = () => {
 		const mptt = this._getSelectedMpttNode();
-		if (mptt.childNodeGroup) {
+		if (mptt && mptt.childNodeGroup) {
 			this._selectNode(mptt.childNodeGroup.nodes[0].id);
 		}
 	};
@@ -235,6 +260,15 @@ class AppRoot extends React.Component {
 		if (this.state.selectedNodeId != noteId) {
 			this.setState({selectedNodeId: noteId});
 		}
+	};
+
+	event_createFirstLeaf = () => {
+		const mutation = new AddDeleteNoteMutation({
+			leftBound: 0,
+			lastSelectedRoot: this.props.user.lastSelectedRoot,
+			type: AddDeleteNoteMutation.ADD
+		});
+		this.props.relay.commitUpdate(mutation);
 	};
 	//</editor-fold>
 

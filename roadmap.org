@@ -1,25 +1,24 @@
 * Features
 ** High Priority
-*** DONE Note add
-    CLOSED: [2017-02-10 Fri 08:52]
-
+*** TODO Trash can
 *** TODO Note move
-*** DONE Note delete
-    CLOSED: [2017-03-02 Thu 10:58]
 *** TODO Show when content is loading
 *** TODO Show when content is preview
+*** TODO Notebook del
+*** TODO Notebook add
+*** TODO Display NodeGroups
+    Need to create more visual intuition around node groups. Right now there is no visual relationship between a node and its siblings(node group). Should eliminate the space between sibling nodes and increase the size of selected node.
+
+*** TODO "Reader" mode concatenation
+*** DONE Note add
+    CLOSED: [2017-02-10 Fri 08:52]
+*** DONE Note delete
+    CLOSED: [2017-03-02 Thu 10:58]
 *** DONE Nav bar
     CLOSED: [2017-02-21 Tue 12:34]
 
 *** DONE Notebook switch
     CLOSED: [2017-02-19 Sun 23:05]
-
-*** TODO Notebook add
-*** TODO Notebook del
-*** TODO Display NodeGroups
-    Need to create more visual intuition around node groups. Right now there is no visual relationship between a node and its siblings(node group). Should eliminate the space between sibling nodes and increase the size of selected node.
-
-*** TODO "Reader" mode concatenation
 *** DONE User Menu
     CLOSED: [2017-03-02 Thu 10:58]
 *** DONE Logout Button
@@ -51,13 +50,13 @@
     check eager loading. do optmistic relay updates
 
 * Bugs
+** TODO Handle case of no roots for user
+** TODO Editor isn't "dirty" until several character difference
 ** DONE Smaller screen sizes have scroll bars
    CLOSED: [2017-02-21 Tue 10:33]
 ** DONE Pane focus issues 
    CLOSED: [2017-02-28 Tue 11:17]
    When a pane becomes focused (like, input focused) and it is off screen at all the browser automatically scrolls it on screen. This wouldn't be a problem but it overrides the custom scrolling that I do. Will probably need to eliminate the tabindex and focus thing I have going on and move key event handlers to the app root :(
-
-** TODO Editor isn't "dirty" until several character difference
 ** DONE Don't toggle editor when link is clicked
    CLOSED: [2017-02-21 Tue 16:45]
 
@@ -66,4 +65,5 @@
 ** DONE Select the parent node when child is deleted
    CLOSED: [2017-03-02 Thu 11:08]
    Or the next node if there isn't a parent
-** TODO Handle case of no nodes
+** DONE Handle case of no nodes in lastSelectedRoot
+   CLOSED: [2017-03-02 Thu 12:04]

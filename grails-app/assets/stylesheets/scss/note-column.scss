@@ -37,4 +37,14 @@
 	  left: 66.6666vw;
 	}
   }
+
+  /* note-columns__add-first-note */
+  @include element('add-first-note') {
+	position: absolute !important;
+	top: 0;
+	width: auto;
+	padding: 0 1em 0 1em !important;
+	margin-top: 1em;
+	cursor: pointer !important;
+  }
 }

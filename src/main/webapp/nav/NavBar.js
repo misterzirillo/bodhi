@@ -13,8 +13,8 @@ const NavBar = ({ user }) => {
 		<div className={bem('nav-bar')}>
 
 			<div className={bem('nav-bar', 'title')}>
-				<i className="fa fa-pied-piper"/>
-				Bodhi
+				<b>Bodhi</b>
+				<i className="fa fa-leaf"/>
 			</div>
 
 			<NoteRootPicker user={user}/>

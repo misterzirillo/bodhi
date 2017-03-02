@@ -38,7 +38,7 @@ class NoteRootPicker extends React.Component {
 
 				<span onClick={this.event_onClick} className={bem('nav-bar', 'modal-toggle', selecting && 'toggled')}>
 
-					<i className="fa fa-ellipsis-h"/>
+					<i className="fa fa-sitemap"/>
 
 					<span className={bem('root-picker', 'current-root')}>
 						{lastSelectedRoot.name}

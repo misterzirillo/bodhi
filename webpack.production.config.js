@@ -30,6 +30,7 @@ module.exports = {
 				query: {
 					plugins: [
 						babelRelayPlugin,
+						'transform-class-properties'
 					],
 					presets: ['react', 'es2015', 'stage-0']
 				}

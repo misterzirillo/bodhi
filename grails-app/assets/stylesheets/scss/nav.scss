@@ -8,7 +8,8 @@
   height: $nav-height;
   z-index: $z-nav;
   width: 100vw;
-  background-color: $nav-color;
+
+  background: linear-gradient(135deg, #455a64 8em, $nav-color 8em);
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 
   display: flex;
@@ -38,7 +39,7 @@
   /* nav-bar__modal-trigger */
   @include element('modal-toggle') {
 	cursor: pointer;
-	padding: .1em 0.3em .1em .3em;
+	padding: .1em 0.4em .1em 0.4em;
 	border-radius: 2px;
 	position: relative;
 

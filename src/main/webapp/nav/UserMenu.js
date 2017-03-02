@@ -42,7 +42,7 @@ class UserMenu extends React.Component {
 					{user.username}
 				</span>
 
-				<i className="fa fa-angle-down"/>
+				<i className="fa fa-ellipsis-h"/>
 
 				<NavModal visible={expanded} position={Position.RIGHT}>
 					<div className={bem('user-menu', 'modal')}>

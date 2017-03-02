@@ -8,7 +8,7 @@
   font-size: 1.2em;
 
   .fa {
-	margin-left: .5em;
+	margin-right: .3em;
   }
 
   /* root-picker__root-selection */
@@ -18,6 +18,14 @@
 	&:hover .name {
 	  text-decoration: underline;
 	}
+  }
+
+  /* root-picker__current-description */
+  @include element('current-description') {
+	margin-left: 1em;
+	font-size: .9em;
+	color: $divider-color;
+	text-overflow: ellipsis;
   }
 
   /* root-picker__root-selection-last-update */

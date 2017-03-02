@@ -13,7 +13,6 @@ const NavBar = ({ user }) => {
 		<div className={bem('nav-bar')}>
 
 			<div className={bem('nav-bar', 'title')}>
-				<i className="fa fa-cubes"/>
 				Bodhi
 			</div>
 

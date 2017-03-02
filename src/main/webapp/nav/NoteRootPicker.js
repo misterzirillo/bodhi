@@ -34,35 +34,39 @@ class NoteRootPicker extends React.Component {
 		const { selecting } = this.state;
 
 		return (
-			<div
-				onClick={this.event_onClick}
-				className={[
-					bem('root-picker', null, selecting && 'selecting'),
-					bem('nav-bar', 'modal-toggle', selecting && 'toggled')
-				].join(' ')}
-			>
-				<span className={bem('root-picker', 'current-root')}>
-					{lastSelectedRoot.name}
+			<div className={bem('root-picker')}>
+
+				<span onClick={this.event_onClick} className={bem('nav-bar', 'modal-toggle', selecting && 'toggled')}>
+
+					<i className="fa fa-ellipsis-h"/>
+
+					<span className={bem('root-picker', 'current-root')}>
+						{lastSelectedRoot.name}
+					</span>
+
+
+					<NavModal visible={selecting} position={Position.LEFT}>
+						<div className={bem('root-picker', 'modal')}>
+							{rootNodes.map(node => (
+								<div
+									className={bem('root-picker', 'root-selection')}
+									key={node.id}
+									onClick={() => this.event_onClickRoot(node.id)}
+								>
+									<span className="name">{node.name}</span>
+									<span className={bem('root-picker', 'root-selection-last-update')}>
+										(last updated {new Date(node.lastUpdated).toLocaleString()})
+									</span>
+								</div>
+							))}
+						</div>
+					</NavModal>
 				</span>
 
-				<i className="fa fa-angle-down"/>
+				<span className={bem('root-picker', 'current-description')}>
+					{lastSelectedRoot.description}
+				</span>
 
-				<NavModal visible={selecting} position={Position.LEFT}>
-					<div className={bem('root-picker', 'modal')}>
-						{rootNodes.map(node => (
-							<div
-								className={bem('root-picker', 'root-selection')}
-								key={node.id}
-								onClick={() => this.event_onClickRoot(node.id)}
-							>
-								<span className="name">{node.name}</span>
-								<span className={bem('root-picker', 'root-selection-last-update')}>
-									(last updated {new Date(node.lastUpdated).toLocaleString()})
-								</span>
-							</div>
-						))}
-					</div>
-				</NavModal>
 			</div>
 		);
 	}
@@ -78,7 +82,8 @@ export default Relay.createContainer(NoteRootPicker, {
 				id,
 			
 				lastSelectedRoot {
-					name
+					name,
+					description
 				},
 				
 				rootNodes {

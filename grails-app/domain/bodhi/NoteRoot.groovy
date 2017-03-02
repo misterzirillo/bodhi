@@ -151,7 +151,13 @@ class NoteRoot {
 				node.rightBound -= removedRange
 		}
 
-		lastEditedNode = toEdit.first()
+		def nodeToSelect = toEdit.findAll { it.leftBound < deletedNode.leftBound }.max { it.leftBound }
+		if (!nodeToSelect) {
+			nodeToSelect = nodes[0]
+		}
+
+
+		lastEditedNode = nodeToSelect
 		deletedNodes.each { removeFromNodes(it) }
 		deletedNodes*.delete()
 		save()

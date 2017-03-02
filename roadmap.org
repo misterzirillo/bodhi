@@ -4,7 +4,8 @@
     CLOSED: [2017-02-10 Fri 08:52]
 
 *** TODO Note move
-*** TODO Note delete
+*** DONE Note delete
+    CLOSED: [2017-03-02 Thu 10:58]
 *** TODO Show when content is loading
 *** TODO Show when content is preview
 *** DONE Nav bar
@@ -19,6 +20,10 @@
     Need to create more visual intuition around node groups. Right now there is no visual relationship between a node and its siblings(node group). Should eliminate the space between sibling nodes and increase the size of selected node.
 
 *** TODO "Reader" mode concatenation
+*** DONE User Menu
+    CLOSED: [2017-03-02 Thu 10:58]
+*** DONE Logout Button
+    CLOSED: [2017-03-02 Thu 10:57]
 ** Medium Priority
 *** TODO Search
     https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/
@@ -43,11 +48,11 @@
 *** TODO Render optimizations
 *** TODO Login screen in-app
 *** TODO Optimize mutation queries
+    check eager loading. do optmistic relay updates
 
 * Bugs
 ** DONE Smaller screen sizes have scroll bars
    CLOSED: [2017-02-21 Tue 10:33]
-
 ** DONE Pane focus issues 
    CLOSED: [2017-02-28 Tue 11:17]
    When a pane becomes focused (like, input focused) and it is off screen at all the browser automatically scrolls it on screen. This wouldn't be a problem but it overrides the custom scrolling that I do. Will probably need to eliminate the tabindex and focus thing I have going on and move key event handlers to the app root :(
@@ -58,3 +63,7 @@
 
 ** DONE Change link colors
    CLOSED: [2017-02-26 Sun 19:35]
+** DONE Select the parent node when child is deleted
+   CLOSED: [2017-03-02 Thu 11:08]
+   Or the next node if there isn't a parent
+** TODO Handle case of no nodes

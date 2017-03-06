@@ -5,6 +5,7 @@ import Markdown from 'react-remarkable';
 import Editor from './NoteEditor';
 import NoteUpdateMutation from './NoteUpdateMutation';
 import { HotKeys } from 'react-hotkeys';
+import MoveNodeMutation from './MoveNodeMutation';
 
 class NotePane extends Component {
 
@@ -40,7 +41,10 @@ class NotePane extends Component {
 		const editing = this.state.editing != nextState.editing;
 		const dirty = this.state.dirty != nextState.dirty;
 
-		return becameRelated || becameSelected || differentRelay || editing || dirty || differentId;
+		const moveMode = this.props.moveMode != nextProps.moveMode;
+		const isMoving = this.props.isMoving != nextProps.isMoving;
+
+		return becameRelated || becameSelected || differentRelay || editing || dirty || differentId || moveMode || isMoving;
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -71,7 +75,7 @@ class NotePane extends Component {
 	}
 
 	componentDidUpdate() {
-		if (this.scrollAfterUpdate && !this.props.relay.variables.previewOnly) {
+		if (this.scrollAfterUpdate && !this.props.relay.variables.previewOnly && !this.props.isMoving) {
 			this.scrollAfterUpdate = false;
 			this._scrollToMe();
 		}
@@ -89,7 +93,14 @@ class NotePane extends Component {
 	}
 
 	render() {
-		const { selected, related, node } = this.props;
+		const {
+			selected,
+			related,
+			node,
+			moveMode,
+			isMoving
+		} = this.props;
+
 		const { editing, dirty } = this.state;
 		const { previewOnly } = this.props.relay.variables;
 		const content = node ? node.content : '';
@@ -98,7 +109,9 @@ class NotePane extends Component {
 			selected ? 'selected' : null,
 			related ? 'related' : null,
 			editing ? 'editing' : null,
-			dirty ? 'dirty' : null
+			dirty ? 'dirty' : null,
+			moveMode ? 'move-' + moveMode.toLowerCase() : null,
+			isMoving ? 'moving' : null
 		].filter(it => it);
 
 		const viewerModifiers = [
@@ -168,13 +181,15 @@ class NotePane extends Component {
 	};
 
 	_scrollToMe = () => {
-		const here = this.pane.offsetTop + this.pane.offsetHeight / 2;
-		this.context.scrollToHere(here);
-	};
-
-	_doIfNotEditing = (fn) => {
-		if (!this.state.editing)
-			fn();
+		const { moveMode } = this.props;
+		if (moveMode == MoveNodeMutation.MoveMode.BEFORE) {
+			this.context.scrollToHere(this.pane.offsetTop);
+		} else if (moveMode == MoveNodeMutation.MoveMode.AFTER) {
+			this.context.scrollToHere(this.pane.offsetTop + this.pane.clientHeight);
+		} else {
+			const here = this.pane.offsetTop + this.pane.offsetHeight / 2;
+			this.context.scrollToHere(here);
+		}
 	};
 	//</editor-fold>
 

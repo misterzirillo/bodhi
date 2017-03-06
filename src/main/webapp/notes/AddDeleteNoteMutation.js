@@ -29,9 +29,15 @@ export default class AddDeleteNoteMutation extends Mutation {
 	}
 
 	getVariables() {
-		return {
-			leftBound: this.props.leftBound
-		};
+		if (this.props.type == AddDeleteNoteMutation.ADD) {
+			return {
+				leftBound: this.props.leftBound
+			}
+		} else if (this.props.type == AddDeleteNoteMutation.DELETE) {
+			return {
+				nodeId: this.props.nodeId
+			}
+		}
 	}
 
 	getConfigs() {

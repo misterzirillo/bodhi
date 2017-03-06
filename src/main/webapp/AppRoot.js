@@ -10,6 +10,7 @@ import InfinityPane from './InfinityPane';
 import MPTT from './MPTT';
 import bem from './BemTool';
 import AddDeleteNoteMutation from './notes/AddDeleteNoteMutation';
+import MoveNodeMutation from './notes/MoveNodeMutation';
 
 const keymap = {
 	'close-open-editor': 'ctrl+enter',
@@ -22,7 +23,8 @@ const keymap = {
 	'navigate-child': 'right',
 	'navigate-sibling-above': 'up',
 	'navigate-sibling-below': 'down',
-	'delete-node': 'ctrl+backspace'
+	'delete-node': 'ctrl+backspace',
+	'move-mode-engage': 'ctrl+m'
 };
 
 class AppRoot extends React.Component {
@@ -36,22 +38,47 @@ class AppRoot extends React.Component {
 	_mptt; // the current mptt model for relay payload
 	relayNodeMap; // for finding relay information about a node by id
 
+	// Shortcut handlers
 	handlers = {
-		'save-all': this._doSaveAll,
+		//'save-all': this._doSaveAll,
+
+		// Add/remove nodes
 		'insert-sibling-below': () => this._addSiblingBelow(),
 		'insert-sibling-above': () => this._addSiblingAbove(),
 		'append-child': () => this._appendChild(),
+		'delete-node': (e) => this.event_doIfNotTextArea(e, this._deleteSelected),
+
+		// Editing
 		'close-open-editor': () => {
 			const editing = this._selectedNotePane._showHideEditor();
 			if (!editing) {
 				this._application.focus();
 			}
 		},
+
+		// Navigation
 		'navigate-sibling-above': (e) => this.event_doIfNotTextArea(e, this._selectSiblingAbove),
 		'navigate-sibling-below': (e) => this.event_doIfNotTextArea(e, this._selectSiblingBelow),
 		'navigate-parent': (e) => this.event_doIfNotTextArea(e, this._selectParent),
 		'navigate-child': (e) => this.event_doIfNotTextArea(e, this._selectChild),
-		'delete-node': (e) => this.event_doIfNotTextArea(e, this._deleteSelected)
+
+		// Move mode
+		'move-mode-engage': (e) => this.event_doIfNotTextArea(e, () => {
+			const currentNode = this._getSelectedMpttNode();
+			if (currentNode) {
+				this.setState({ movingNode: currentNode, moveMode: MoveNodeMutation.MoveMode.AFTER });
+			}
+		}),
+		'enter': (e) => this.event_doIfNotTextArea(e, () => {
+			if (this.state.moveMode) {
+				this._moveNode();
+			}
+		}),
+		'escape': (e) => this.event_doIfNotTextArea(e, () => {
+			if (this.state.moveMode) {
+				this.setState({ movingNode: null, moveMode: null });
+			}
+		})
 	};
 
 	//<editor-fold desc="Component lifecycle">
@@ -60,9 +87,11 @@ class AppRoot extends React.Component {
 
 		this._refreshMPTT(props.user.lastSelectedRoot.nodes);
 		let lastSelectedNodeId;
-		try { lastSelectedNodeId= props.user.lastSelectedRoot.lastEditedNode.id } catch (e) {}
+		try { lastSelectedNodeId = props.user.lastSelectedRoot.lastEditedNode.id } catch (e) {}
 		this.state = {
-			selectedNodeId: lastSelectedNodeId
+			selectedNodeId: lastSelectedNodeId,
+			movingNode: null,
+			moveMode: null
 		};
 	}
 
@@ -108,13 +137,13 @@ class AppRoot extends React.Component {
 
 				<div ref={this.ref_application} tabIndex="-1" className={bem('note-columns')}>
 
-					<div style={{
-					    position: 'absolute',
-					    top: '50%',
-					    height: '4px',
-					    borderTop: '2px solid red',
-					    width:'100%'}}
-					/>
+					{/*<div style={{*/}
+					    {/*position: 'absolute',*/}
+					    {/*top: '50%',*/}
+					    {/*height: '4px',*/}
+					    {/*borderTop: '2px solid red',*/}
+					    {/*width:'100%'}}*/}
+					{/*/>*/}
 
 					{[1, 2, 3].map(level => {
 						return (
@@ -130,6 +159,8 @@ class AppRoot extends React.Component {
 										    relayNodeMap={this.relayNodeMap}
 										    getMpttNodeById={this._mptt.getNodeById}
 										    refForNoteNode={this.ref_selectedNotePane}
+										    moveMode={this.state.moveMode}
+										    movingNodeId={this.state.moveMode ? this.state.movingNode.id : null}
 										/>
 									))}
 								</InfinityPane>
@@ -153,6 +184,20 @@ class AppRoot extends React.Component {
 	//</editor-fold>
 
 	//<editor-fold desc="Private">
+	_moveNode = () => {
+		const { movingNode, moveMode, selectedNodeId } = this.state;
+
+		const mutation = new MoveNodeMutation({
+			lastSelectedRoot: this.props.user.lastSelectedRoot,
+			targetNodeId: selectedNodeId,
+			movingNodeId: movingNode.id,
+			moveMode: moveMode
+		});
+		this.props.relay.commitUpdate(mutation);
+
+		this.setState({ selectedNodeId: movingNode.id, moveMode: null });
+	};
+
 	_refreshMPTT = (nextNodes) => {
 		this._mptt = new MPTT(nextNodes);
 		this.relayNodeMap = nextNodes.reduce(function(map, node) {
@@ -205,10 +250,10 @@ class AppRoot extends React.Component {
 	};
 
 	_deleteSelected = () => {
-		const selectedNode = this._getSelectedMpttNode();
-		if (selectedNode) {
+		const selectedNodeId = this.state.selectedNodeId;
+		if (selectedNodeId) {
 			const mutation = new AddDeleteNoteMutation({
-				leftBound: selectedNode.leftBound,
+				nodeId: selectedNodeId,
 				lastSelectedRoot: this.props.user.lastSelectedRoot,
 				type: AddDeleteNoteMutation.DELETE
 			});
@@ -221,44 +266,67 @@ class AppRoot extends React.Component {
 	_selectSiblingAbove = () => {
 		const mptt = this._getSelectedMpttNode();
 		if (mptt) {
+
 			let above = mptt.siblingAbove;
+			let moveMode = this.state.moveMode ? MoveNodeMutation.MoveMode.BEFORE : null;
 			if (above == null) {
 				const nextGroup = mptt.containingNodeGroup.groupAbove.nodes;
 				above = nextGroup[nextGroup.length - 1];
+
+				if (moveMode) {
+					moveMode = MoveNodeMutation.MoveMode.AFTER;
+				}
+			} else if (moveMode == MoveNodeMutation.MoveMode.AFTER) {
+				above = mptt;
+				moveMode = MoveNodeMutation.MoveMode.BEFORE;
 			}
-			this._selectNode(above.id);
+
+			this._selectNode(above.id, moveMode);
 		}
 	};
 
 	_selectSiblingBelow = () => {
 		const mptt = this._getSelectedMpttNode();
 		if (mptt) {
+
 			let below = mptt.siblingBelow;
+			let moveMode = this.state.moveMode ? MoveNodeMutation.MoveMode.AFTER : null;
 			if (below == null) {
 				const nextGroup = mptt.containingNodeGroup.groupBelow.nodes;
 				below = nextGroup[0];
+
+				if (moveMode) {
+					moveMode = MoveNodeMutation.MoveMode.BEFORE;
+				}
+			} else if (moveMode == MoveNodeMutation.MoveMode.BEFORE) {
+				below = mptt;
+				moveMode = MoveNodeMutation.MoveMode.AFTER;
 			}
-			this._selectNode(below.id);
+
+			this._selectNode(below.id, moveMode);
+
 		}
 	};
 
 	_selectParent = () => {
 		const mptt = this._getSelectedMpttNode();
-		if (mptt && mptt.parentNode) {
-			this._selectNode(mptt.parentNode.id);
+		if (mptt && mptt.containingNodeGroup.parentNode) {
+			const { id } = mptt.containingNodeGroup.parentNode;
+			this._selectNode(id, this.state.moveMode ? MoveNodeMutation.MoveMode.BEFORE : null);
 		}
 	};
 
 	_selectChild = () => {
 		const mptt = this._getSelectedMpttNode();
 		if (mptt && mptt.childNodeGroup) {
-			this._selectNode(mptt.childNodeGroup.nodes[0].id);
+			const { id } = mptt.childNodeGroup.nodes[0];
+			this._selectNode(id, this.state.moveMode ? MoveNodeMutation.MoveMode.BEFORE : null);
 		}
 	};
 
-	_selectNode = (noteId) => {
-		if (this.state.selectedNodeId != noteId) {
-			this.setState({selectedNodeId: noteId});
+	_selectNode = (nodeId, moveMode) => {
+		if (this.state.selectedNodeId != nodeId || moveMode) {
+			this.setState({selectedNodeId: nodeId, moveMode});
 		}
 	};
 
@@ -301,6 +369,7 @@ export default Relay.createContainer(AppRoot, {
 				lastSelectedRoot {
 
 					${AddDeleteNoteMutation.getFragment('lastSelectedRoot')}
+					${MoveNodeMutation.getFragment('lastSelectedRoot')}
 
 					lastEditedNode {
 						id,

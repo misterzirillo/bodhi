@@ -1,24 +1,18 @@
 package bodhi
 
-import grails.plugin.springsecurity.SpringSecurityService
-import grails.util.Holders
 import graphql.Scalars
-import graphql.schema.GraphQLTypeReference
-import io.cirill.relay.RelayHelpers
+import io.cirill.relay.annotation.RelayEnum
 import io.cirill.relay.annotation.RelayField
-import io.cirill.relay.annotation.RelayMutation
 import io.cirill.relay.annotation.RelayProxyField
 import io.cirill.relay.annotation.RelayType
 import io.cirill.relay.dsl.GQLFieldSpec
-import io.cirill.relay.dsl.GQLMutationSpec
-import org.hibernate.FetchMode
 
 /**
  * bodhi
  * @author mcirillo
  */
 @RelayType
-class NoteRoot {
+class NoteRoot implements SwitchRootMutation, AddNoteMutation, DeleteNoteMutation, MoveNoteMutation {
 
 	static belongsTo = [ owner: User ]
 	static hasMany = [ nodes: NoteNode ]
@@ -53,99 +47,32 @@ class NoteRoot {
 	@RelayField
 	NoteNode lastEditedNode
 
-	@RelayMutation
-	static addNoteMutation = {
-		GQLMutationSpec.field {
-			name 'addNote'
-
-			inputType {
-				name 'AddNoteInput'
-				field {
-					name 'leftBound'
-					type {
-						nonNull Scalars.GraphQLInt
-					}
-				}
-			}
-
-			type {
-				name 'AddDeleteNotePayload'
-
-				field {
-					name 'clientMutationId'
-					type Scalars.GraphQLString
-				}
-
-				field {
-					name 'lastSelectedRoot'
-					type {
-						ref 'NoteRoot'
-					}
-				}
-			}
-
-			dataFetcher { env ->
-				def leftBound = env.arguments.input.leftBound as int
-
-				def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
-				def lsr = (sss.currentUser as User).lastSelectedRoot
-				lsr.addNoteToHere(leftBound)
-
-				return [
-				        lastSelectedRoot: lsr,
-						clientMutationId: env.arguments.input.clientMutationId
-				]
-			}
-		}
+	@RelayEnum
+	public enum MoveMode {
+		Before,
+		After
 	}
 
-	@RelayMutation
-	static deleteNoteMutation = {
-		GQLMutationSpec.field {
-			name 'deleteNote'
+	//<editor-fold desc="Operations">
+	void deleteNoteFromHere(long id) {
+		def deletedNode = nodes.find { it.id == id }
 
-			inputType {
-				name 'DeleteNoteInput'
-				field {
-					name 'leftBound'
-					type {
-						nonNull Scalars.GraphQLInt
-					}
-				}
-			}
-
-			type {
-				ref 'AddDeleteNotePayload'
-			}
-
-			dataFetcher { env ->
-				def leftBound = env.arguments.input.leftBound as int
-
-				def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
-				def lsr = (sss.currentUser as User).lastSelectedRoot
-				lsr.deleteNoteFromHere(leftBound)
-
-				return [
-						lastSelectedRoot: lsr,
-						clientMutationId: env.arguments.input.clientMutationId
-				]
-			}
+		if (!deletedNode) {
+			throw new Exception('This root does not contain the specified node')
 		}
-	}
 
-	private void deleteNoteFromHere(int targetLeftBound) {
+		def targetLeftBound = deletedNode.leftBound
 		def toEdit = NoteNode.where {
 			root == this
 			rightBound >= targetLeftBound
 		}.list(fetch: ['rightBound', 'leftBound'])
 
-		def deletedNode = toEdit.find { it.leftBound == targetLeftBound }
 		def deletedNodes = toEdit.findAll { it.leftBound >= targetLeftBound && it.rightBound <= deletedNode.rightBound }
 		toEdit.removeAll(deletedNodes)
 
 		int removedRange = deletedNode.rightBound - deletedNode.leftBound + 1
 		toEdit.each { node ->
-			if ( node.leftBound >= targetLeftBound)
+			if (node.leftBound >= targetLeftBound)
 				node.leftBound -= removedRange
 			if (node.rightBound >= targetLeftBound)
 				node.rightBound -= removedRange
@@ -163,7 +90,7 @@ class NoteRoot {
 		save()
 	}
 
-	private void addNoteToHere(int leftBound) {
+	void addNoteHere(int leftBound) {
 		nodes.each { node ->
 			if (node.leftBound >= leftBound) {
 				node.leftBound += 2
@@ -179,55 +106,71 @@ class NoteRoot {
 		save()
 	}
 
-	@RelayMutation
-	static switchRoot = {
-		GQLMutationSpec.field {
-			name 'switchRoot'
+	void moveNote(long movingId, long targetId, MoveMode mode) {
+		def movingNode = nodes.find { it.id == movingId }
+		def targetNode = nodes.find { it.id == targetId }
 
-			inputType {
-				name 'SwitchRootInput'
-				field {
-					name 'newRootId'
-					type {
-						nonNull Scalars.GraphQLID
-					}
-				}
+		if (movingNode && targetNode) {
+			def movingBoundaries = movingNode.leftBound..movingNode.rightBound
+			def displacedBoundaries
+			int newLB, newRB, displacement = movingBoundaries.size()
+
+			boolean shiftLeft
+			if (targetNode.leftBound < movingNode.leftBound && targetNode.rightBound > movingNode.rightBound)
+				// is child, so before/after will determine which way the displacement happens
+				// moving a child element after it's parent means some parent bounds will shift left
+				shiftLeft = mode == MoveMode.After
+			else if (targetNode.leftBound >= movingNode.leftBound && targetNode.rightBound <= movingNode.rightBound)
+				// node is trying to move inside itself this is not allowed
+				throw new Exception('Illegal move parameters')
+			else
+				shiftLeft = targetNode.leftBound > movingNode.leftBound
+
+			if (shiftLeft) {
+
+				if (mode == MoveMode.Before)
+					newRB = targetNode.leftBound - 1
+				else
+					newRB = targetNode.rightBound
+
+				displacedBoundaries = newRB..<movingNode.rightBound
+				displacement = -displacement
+
+			} else {
+
+				if (mode == MoveMode.Before)
+					newLB = targetNode.leftBound
+				else
+					newLB = targetNode.rightBound + 1
+
+				displacedBoundaries = newLB..<movingNode.leftBound
+
 			}
 
-			type {
-				name 'SwitchRootPayload'
-				field {
-					name 'clientMutationId'
-					type Scalars.GraphQLString
-				}
-				field {
-					name 'user'
-					type {
-						ref 'User'
-					}
-				}
+			def movingNodes = nodes.findAll { it.leftBound in movingBoundaries }
+			def distance = shiftLeft ? displacedBoundaries.size() : -displacedBoundaries.size()
+
+			shiftBounds displacedBoundaries, displacement
+			movingNodes.each {
+				it.leftBound += distance
+				it.rightBound += distance
 			}
 
-			dataFetcher { env ->
-				def id = RelayHelpers.fromGlobalId(env.arguments.input.newRootId).id as long
-				def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
-				def user = sss.currentUser as User
+			lastEditedNode = movingNode
+			save()
+		}
+	}
 
-				def newRoot = NoteRoot.withCriteria {
-					idEq(id)
-					for (def str : ['nodes', 'nodes.content', 'nodes.id', 'nodes.leftBound', 'nodes.rightBound']){
-						fetchMode str, FetchMode.JOIN
-					}
-				}.first()
-
-				user.lastSelectedRoot = newRoot
-				user.save()
-
-				[
-						user: user,
-						clientMutationId: env.arguments.input.clientMutationId
-				]
+	private void shiftBounds(Range range, int increment) {
+		def toEdit = nodes.findAll { node -> node.rightBound in range || node.leftBound in range }
+		toEdit.each { node ->
+			if (node.leftBound in range) {
+				node.leftBound += increment
+			}
+			if (node.rightBound in range) {
+				node.rightBound += increment
 			}
 		}
 	}
+	//</editor-fold>
 }

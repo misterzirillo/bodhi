@@ -1,7 +1,7 @@
 * Features
 ** High Priority
 *** TODO Trash can
-*** TODO Note move
+    CLOSED: [2017-03-05 Sun 22:49]
 *** TODO Show when content is loading
 *** TODO Show when content is preview
 *** TODO Notebook del
@@ -10,6 +10,7 @@
     Need to create more visual intuition around node groups. Right now there is no visual relationship between a node and its siblings(node group). Should eliminate the space between sibling nodes and increase the size of selected node.
 
 *** TODO "Reader" mode concatenation
+*** DONE Note move
 *** DONE Note add
     CLOSED: [2017-02-10 Fri 08:52]
 *** DONE Note delete

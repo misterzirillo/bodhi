@@ -236,6 +236,7 @@
 .#{$fa-css-prefix}-flash:before,
 .#{$fa-css-prefix}-bolt:before { content: $fa-var-bolt; }
 .#{$fa-css-prefix}-sitemap:before { content: $fa-var-sitemap; }
+.#{$fa-css-prefix}-sitemap-h:before { content: $fa-var-sitemap; transform: rotate(-90deg); display: inline-block; }
 .#{$fa-css-prefix}-umbrella:before { content: $fa-var-umbrella; }
 .#{$fa-css-prefix}-paste:before,
 .#{$fa-css-prefix}-clipboard:before { content: $fa-var-clipboard; }

@@ -48,7 +48,7 @@
   /* nav-bar__modal-trigger */
   @include element('modal-toggle') {
 	cursor: pointer;
-	padding: .1em 0.4em .1em 0.4em;
+	padding: .1em 0.4em .2em 0.4em;
 	border-radius: 2px;
 	position: relative;
 

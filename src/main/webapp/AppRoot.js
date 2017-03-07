@@ -70,8 +70,15 @@ class AppRoot extends React.Component {
 			}
 		}),
 		'enter': (e) => this.event_doIfNotTextArea(e, () => {
-			if (this.state.moveMode) {
+			const  { moveMode, movingNode, selectedNodeId } = this.state;
+			let canMove = moveMode;
+			canMove = canMove && movingNode.id != selectedNodeId;
+			canMove = canMove && !(movingNode.siblingAbove.id == selectedNodeId && moveMode ==  MoveNodeMutation.MoveMode.AFTER);
+			canMove = canMove && !(movingNode.siblingBelow.id == selectedNodeId && moveMode ==  MoveNodeMutation.MoveMode.BEFORE);
+			if (canMove) {
 				this._moveNode();
+			} else if (moveMode) {
+				this.setState({ movingNode: null, moveMode: null });
 			}
 		}),
 		'escape': (e) => this.event_doIfNotTextArea(e, () => {
@@ -266,19 +273,13 @@ class AppRoot extends React.Component {
 	_selectSiblingAbove = () => {
 		const mptt = this._getSelectedMpttNode();
 		if (mptt) {
+			let above = mptt.getAbove();
+			let moveMode = this.state.moveMode;
 
-			let above = mptt.siblingAbove;
-			let moveMode = this.state.moveMode ? MoveNodeMutation.MoveMode.BEFORE : null;
-			if (above == null) {
-				const nextGroup = mptt.containingNodeGroup.groupAbove.nodes;
-				above = nextGroup[nextGroup.length - 1];
-
-				if (moveMode) {
-					moveMode = MoveNodeMutation.MoveMode.AFTER;
-				}
-			} else if (moveMode == MoveNodeMutation.MoveMode.AFTER) {
-				above = mptt;
+			if (moveMode) {
 				moveMode = MoveNodeMutation.MoveMode.BEFORE;
+				if (this.state.moveMode == MoveNodeMutation.MoveMode.AFTER) above = mptt;
+				else if (above.siblingBelow == null) moveMode = MoveNodeMutation.MoveMode.AFTER;
 			}
 
 			this._selectNode(above.id, moveMode);
@@ -288,23 +289,16 @@ class AppRoot extends React.Component {
 	_selectSiblingBelow = () => {
 		const mptt = this._getSelectedMpttNode();
 		if (mptt) {
+			let below = mptt.getBelow();
+			let moveMode = this.state.moveMode;
 
-			let below = mptt.siblingBelow;
-			let moveMode = this.state.moveMode ? MoveNodeMutation.MoveMode.AFTER : null;
-			if (below == null) {
-				const nextGroup = mptt.containingNodeGroup.groupBelow.nodes;
-				below = nextGroup[0];
-
-				if (moveMode) {
-					moveMode = MoveNodeMutation.MoveMode.BEFORE;
-				}
-			} else if (moveMode == MoveNodeMutation.MoveMode.BEFORE) {
-				below = mptt;
+			if (moveMode) {
 				moveMode = MoveNodeMutation.MoveMode.AFTER;
+				if (this.state.moveMode == MoveNodeMutation.MoveMode.BEFORE) below = mptt;
+				else if (below.siblingAbove == null) moveMode = MoveNodeMutation.MoveMode.BEFORE;
 			}
 
 			this._selectNode(below.id, moveMode);
-
 		}
 	};
 

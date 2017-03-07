@@ -61,13 +61,14 @@ class NoteGroup extends React.PureComponent {
 
 		const groupIsChild = nodeGroup.isChildOf(selectedNode);
 		let groupIsRelated = groupIsChild;
-		console.log(groupIsChild);
 
 		const notePanes = nodeGroup.nodes.map(node => {
 
 			const nodeIsRelated = groupIsChild || node.isParentOf(selectedNode);
 			const nodeIsSelected = !nodeIsRelated && node === selectedNode;
 			const nodeShouldScrollToSelf = groupIsChild ? false : nodeIsRelated || nodeIsSelected;
+			const isMoving = movingNodeId == node.id;
+			const shouldDisplayMoveMode = nodeIsSelected ? this.props.moveMode : null;
 
 			groupIsRelated = groupIsRelated || nodeIsRelated || nodeIsSelected;
 
@@ -81,8 +82,8 @@ class NoteGroup extends React.PureComponent {
 					selectNode={selectNode}
 					registerSaveFn={registerSaveFn}
 				    refWhenSelected={refForNoteNode}
-					moveMode={nodeIsSelected ? this.props.moveMode : null}
-				    isMoving={movingNodeId == node.id}
+					moveMode={shouldDisplayMoveMode}
+				    isMoving={isMoving}
 				/>
 			);
 		});

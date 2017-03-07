@@ -20,7 +20,26 @@ class MPTTNode {
 		return this.leftBound < node.leftBound && this.rightBound > node.rightBound;
 	};
 
+	getAbove = () => {
+		let above = this.siblingAbove;
+		if (above == null) {
+			const nextGroup = this.containingNodeGroup.groupAbove.nodes;
+			above = nextGroup[nextGroup.length - 1];
+		}
+		return above;
+	};
+
+	getBelow = () => {
+		let below = this.siblingBelow;
+		if (below == null) {
+			const nextGroup = this.containingNodeGroup.groupBelow.nodes;
+			below = nextGroup[0];
+		}
+		return below;
+	};
 }
+
+
 
 class MPTTNodeGroup {
 

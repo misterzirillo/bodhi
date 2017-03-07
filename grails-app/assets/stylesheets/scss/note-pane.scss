@@ -74,12 +74,12 @@
 	  content: 'Press enter to move here';
 	  color: $accent-color;
 	  position: absolute;
-	  width: 101%;
+	  width: 100%;
 	  height: $move-gap + 1;
-	  bottom: -$move-gap - 1;
+	  bottom: -$move-gap - 10;
 	  left: -3px;
 	  border: dashed 3px $accent-color;
-	  box-sizing: border-box;
+	  //box-sizing: border-box;
 	  text-align: center;
 	}
   }

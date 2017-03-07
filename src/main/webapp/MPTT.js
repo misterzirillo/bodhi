@@ -37,16 +37,12 @@ class MPTTNodeGroup {
 	};
 
 	isChildOf = (node) => {
-		switch (this.level - node.level) {
-			case 1:
-				return this.parentNode === node;
-			case 2:
-				return this.parentNode.parentNode === node;
-			default:
-				return false;
+		let nodeGroup = this;
+		while (nodeGroup.parentNode) {
+			if (nodeGroup.parentNode === node) return true;
+			else nodeGroup = nodeGroup.parentNode.containingNodeGroup;
 		}
 	}
-
 }
 
 class MPTT {

@@ -59,13 +59,17 @@ class NoteGroup extends React.PureComponent {
 			movingNodeId
 		} = this.props;
 
-		const groupIsRelated = nodeGroup.isChildOf(selectedNode);
+		const groupIsChild = nodeGroup.isChildOf(selectedNode);
+		let groupIsRelated = groupIsChild;
+		console.log(groupIsChild);
 
 		const notePanes = nodeGroup.nodes.map(node => {
 
-			const nodeIsRelated = groupIsRelated || node.isParentOf(selectedNode);
+			const nodeIsRelated = groupIsChild || node.isParentOf(selectedNode);
 			const nodeIsSelected = !nodeIsRelated && node === selectedNode;
-			const nodeShouldScrollToSelf = groupIsRelated ? false : nodeIsRelated || nodeIsSelected;
+			const nodeShouldScrollToSelf = groupIsChild ? false : nodeIsRelated || nodeIsSelected;
+
+			groupIsRelated = groupIsRelated || nodeIsRelated || nodeIsSelected;
 
 			return (
 				<NotePane
@@ -84,7 +88,7 @@ class NoteGroup extends React.PureComponent {
 		});
 
 		return (
-			<div className={bemTool('note-columns', 'note-group')} ref={this._ref_el}>
+			<div className={bemTool('note-columns', 'note-group', groupIsRelated && 'related')} ref={this._ref_el}>
 				{notePanes}
 			</div>
 		);

@@ -4,27 +4,40 @@
 /* note-pane */
 @include block('note-pane') {
   padding: 1em;
-  border-radius: 2px;
   color: $primary-color-text;
   background-color: #5C6BC0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   transition: all 0.25s cubic-bezier(.25,.8,.25,1);
   cursor: default;
-  min-height: 4em;
-  margin-bottom:1.5em;
+  min-height: 5em;
   position: relative;
   font-size: 1.1em;
+  box-sizing: border-box;
+  border: dashed 3px transparent;
+
+   &:first-child {
+	 border-radius: 3px 3px 0 0;
+   }
+
+  &:last-child {
+	border-radius: 0 0 3px 3px;
+  }
+
+  &:not(:last-child) {
+	border-bottom: 1px solid $divider-color;
+  }
+
+  &:only-child {
+	border-radius: 3px;
+  }
 
   /* note-pane--selected */
   @include modifier('selected') {
 	cursor: text;
-	//box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 	background-color: #8E24AA;
   }
 
   /* note-pane--related */
   @include modifier('related') {
-	//box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 	background-color: #7E57C2;
   }
 
@@ -35,37 +48,45 @@
 
   /* note-pane--highlight-up */
   @include modifier('move-before') {
-	margin-top: 6em;
+
+	margin-top: $move-gap;
 
 	&::before {
-	  content: '';
+	  content: 'Press enter to move here';
+	  color: $accent-color;
 	  position: absolute;
-	  width: 100%;
-	  height: 4px;
-	  top: -3em;
-	  left: 0;
-	  border-top: 2px solid #D81B60;
+	  width: 101%;
+	  height: $move-gap + 1;
+	  top: -$move-gap - 4;
+	  left: -3px;
+	  border: dashed 3px $accent-color;
+	  box-sizing: border-box;
+	  text-align: center;
 	}
   }
 
   /* note-pane--highlight-down */
   @include modifier('move-after') {
-	margin-bottom: 6em;
+
+	margin-bottom: $move-gap;
 
 	&::after {
-	  content: '';
+	  content: 'Press enter to move here';
+	  color: $accent-color;
 	  position: absolute;
-	  width: 100%;
-	  height: 4px;
-	  bottom: -3em;
-	  left: 0;
-	  border-top: 2px solid #D81B60;
+	  width: 101%;
+	  height: $move-gap + 1;
+	  bottom: -$move-gap - 1;
+	  left: -3px;
+	  border: dashed 3px $accent-color;
+	  box-sizing: border-box;
+	  text-align: center;
 	}
   }
 
   /* note-pane--moving */
   @include modifier('moving') {
-	opacity: 0.5;
+	border: dashed 3px $accent-color;
   }
 
   /* note-pane__editor */

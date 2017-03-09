@@ -6,10 +6,10 @@
 *** TODO Show when content is preview
 *** TODO Notebook del
 *** TODO Notebook add
-*** TODO Display NodeGroups
-    Need to create more visual intuition around node groups. Right now there is no visual relationship between a node and its siblings(node group). Should eliminate the space between sibling nodes and increase the size of selected node.
-
+    CLOSED: [2017-03-09 Thu 10:13]
 *** TODO "Reader" mode concatenation
+*** DONE Display NodeGroups
+    CLOSED: [2017-03-09 Thu 10:13]
 *** DONE Note move
 *** DONE Note add
     CLOSED: [2017-02-10 Fri 08:52]
@@ -53,6 +53,8 @@
 * Bugs
 ** TODO Handle case of no roots for user
 ** TODO Editor isn't "dirty" until several character difference
+** TODO Keyboard doesn't work in firefox
+   Do I even care about firefox?
 ** DONE Smaller screen sizes have scroll bars
    CLOSED: [2017-02-21 Tue 10:33]
 ** DONE Pane focus issues 

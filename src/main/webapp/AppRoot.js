@@ -72,9 +72,15 @@ class AppRoot extends React.Component {
 		'enter': (e) => this.event_doIfNotTextArea(e, () => {
 			const  { moveMode, movingNode, selectedNodeId } = this.state;
 			let canMove = moveMode;
+
+			// shouldn't try to move the node to where it already is
 			canMove = canMove && movingNode.id != selectedNodeId;
-			canMove = canMove && !(movingNode.siblingAbove.id == selectedNodeId && moveMode ==  MoveNodeMutation.MoveMode.AFTER);
-			canMove = canMove && !(movingNode.siblingBelow.id == selectedNodeId && moveMode ==  MoveNodeMutation.MoveMode.BEFORE);
+			if (moveMode == MoveNodeMutation.MoveMode.AFTER && movingNode.siblingAbove) {
+				canMove = canMove && !(movingNode.siblingAbove.id == selectedNodeId);
+			} else if (moveMode == MoveNodeMutation.MoveMode.BEFORE && movingNode.siblingBelow) {
+				canMove = canMove && !(movingNode.siblingBelow.id == selectedNodeId);
+			}
+
 			if (canMove) {
 				this._moveNode();
 			} else if (moveMode) {

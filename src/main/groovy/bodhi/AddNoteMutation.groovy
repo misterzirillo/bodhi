@@ -5,6 +5,7 @@ import grails.util.Holders
 import graphql.Scalars
 import io.cirill.relay.annotation.RelayMutation
 import io.cirill.relay.dsl.GQLMutationSpec
+import org.hibernate.FetchMode
 
 /**
  * bodhi
@@ -45,7 +46,12 @@ trait AddNoteMutation {
 
 			dataFetcher { env ->
 				def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
-				def lsr = (sss.currentUser as User).lastSelectedRoot
+
+				def lsr = NoteRoot.withCriteria {
+					idEq(sss.currentUser.lastSelectedRoot.id)
+					fetchMode 'nodes', FetchMode.SELECT
+				}.first() as NoteRoot
+
 				def leftBound = env.arguments.input.leftBound as int
 				lsr.addNoteHere(leftBound)
 

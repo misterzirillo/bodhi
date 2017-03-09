@@ -92,14 +92,9 @@ class NoteRoot implements SwitchRootMutation, AddNoteMutation, DeleteNoteMutatio
 	}
 
 	void addNoteHere(int leftBound) {
-		nodes.each { node ->
-			if (node.leftBound >= leftBound) {
-				node.leftBound += 2
-			}
-			if (node.rightBound >= leftBound) {
-				node.rightBound += 2
-			}
-		}
+		// make some room for the new node
+		def range = leftBound..Integer.MAX_VALUE
+		shiftBounds(range, 2)
 
 		def newNode = new NoteNode(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this).save()
 		lastEditedNode = newNode

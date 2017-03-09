@@ -55,7 +55,7 @@ export default class AddDeleteNoteMutation extends Mutation {
 		return Relay.QL`
 		fragment on AddDeleteNotePayload {
 			lastSelectedRoot {
-				id,
+				lastUpdated,
 				lastEditedNode {
 					id,
 					content(preview: false)

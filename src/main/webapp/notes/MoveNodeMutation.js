@@ -42,6 +42,7 @@ export default class MoveNodeMutation extends Mutation {
 		return Relay.QL`
 		fragment on MoveNotePayload {
 			lastSelectedRoot {
+				lastUpdated,
 				lastEditedNode {
 					id
 				},

@@ -87,6 +87,7 @@ class NoteRoot implements SwitchRootMutation, AddNoteMutation, DeleteNoteMutatio
 		}
 
 		lastEditedNode = nodeToSelect
+		lastUpdated = new Date()
 		save()
 	}
 
@@ -103,6 +104,7 @@ class NoteRoot implements SwitchRootMutation, AddNoteMutation, DeleteNoteMutatio
 		def newNode = new NoteNode(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this).save()
 		lastEditedNode = newNode
 		addToNodes(newNode)
+		lastUpdated = new Date()
 		save()
 	}
 
@@ -157,6 +159,7 @@ class NoteRoot implements SwitchRootMutation, AddNoteMutation, DeleteNoteMutatio
 			}
 
 			lastEditedNode = movingNode
+			lastUpdated = new Date()
 			save()
 		}
 	}

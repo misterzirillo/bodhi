@@ -51,7 +51,7 @@
     check eager loading. do optmistic relay updates
 
 * Bugs
-** TODO Some odd scrolling when moving a node
+** TODO Some odd scrolling when moving a node[<0;43;28M
 ** TODO Handle case of no roots for user
 ** TODO Editor isn't "dirty" until several character difference
 ** TODO Keyboard doesn't work in firefox

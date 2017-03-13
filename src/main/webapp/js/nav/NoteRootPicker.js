@@ -55,10 +55,16 @@ class NoteRootPicker extends React.Component {
 								>
 									<span className="name">{node.name}</span>
 									<span className={bem('root-picker', 'root-selection-last-update')}>
-										(last updated {new Date(node.lastUpdated).toLocaleString()})
+										last updated {new Date(node.lastUpdated).toLocaleString()}
 									</span>
 								</div>
 							))}
+
+							<hr/>
+
+							<div className={bem('root-picker', 'create-new')}>
+								<i className="fa fa-plus-square-o" />
+							</div>
 						</div>
 					</NavModal>
 				</span>

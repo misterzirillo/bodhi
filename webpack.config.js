@@ -1,9 +1,9 @@
 var path = require('path');
-var babelRelayPlugin = path.join(__dirname, 'src/main/webapp/babelRelayPlugin');
+var babelRelayPlugin = path.join(__dirname, 'src/main/webapp/js/babelRelayPlugin');
 
 module.exports = {
     entry: {
-        index: './src/main/webapp/index.js'
+        index: './src/main/webapp/js/index.js'
     },
     output: {
         path: './grails-app/assets/javascripts',
@@ -14,7 +14,7 @@ module.exports = {
 		loaders: [
 			{
 				test: /\.js$/,
-				include: path.join(__dirname, 'src/main/webapp'),
+				include: path.join(__dirname, 'src/main/webapp/js'),
 				loader: 'babel-loader',
 				query: {
 					plugins: [babelRelayPlugin, 'transform-class-properties'],

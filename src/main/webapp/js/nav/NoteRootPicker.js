@@ -18,7 +18,7 @@ class NoteRootPicker extends React.Component {
 
 		this.state = {
 			selecting: false,
-			creatingNewRoot: false,
+			creatingNewRoot: !props.user.lastSelectedRoot,
 			nameValue: '',
 			descValue: ''
 		}
@@ -98,7 +98,7 @@ class NoteRootPicker extends React.Component {
 					<i className="fa fa-sitemap-h"/>
 
 					<span className={bem('root-picker', 'current-root')}>
-						{lastSelectedRoot.name}
+						{lastSelectedRoot ? lastSelectedRoot.name : '(None)'}
 					</span>
 
 
@@ -129,7 +129,7 @@ class NoteRootPicker extends React.Component {
 				</span>
 
 				<span className={bem('root-picker', 'current-description')}>
-					{lastSelectedRoot.description}
+					{lastSelectedRoot ? lastSelectedRoot.description : ''}
 				</span>
 
 				<GlobalModal visible={creatingNewRoot} onBackgroundClick={this.event_onClickCreateClose}>

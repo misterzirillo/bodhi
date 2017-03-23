@@ -97,15 +97,18 @@ class AppRoot extends React.Component {
 	//<editor-fold desc="Component lifecycle">
 	constructor(props) {
 		super(props);
-
-		this._refreshMPTT(props.user.lastSelectedRoot.nodes);
-		let lastSelectedNodeId;
-		try { lastSelectedNodeId = props.user.lastSelectedRoot.lastEditedNode.id } catch (e) {}
+		let lastSelectedNodeId, nodes = [];
+		try {
+			lastSelectedNodeId = props.user.lastSelectedRoot.lastEditedNode.id;
+			nodes = props.user.lastSelectedRoot.nodes;
+		} catch (e) {}
 		this.state = {
 			selectedNodeId: lastSelectedNodeId,
 			movingNode: null,
 			moveMode: null
 		};
+
+		this._refreshMPTT(nodes);
 	}
 
 	componentDidMount() {

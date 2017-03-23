@@ -16,7 +16,7 @@ class BootStrap {
 		    UserRole.create adminUser, adminRole
 		    UserRole.create testUser, userRole
 
-		    testUser.createTutorial()
+		    //testUser.createTutorial()
 
 		    UserRole.withSession {
 			    it.flush()

@@ -50,7 +50,7 @@ class User implements Serializable, AddRootMutation {
 	static transients = ['springSecurityService']
 
 	static constraints = {
-		password blank: false, password: true, display: false
+		password blank: false, password: true
 		username blank: false, unique: true
 		lastSelectedRoot nullable: true
 	}

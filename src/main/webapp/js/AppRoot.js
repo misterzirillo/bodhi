@@ -3,7 +3,7 @@ import Relay from 'react-relay';
 
 import NoteGroup from './notes/NoteGroup';
 import NotePane from './notes/NotePane';
-import { HotKeys, FocusTrap } from 'react-hotkeys';
+import { HotKeys } from 'react-hotkeys';
 import NavBar from './nav/NavBar';
 import InfinityPane from './InfinityPane';
 
@@ -118,7 +118,7 @@ class AppRoot extends React.Component {
 		const lastNodes = this.props.user.lastSelectedRoot.nodes;
 		const { nodes: nextNodes, lastEditedNode } = nextProps.user.lastSelectedRoot;
 		if (nextNodes.length > 0) {
-			if (nextNodes.length != lastNodes.length) {
+			if (this.props.user.lastSelectedRoot.id != nextProps.user.lastSelectedRoot.id || nextNodes.length != lastNodes.length) {
 				// node was added/removed
 				this._refreshMPTT(nextNodes);
 				this.setState({ selectedNodeId: lastEditedNode.id });
@@ -150,21 +150,13 @@ class AppRoot extends React.Component {
 
 				<div ref={this.ref_application} tabIndex="-1" className={bem('note-columns')}>
 
-					{/*<div style={{*/}
-					    {/*position: 'absolute',*/}
-					    {/*top: '50%',*/}
-					    {/*height: '4px',*/}
-					    {/*borderTop: '2px solid red',*/}
-					    {/*width:'100%'}}*/}
-					{/*/>*/}
-
 					{[1, 2, 3].map(level => {
 						return (
 							<div key={level} className={bem('note-columns', 'column', `level-${level}`)}>
 								<InfinityPane>
 									{this._mptt.nodeGroupsByLevel(level).map(nodeGroup => (
 										<NoteGroup
-											key={level > 1 ? nodeGroup.parentNode.id : nodeGroup.nodes[0].id}
+											key={level > 1 ? nodeGroup.parentNode.id : 'root'}
 											nodeGroup={nodeGroup}
 											selectedNode={selectedNodeMPTT}
 											selectNode={this._selectNode}
@@ -342,7 +334,7 @@ class AppRoot extends React.Component {
 
 	//<editor-fold desc="Bindings">
 	event_doIfNotTextArea = (event, fn) => {
-		if (event.srcElement.type != 'textarea')
+		if (event.srcElement.type != 'textarea' && event.srcElement.type != 'input')
 			fn();
 	};
 

@@ -14,7 +14,7 @@ import org.hibernate.FetchMode
 @EqualsAndHashCode(includes='username')
 @ToString(includes='username', includeNames=true, includePackage=false)
 @RelayType
-class User implements Serializable {
+class User implements Serializable, AddRootMutation {
 
 	private static final long serialVersionUID = 1
 

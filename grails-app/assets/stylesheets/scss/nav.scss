@@ -9,7 +9,7 @@
   z-index: $z-nav;
   width: 100vw;
 
-  background: linear-gradient(135deg, #455a64 7.5em, $nav-color 7.5em);
+  background: linear-gradient(135deg, $nav-color-accent 7.5em, $nav-color 7.5em);
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 
   display: flex;
@@ -56,64 +56,5 @@
 	@include modifier('toggled') {
 	  background-color: $accent-color;
 	}
-  }
-}
-
-/* nav-modal */
-@include block('nav-modal') {
-
-  background-color: $nav-color;
-  position: absolute;
-  z-index: $z-modal;
-  border-radius: 2px;
-  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
-  padding: 1em;
-  white-space: nowrap;
-  cursor: default;
-  top: 2.8em;
-
-  visibility: hidden;
-  opacity: 0;
-  transform: translateY(-20px);
-
-  transition: all 0.25s cubic-bezier(.25,.8,.25,1);
-
-  /* nav-modal--visible */
-  @include modifier('visible') {
-	visibility: visible;
-	opacity: 1;
-	transform: translateY(0);
-  }
-
-  /* nav-modal */
-  @include element('arrow') {
-	width: 0;
-	height: 0;
-	border-left: 7px solid transparent;
-	border-right: 7px solid transparent;
-	bottom: 100%;
-	position: absolute;
-
-	border-bottom: 7px solid $nav-color;
-
-	/* nav-modal__arrow--right */
-	@include modifier('right') {
-	  right: 1em;
-	}
-
-	/* nav-modal__arrow--left */
-	@include modifier('left') {
-	  left: 1em;
-	}
-  }
-
-  /* nav-modal--left */
-  @include modifier('left') {
-	left: 0;
-  }
-
-  /* nav-modal--right */
-  @include modifier('right') {
-	right: 0;
   }
 }

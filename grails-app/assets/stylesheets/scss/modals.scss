@@ -1,0 +1,106 @@
+@import 'bem';
+@import 'constants';
+
+/* nav-modal */
+@include block('nav-modal') {
+
+  background-color: $nav-color;
+  position: absolute;
+  //z-index: $z-modal-nav;
+  border-radius: 2px;
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  padding: 1em;
+  white-space: nowrap;
+  cursor: default;
+  top: 2.8em;
+
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-20px);
+
+  transition: all 0.25s cubic-bezier(.25,.8,.25,1);
+
+  /* nav-modal--visible */
+  @include modifier('visible') {
+	visibility: visible;
+	opacity: 1;
+	transform: translateY(0);
+  }
+
+  /* nav-modal */
+  @include element('arrow') {
+	width: 0;
+	height: 0;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	bottom: 100%;
+	position: absolute;
+
+	border-bottom: 7px solid $nav-color;
+
+	/* nav-modal__arrow--right */
+	@include modifier('right') {
+	  right: 1em;
+	}
+
+	/* nav-modal__arrow--left */
+	@include modifier('left') {
+	  left: 1em;
+	}
+  }
+
+  /* nav-modal--left */
+  @include modifier('left') {
+	left: 0;
+  }
+
+  /* nav-modal--right */
+  @include modifier('right') {
+	right: 0;
+  }
+}
+
+/* global-modal */
+@include block('global-modal') {
+
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  position: fixed;
+  visibility: hidden;
+  opacity: 0;
+
+  transition: visibility 0s linear .25s, opacity 0.25s cubic-bezier(.25,.8,.25,1);
+
+  /* global-modal__background */
+  @include element('background') {
+	z-index: $z-modal-background;
+	background-color: $divider-color;
+	opacity: 0.5;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+  }
+
+  /* global-modal__dialog */
+  @include element('dialog') {
+	z-index: $z-modal-dialog;
+	position: absolute;
+	top: 10vh;
+	width: 33.33%;
+	left: 33.33%;
+
+	background-color: $nav-color;
+	border-radius: 2px;
+	box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+	padding: 1em;
+  }
+
+  /* global-modal--visible */
+  @include modifier('visible') {
+	visibility: visible;
+	transition: opacity 0.25s cubic-bezier(.25,.8,.25,1);
+	opacity: 1;
+  }
+}

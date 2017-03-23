@@ -72,30 +72,32 @@ class MPTT {
 		this._nodeMap = {};
 		this._nodeGroups = [];
 
-		// bootstrap mptt with a fake root node
-		const dummyNodeId = 'DUMMY_NODE';
-		const dummyRoot = new MPTTNode(
-			dummyNodeId,
-			Math.min(...stack.map(node => node.leftBound)),
-			Math.max(...stack.map(node => node.rightBound)),
-			0
-		);
-		this._resolveMPTT(dummyRoot, stack, 0);
+		if (stack.length > 0) {
+			// bootstrap mptt with a fake root node
+			const dummyNodeId = 'DUMMY_NODE';
+			const dummyRoot = new MPTTNode(
+				dummyNodeId,
+				Math.min(...stack.map(node => node.leftBound)) - 1,
+				Math.max(...stack.map(node => node.rightBound)) + 1,
+				0
+			);
+			this._resolveMPTT(dummyRoot, stack, 0);
 
-		// clean up after fake node
-		delete this._nodeMap[dummyNodeId];
-		this._nodeGroups[0].parentNode = null;
+			// clean up after fake node
+			delete this._nodeMap[dummyNodeId];
+			this._nodeGroups[0].parentNode = null;
 
-		// associate each node group with the next/previous
-		const minLevel = Math.min(...this._nodeGroups.map(ng => ng.level));
-		const maxLevel = Math.max(...this._nodeGroups.map(ng => ng.level));
-		for (let level = minLevel; level <= maxLevel; level++) {
-			const nodeGroups = this.nodeGroupsByLevel(level);
-			for (let i = 0; i < nodeGroups.length; i++) {
-				let nodeGroup = nodeGroups[i];
-				let nextGroup = nodeGroups[(i + 1) % nodeGroups.length];
-				nodeGroup.groupBelow = nextGroup;
-				nextGroup.groupAbove = nodeGroup;
+			// associate each node group with the next/previous
+			const minLevel = Math.min(...this._nodeGroups.map(ng => ng.level));
+			const maxLevel = Math.max(...this._nodeGroups.map(ng => ng.level));
+			for (let level = minLevel; level <= maxLevel; level++) {
+				const nodeGroups = this.nodeGroupsByLevel(level);
+				for (let i = 0; i < nodeGroups.length; i++) {
+					let nodeGroup = nodeGroups[i];
+					let nextGroup = nodeGroups[(i + 1) % nodeGroups.length];
+					nodeGroup.groupBelow = nextGroup;
+					nextGroup.groupAbove = nodeGroup;
+				}
 			}
 		}
 	}

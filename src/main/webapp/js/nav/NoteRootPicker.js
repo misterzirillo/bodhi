@@ -7,7 +7,9 @@ import Relay from 'react-relay';
 import bem from '../BemTool';
 
 import NavModal, { Position } from './NavModal';
+import GlobalModal from '../GlobalModal';
 import SwitchRootMutation from './SwitchRootMutation';
+import AddRootMutation from '../AddRootMutation';
 
 class NoteRootPicker extends React.Component {
 
@@ -15,7 +17,17 @@ class NoteRootPicker extends React.Component {
 		super(props);
 
 		this.state = {
-			selecting: false
+			selecting: false,
+			creatingNewRoot: false,
+			nameValue: '',
+			descValue: ''
+		}
+	}
+
+	componentDidUpdate() {
+		if (this.state.creatingNewRoot && this.doFocus) {
+			this.nameInput.focus();
+			this.doFocus = false;
 		}
 	}
 
@@ -28,10 +40,55 @@ class NoteRootPicker extends React.Component {
 		this.props.relay.commitUpdate(mutation);
 	};
 
+	event_onClickCreate = (e) => {
+		this.setState({ creatingNewRoot: true });
+		this.doFocus = true;
+	};
+
+	event_onClickCreateClose = (e) => {
+		this.setState({ creatingNewRoot: false });
+	};
+
+	event_onClickSubmit = () => {
+		const {	nameValue: newRootName, descValue: newRootDescription } = this.state;
+
+		if (newRootName) {
+			const mutation = new AddRootMutation({newRootName, newRootDescription, user: this.props.user});
+			this.props.relay.commitUpdate(mutation);
+			this.setState({
+				nameValue: '',
+				descValue: '',
+				creatingNewRoot: false
+			});
+		} else {
+			// do something
+		}
+	};
+
+	event_onNameChange = (e) => {
+		this.setState({ nameValue: e.target.value });
+	};
+
+	event_onDescChange = (e) => {
+		this.setState({ descValue: e.target.value });
+	};
+
+	ref_nameInput = (ref) => {
+		this.nameInput = ref;
+	};
+
+	ref_descInput = (ref) => {
+		this.descInput = ref;
+	};
+
+	ref_submit = (ref) => {
+		this.submit = ref;
+	};
+
 	render() {
 
 		const { lastSelectedRoot, rootNodes } = this.props.user;
-		const { selecting } = this.state;
+		const { selecting, creatingNewRoot, nameValue, descValue } = this.state;
 
 		return (
 			<div className={bem('root-picker')}>
@@ -62,9 +119,11 @@ class NoteRootPicker extends React.Component {
 
 							<hr/>
 
-							<div className={bem('root-picker', 'create-new')}>
+							<div onClick={this.event_onClickCreate} className={bem('root-picker', 'create-new')}>
 								<i className="fa fa-plus-square-o" />
+								<span>Create</span>
 							</div>
+
 						</div>
 					</NavModal>
 				</span>
@@ -72,6 +131,37 @@ class NoteRootPicker extends React.Component {
 				<span className={bem('root-picker', 'current-description')}>
 					{lastSelectedRoot.description}
 				</span>
+
+				<GlobalModal visible={creatingNewRoot} onBackgroundClick={this.event_onClickCreateClose}>
+					<div className={bem('root-picker-modal', 'header')}>
+						<b>Create a Root</b>
+						<i onClick={this.event_onClickCreateClose} className={"fa fa-close " + bem('root-picker-modal', 'close')}/>
+					</div>
+
+					<input
+						type="text"
+						required
+						ref={this.ref_nameInput}
+						onChange={this.event_onNameChange}
+						value={nameValue}
+						tabIndex="1"
+						placeholder="Name"
+						className={bem('root-picker-modal', 'input')}
+					/>
+					<input
+						type="text"
+						ref={this.ref_descInput}
+						onChange={this.event_onDescChange}
+						value={descValue}
+						tabIndex="2"
+						placeholder="Description (Optional)"
+						className={bem('root-picker-modal', 'input')}
+					/>
+
+					<div onClick={this.event_onClickSubmit} ref={this.ref_submit} className={bem('root-picker-modal', 'submit')}>
+						Submit
+					</div>
+				</GlobalModal>
 
 			</div>
 		);
@@ -86,6 +176,8 @@ export default Relay.createContainer(NoteRootPicker, {
 			fragment on User {
 			
 				id,
+				
+				${AddRootMutation.getFragment('user')}
 			
 				lastSelectedRoot {
 					name,

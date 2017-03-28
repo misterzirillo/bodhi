@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import Relay from 'react-relay';
-import bem from '../BemTool';
+import bem from '../utility/BemTool';
 
 import NoteRootPicker from './NoteRootPicker';
 import UserMenu from './UserMenu';

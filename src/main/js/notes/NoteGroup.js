@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import bemTool from '../BemTool';
+import bemTool from '../utility/BemTool';
 import NotePane from './NotePane';
 
 class NoteGroup extends React.PureComponent {
@@ -67,7 +67,7 @@ class NoteGroup extends React.PureComponent {
 			const nodeIsRelated = groupIsChild || node.isParentOf(selectedNode);
 			const nodeIsSelected = !nodeIsRelated && node === selectedNode;
 			const nodeShouldScrollToSelf = groupIsChild ? false : nodeIsRelated || nodeIsSelected;
-			const isMoving = movingNodeId == node.id;
+			const isMoving = movingNodeId === node.id;
 			const shouldDisplayMoveMode = nodeIsSelected ? this.props.moveMode : null;
 
 			groupIsRelated = groupIsRelated || nodeIsRelated || nodeIsSelected;

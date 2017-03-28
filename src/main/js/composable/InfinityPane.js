@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import bem from './BemTool';
+import bem from '../utility/BemTool';
 
 class InfinityPane extends React.PureComponent {
 

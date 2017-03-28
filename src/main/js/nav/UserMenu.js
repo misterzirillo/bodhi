@@ -4,9 +4,9 @@
 
 import React from 'react';
 import Relay from 'react-relay';
-import bem from '../BemTool';
+import bem from '../utility/BemTool';
 
-import NavModal, { Position } from './NavModal';
+import NavModal, { Position } from '../composable/NavModal';
 
 class UserMenu extends React.Component {
 

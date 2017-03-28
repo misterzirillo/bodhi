@@ -22,7 +22,7 @@ class MPTTNode {
 
 	getAbove = () => {
 		let above = this.siblingAbove;
-		if (above == null) {
+		if (above === null) {
 			const nextGroup = this.containingNodeGroup.groupAbove.nodes;
 			above = nextGroup[nextGroup.length - 1];
 		}
@@ -31,7 +31,7 @@ class MPTTNode {
 
 	getBelow = () => {
 		let below = this.siblingBelow;
-		if (below == null) {
+		if (below === null) {
 			const nextGroup = this.containingNodeGroup.groupBelow.nodes;
 			below = nextGroup[0];
 		}
@@ -52,7 +52,7 @@ class MPTTNodeGroup {
 	}
 
 	containsNodeWithId = (id) => {
-		return this.nodes.some(n => n.id == id);
+		return this.nodes.some(n => n.id === id);
 	};
 
 	isChildOf = (node) => {
@@ -107,7 +107,7 @@ class MPTT {
 	};
 
 	nodeGroupsByLevel = (level) => {
-		return this._nodeGroups.filter(group => group.level == level);
+		return this._nodeGroups.filter(group => group.level === level);
 	};
 
 	 _resolveMPTT = (relayNode, stack, level, nodeGroup) => {
@@ -121,7 +121,7 @@ class MPTT {
 
 		this._nodeMap[relayNode.id] = currentRoot;
 
-		if (relayNode.rightBound - relayNode.leftBound != 1) {
+		if (relayNode.rightBound - relayNode.leftBound !== 1) {
 
 			// if this node has children then set up a node group
 			const newNodeGroup = new MPTTNodeGroup(currentRoot, level + 1);

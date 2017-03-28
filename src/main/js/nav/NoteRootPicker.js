@@ -4,12 +4,12 @@
 
 import React from 'react';
 import Relay from 'react-relay';
-import bem from '../BemTool';
+import bem from '../utility/BemTool';
 
-import NavModal, { Position } from './NavModal';
-import GlobalModal from '../GlobalModal';
-import SwitchRootMutation from './SwitchRootMutation';
-import AddRootMutation from '../AddRootMutation';
+import NavModal, { Position } from '../composable/NavModal';
+import GlobalModal from '../composable/GlobalModal';
+import SwitchRootMutation from '../mutation/SwitchRootMutation';
+import AddRootMutation from '../mutation/AddRootMutation';
 
 class NoteRootPicker extends React.Component {
 
@@ -40,12 +40,12 @@ class NoteRootPicker extends React.Component {
 		this.props.relay.commitUpdate(mutation);
 	};
 
-	event_onClickCreate = (e) => {
+	event_onClickCreate = () => {
 		this.setState({ creatingNewRoot: true });
 		this.doFocus = true;
 	};
 
-	event_onClickCreateClose = (e) => {
+	event_onClickCreateClose = () => {
 		this.setState({ creatingNewRoot: false });
 	};
 
@@ -75,10 +75,6 @@ class NoteRootPicker extends React.Component {
 
 	ref_nameInput = (ref) => {
 		this.nameInput = ref;
-	};
-
-	ref_descInput = (ref) => {
-		this.descInput = ref;
 	};
 
 	ref_submit = (ref) => {
@@ -150,7 +146,6 @@ class NoteRootPicker extends React.Component {
 					/>
 					<input
 						type="text"
-						ref={this.ref_descInput}
 						onChange={this.event_onDescChange}
 						value={descValue}
 						tabIndex="2"

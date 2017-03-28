@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import Relay from 'react-relay';
-import bemTool from '../BemTool';
+import bemTool from '../utility/BemTool';
 import Markdown from 'react-remarkable';
 import Editor from './NoteEditor';
-import NoteUpdateMutation from './NoteUpdateMutation';
+import NoteUpdateMutation from '../mutation/NoteUpdateMutation';
 import { HotKeys } from 'react-hotkeys';
-import MoveNodeMutation from './MoveNodeMutation';
+import MoveNodeMutation from '../mutation/MoveNodeMutation';
 
 class NotePane extends Component {
 
@@ -32,17 +32,17 @@ class NotePane extends Component {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-		const becameSelected = this.props.selected != nextProps.selected;
-		const becameRelated = this.props.related != nextProps.related;
+		const becameSelected = this.props.selected !== nextProps.selected;
+		const becameRelated = this.props.related !== nextProps.related;
 
-		const differentRelay = this.props.relay.variables.previewOnly != nextProps.relay.variables.previewOnly;
-		const differentId = this.props.node.id != nextProps.node.id;
+		const differentRelay = this.props.relay.variables.previewOnly !== nextProps.relay.variables.previewOnly;
+		const differentId = this.props.node.id !== nextProps.node.id;
 
-		const editing = this.state.editing != nextState.editing;
-		const dirty = this.state.dirty != nextState.dirty;
+		const editing = this.state.editing !== nextState.editing;
+		const dirty = this.state.dirty !== nextState.dirty;
 
-		const moveMode = this.props.moveMode != nextProps.moveMode;
-		const isMoving = this.props.isMoving != nextProps.isMoving;
+		const moveMode = this.props.moveMode !== nextProps.moveMode;
+		const isMoving = this.props.isMoving !== nextProps.isMoving;
 
 		return becameRelated || becameSelected || differentRelay || editing || dirty || differentId || moveMode || isMoving;
 	}
@@ -159,7 +159,7 @@ class NotePane extends Component {
 	_doSave = () => {
 		if (this.state.dirty) {
 			const newContent = this.editor.getValue();
-			if (this.props.node.content != newContent) {
+			if (this.props.node.content !== newContent) {
 				const mutation = new NoteUpdateMutation({
 					nodeId: this.props.node.id,
 					patch: this.editor.getValue()
@@ -182,9 +182,9 @@ class NotePane extends Component {
 
 	_scrollToMe = () => {
 		const { moveMode } = this.props;
-		if (moveMode == MoveNodeMutation.MoveMode.BEFORE) {
+		if (moveMode === MoveNodeMutation.MoveMode.BEFORE) {
 			this.context.scrollToHere(this.pane.offsetTop);
-		} else if (moveMode == MoveNodeMutation.MoveMode.AFTER) {
+		} else if (moveMode === MoveNodeMutation.MoveMode.AFTER) {
 			this.context.scrollToHere(this.pane.offsetTop + this.pane.clientHeight);
 		} else {
 			const here = this.pane.offsetTop + this.pane.offsetHeight / 2;

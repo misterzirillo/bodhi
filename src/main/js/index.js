@@ -2,8 +2,8 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import Relay from 'react-relay';
 import AppRoot from './AppRoot';
-import Route from './route';
-import MainLoadingSpinner from './other/MainLoadingSpinner2';
+import Route from './utility/route';
+import MainLoadingSpinner from './indicators/MainLoadingSpinner2';
 
 window.startApp = () => {
 

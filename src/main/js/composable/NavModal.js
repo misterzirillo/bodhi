@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import bem from '../BemTool';
+import bem from '../utility/BemTool';
 
 const Position = {
 	LEFT: 'left', // modal will align with the left side of the toggle

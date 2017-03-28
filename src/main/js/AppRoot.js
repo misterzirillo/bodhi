@@ -5,12 +5,13 @@ import NoteGroup from './notes/NoteGroup';
 import NotePane from './notes/NotePane';
 import { HotKeys } from 'react-hotkeys';
 import NavBar from './nav/NavBar';
-import InfinityPane from './InfinityPane';
+import InfinityPane from './composable/InfinityPane';
 
-import MPTT from './MPTT';
-import bem from './BemTool';
-import AddDeleteNoteMutation from './notes/AddDeleteNoteMutation';
-import MoveNodeMutation from './notes/MoveNodeMutation';
+import MPTT from './utility/MPTT';
+import bem from './utility/BemTool';
+
+import AddDeleteNoteMutation from './mutation/AddDeleteNoteMutation';
+import MoveNodeMutation from './mutation/MoveNodeMutation';
 
 const keymap = {
 	'close-open-editor': 'ctrl+enter',
@@ -74,11 +75,11 @@ class AppRoot extends React.Component {
 			let canMove = moveMode;
 
 			// shouldn't try to move the node to where it already is
-			canMove = canMove && movingNode.id != selectedNodeId;
-			if (moveMode == MoveNodeMutation.MoveMode.AFTER && movingNode.siblingAbove) {
-				canMove = canMove && !(movingNode.siblingAbove.id == selectedNodeId);
-			} else if (moveMode == MoveNodeMutation.MoveMode.BEFORE && movingNode.siblingBelow) {
-				canMove = canMove && !(movingNode.siblingBelow.id == selectedNodeId);
+			canMove = canMove && movingNode.id !== selectedNodeId;
+			if (moveMode === MoveNodeMutation.MoveMode.AFTER && movingNode.siblingAbove) {
+				canMove = canMove && !(movingNode.siblingAbove.id === selectedNodeId);
+			} else if (moveMode === MoveNodeMutation.MoveMode.BEFORE && movingNode.siblingBelow) {
+				canMove = canMove && !(movingNode.siblingBelow.id === selectedNodeId);
 			}
 
 			if (canMove) {
@@ -121,7 +122,7 @@ class AppRoot extends React.Component {
 		const lastNodes = this.props.user.lastSelectedRoot.nodes;
 		const { nodes: nextNodes, lastEditedNode } = nextProps.user.lastSelectedRoot;
 		if (nextNodes.length > 0) {
-			if (this.props.user.lastSelectedRoot.id != nextProps.user.lastSelectedRoot.id || nextNodes.length != lastNodes.length) {
+			if (this.props.user.lastSelectedRoot.id !== nextProps.user.lastSelectedRoot.id || nextNodes.length !== lastNodes.length) {
 				// node was added/removed
 				this._refreshMPTT(nextNodes);
 				this.setState({ selectedNodeId: lastEditedNode.id });
@@ -131,7 +132,7 @@ class AppRoot extends React.Component {
 					const next = nextNodes[i];
 
 					// if we detect a change in node order then re-create the tree
-					if (curr.leftBound != next.leftBound || curr.rightBound != next.rightBound) {
+					if (curr.leftBound !== next.leftBound || curr.rightBound !== next.rightBound) {
 						this._refreshMPTT(nextNodes);
 						break;
 					}
@@ -173,7 +174,7 @@ class AppRoot extends React.Component {
 									))}
 								</InfinityPane>
 
-								{level == 1 && this._mptt.nodeGroupsByLevel(1).length == 0 &&
+								{level === 1 && this._mptt.nodeGroupsByLevel(1).length === 0 &&
 									<div onClick={this.event_createFirstLeaf} className={[
 										bem('note-columns', 'add-first-note'), bem('note-pane', null, 'dirty')
 									].join(' ')}>
@@ -279,8 +280,8 @@ class AppRoot extends React.Component {
 
 			if (moveMode) {
 				moveMode = MoveNodeMutation.MoveMode.BEFORE;
-				if (this.state.moveMode == MoveNodeMutation.MoveMode.AFTER) above = mptt;
-				else if (above.siblingBelow == null) moveMode = MoveNodeMutation.MoveMode.AFTER;
+				if (this.state.moveMode === MoveNodeMutation.MoveMode.AFTER) above = mptt;
+				else if (above.siblingBelow === null) moveMode = MoveNodeMutation.MoveMode.AFTER;
 			}
 
 			this._selectNode(above.id, moveMode);
@@ -295,8 +296,8 @@ class AppRoot extends React.Component {
 
 			if (moveMode) {
 				moveMode = MoveNodeMutation.MoveMode.AFTER;
-				if (this.state.moveMode == MoveNodeMutation.MoveMode.BEFORE) below = mptt;
-				else if (below.siblingAbove == null) moveMode = MoveNodeMutation.MoveMode.BEFORE;
+				if (this.state.moveMode === MoveNodeMutation.MoveMode.BEFORE) below = mptt;
+				else if (below.siblingAbove === null) moveMode = MoveNodeMutation.MoveMode.BEFORE;
 			}
 
 			this._selectNode(below.id, moveMode);
@@ -305,7 +306,7 @@ class AppRoot extends React.Component {
 
 	_selectParent = () => {
 		const mptt = this._getSelectedMpttNode();
-		if (mptt && mptt.containingNodeGroup.parentNode) {
+		if (mptt && mptt.containingNodeGroup.parentNode && mptt.level !== 1) {
 			const { id } = mptt.containingNodeGroup.parentNode;
 			this._selectNode(id, this.state.moveMode ? MoveNodeMutation.MoveMode.BEFORE : null);
 		}
@@ -313,14 +314,14 @@ class AppRoot extends React.Component {
 
 	_selectChild = () => {
 		const mptt = this._getSelectedMpttNode();
-		if (mptt && mptt.childNodeGroup) {
+		if (mptt && mptt.childNodeGroup && mptt.level !== 3) {
 			const { id } = mptt.childNodeGroup.nodes[0];
 			this._selectNode(id, this.state.moveMode ? MoveNodeMutation.MoveMode.BEFORE : null);
 		}
 	};
 
 	_selectNode = (nodeId, moveMode) => {
-		if (this.state.selectedNodeId != nodeId || moveMode) {
+		if (this.state.selectedNodeId !== nodeId || moveMode) {
 			this.setState({selectedNodeId: nodeId, moveMode});
 		}
 	};
@@ -337,7 +338,7 @@ class AppRoot extends React.Component {
 
 	//<editor-fold desc="Bindings">
 	event_doIfNotTextArea = (event, fn) => {
-		if (event.srcElement.type != 'textarea' && event.srcElement.type != 'input')
+		if (event.srcElement.type !== 'textarea' && event.srcElement.type !== 'input')
 			fn();
 	};
 

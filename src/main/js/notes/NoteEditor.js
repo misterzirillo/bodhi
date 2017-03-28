@@ -15,7 +15,7 @@ export default class Editor extends React.Component {
 
 	handleChange = (event) => {
 		this.setState({ value: event.target.value });
-		if (!this.isDirty && this.props.content != this.state.value) {
+		if (!this.isDirty && this.props.content !== this.state.value) {
 			this.props.notifyDirty();
 		}
 	};

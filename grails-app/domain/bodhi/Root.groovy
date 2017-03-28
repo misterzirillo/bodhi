@@ -1,21 +1,13 @@
 package bodhi
 
-import graphql.Scalars
-import io.cirill.relay.annotation.RelayEnum
-import io.cirill.relay.annotation.RelayField
-import io.cirill.relay.annotation.RelayProxyField
-import io.cirill.relay.annotation.RelayType
-import io.cirill.relay.dsl.GQLFieldSpec
-
 /**
  * bodhi
  * @author mcirillo
  */
-@RelayType
-class NoteRoot implements SwitchRootMutation, AddNoteMutation, DeleteNoteMutation, MoveNoteMutation {
+class Root {
 
 	static belongsTo = [ owner: User ]
-	static hasMany = [ nodes: NoteNode ]
+	static hasMany = [ nodes: Node ]
 
 	static constraints = {
 		description nullable: true
@@ -24,31 +16,15 @@ class NoteRoot implements SwitchRootMutation, AddNoteMutation, DeleteNoteMutatio
 
 	Date dateCreated, lastUpdated
 
-	@RelayProxyField
-	static lastUpdatedProxy = {
-		GQLFieldSpec.field {
-			name 'lastUpdated'
-			type Scalars.GraphQLLong
-			dataFetcher { env ->
-				(env.source as NoteRoot).lastUpdated.time
-			}
-		}
-	}
+	Set<Node> nodes = []
 
-	@RelayField
-	Set<NoteNode> nodes = []
-
-	@RelayField
 	String name
 
-	@RelayField
 	String description
 
-	@RelayField
-	NoteNode lastEditedNode
+	Node lastEditedNode
 
-	@RelayEnum
-	public enum MoveMode {
+	enum MoveMode {
 		Before,
 		After
 	}
@@ -62,7 +38,7 @@ class NoteRoot implements SwitchRootMutation, AddNoteMutation, DeleteNoteMutatio
 		}
 
 		def targetLeftBound = deletedNode.leftBound
-		def toEdit = NoteNode.where {
+		def toEdit = Node.where {
 			root == this
 			rightBound >= targetLeftBound
 		}.list(fetch: ['rightBound', 'leftBound'])
@@ -96,7 +72,7 @@ class NoteRoot implements SwitchRootMutation, AddNoteMutation, DeleteNoteMutatio
 		def range = leftBound..Integer.MAX_VALUE
 		shiftBounds(range, 2)
 
-		def newNode = new NoteNode(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this).save()
+		def newNode = new Node(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this).save()
 		lastEditedNode = newNode
 		addToNodes(newNode)
 		lastUpdated = new Date()

@@ -7,7 +7,7 @@ import Relay, { Mutation } from 'react-relay';
 export default class NoteUpdateMutation extends Mutation {
 
 	getMutation() {
-		return Relay.QL`mutation { patchContent }`;
+		return Relay.QL`mutation { textUpdate }`;
 	}
 
 	getVariables() {
@@ -27,7 +27,7 @@ export default class NoteUpdateMutation extends Mutation {
 
 	getFatQuery() {
 		return Relay.QL`
-		fragment on PatchContentPayload { 
+		fragment on TextInputPayload { 
 			updatedNode { content(preview: false) }
 		}`;
 	}

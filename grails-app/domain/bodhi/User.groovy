@@ -1,26 +1,17 @@
 package bodhi
 
-import grails.plugin.springsecurity.SpringSecurityService
-import grails.util.Holders
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
-import io.cirill.relay.RelayHelpers
-import io.cirill.relay.annotation.RelayField
-import io.cirill.relay.annotation.RelayQuery
-import io.cirill.relay.annotation.RelayType
-import io.cirill.relay.dsl.GQLFieldSpec
-import org.hibernate.FetchMode
 
 @EqualsAndHashCode(includes='username')
 @ToString(includes='username', includeNames=true, includePackage=false)
-@RelayType
-class User implements Serializable, AddRootMutation {
+class User implements Serializable {
 
 	private static final long serialVersionUID = 1
 
 	transient springSecurityService
 
-	@RelayField
+	//@RelayField
 	String username
 
 	String password
@@ -60,54 +51,31 @@ class User implements Serializable, AddRootMutation {
 		rootNodes sort: 'lastUpdated', order: 'desc'
 	}
 
-	static hasMany = [ rootNodes: NoteRoot ]
+	static hasMany = [ rootNodes: Root ]
 
-	@RelayQuery
-	static userQuery = {
-		GQLFieldSpec.field {
-			name 'currentUser'
-			description 'The current user'
-			type {
-				ref 'User'
-			}
-			dataFetcher { env ->
-				def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
-				def eagerLoad = RelayHelpers.eagerFetchStrings(env)
-				User.withCriteria {
-					idEq(sss.currentUserId)
-					for (def str : eagerLoad) {
-						fetchMode str, FetchMode.JOIN
-					}
-				}.first()
-			}
-		}
-	}
+	Root lastSelectedRoot
 
-	@RelayField
-	NoteRoot lastSelectedRoot
-
-	@RelayField
-	Set<NoteRoot> rootNodes
+	Set<Root> rootNodes
 
 	void createTutorial() {
 
-		def root =  new NoteRoot(owner: this, name: 'Tutorial', description: 'Introducing Bodhi').save()
+		def root =  new Root(owner: this, name: 'Tutorial', description: 'Introducing Bodhi').save()
 
-		def n1 = new NoteNode(
+		def n1 = new Node(
 				content: this.class.classLoader.getResourceAsStream("tutorial1.md").readLines().join('\n'),
 				root: root,
 				leftBound: 0,
 				rightBound: 3
 		).save()
 
-		def n2 = new NoteNode(
+		def n2 = new Node(
 				content: this.class.classLoader.getResourceAsStream("tutorial2.md").readLines().join('\n'),
 				root: root,
 				leftBound: 1,
 				rightBound: 2
 		).save()
 
-		def n3 = new NoteNode(
+		def n3 = new Node(
 				content: this.class.classLoader.getResourceAsStream("tutorial3.md").readLines().join('\n'),
 				root: root,
 				leftBound: 4,

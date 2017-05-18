@@ -94,5 +94,11 @@
 	  background-color: #FF6681;
 	}
   }
+
+  /* root-picker-modal__error */
+  @include element('error') {
+	display: inline-block;
+	margin-left: 1em;
+  }
   
 }

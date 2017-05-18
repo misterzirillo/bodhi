@@ -20,7 +20,8 @@ class NoteRootPicker extends React.Component {
 			selecting: false,
 			creatingNewRoot: !props.user.lastSelectedRoot,
 			nameValue: '',
-			descValue: ''
+			descValue: '',
+			rootCreationError: ''
 		}
 	}
 
@@ -61,12 +62,14 @@ class NoteRootPicker extends React.Component {
 				creatingNewRoot: false
 			});
 		} else {
-			// do something
+			this.setState({
+				rootCreationError: 'Please enter a name for the root.'
+			});
 		}
 	};
 
 	event_onNameChange = (e) => {
-		this.setState({ nameValue: e.target.value });
+		this.setState({ nameValue: e.target.value, rootCreationError: '' });
 	};
 
 	event_onDescChange = (e) => {
@@ -84,7 +87,7 @@ class NoteRootPicker extends React.Component {
 	render() {
 
 		const { lastSelectedRoot, rootNodes } = this.props.user;
-		const { selecting, creatingNewRoot, nameValue, descValue } = this.state;
+		const { selecting, creatingNewRoot, nameValue, descValue, rootCreationError } = this.state;
 
 		return (
 			<div className={bem('root-picker')}>
@@ -156,6 +159,8 @@ class NoteRootPicker extends React.Component {
 					<div onClick={this.event_onClickSubmit} ref={this.ref_submit} className={bem('root-picker-modal', 'submit')}>
 						Submit
 					</div>
+
+					<div className={bem('root-picker-modal', 'error')}>{rootCreationError}</div>
 				</GlobalModal>
 
 			</div>

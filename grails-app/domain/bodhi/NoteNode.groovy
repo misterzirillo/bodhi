@@ -103,7 +103,7 @@ class NoteNode {
 
 			dataFetcher { env ->
 				long nodeId = RelayHelpers.fromGlobalId(env.arguments.input.nodeId as String).id as long
-				NoteNode node = NoteNode.get(nodeId)
+				NoteNode node = NoteNode.findById(nodeId)
 				node.content = env.arguments.input.patch
 				node.root.lastEditedNode = node
 				node.save()

@@ -122,7 +122,7 @@ class AppRoot extends React.Component {
 		const lastNodes = this.props.user.lastSelectedRoot.nodes;
 		const { nodes: nextNodes, lastEditedNode } = nextProps.user.lastSelectedRoot;
 		if (nextNodes.length > 0) {
-			if (this.props.user.lastSelectedRoot.id !== nextProps.user.lastSelectedRoot.id || nextNodes.length !== lastNodes.length) {
+			if ((this.props.user.lastSelectedRoot.id !== nextProps.user.lastSelectedRoot.id) || (nextNodes.length !== lastNodes.length)) {
 				// node was added/removed
 				this._refreshMPTT(nextNodes);
 				this.setState({ selectedNodeId: lastEditedNode.id });
@@ -134,7 +134,7 @@ class AppRoot extends React.Component {
 					// if we detect a change in node order then re-create the tree
 					if (curr.leftBound !== next.leftBound || curr.rightBound !== next.rightBound) {
 						this._refreshMPTT(nextNodes);
-						break;
+						i = lastNodes.length; // break out
 					}
 				}
 			}

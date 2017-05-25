@@ -10,7 +10,7 @@ export default class AddDeleteNoteMutation extends Mutation {
 	static DELETE = "deleteNote";
 
 	static fragments = {
-		lastSelectedRoot: () => Relay.QL`fragment on NoteRoot { id }`
+		lastSelectedRoot: () => Relay.QL`fragment on NoteRoot { id, nodes { leftBound, rightBound } }`
 	};
 
 	getMutation() {

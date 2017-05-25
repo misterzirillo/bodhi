@@ -49,7 +49,7 @@ trait AddNoteMutation {
 
 				def lsr = NoteRoot.withCriteria {
 					idEq(sss.currentUser.lastSelectedRoot.id)
-					fetchMode 'nodes', FetchMode.SELECT
+					fetchMode 'nodes', FetchMode.JOIN
 				}.first() as NoteRoot
 
 				def leftBound = env.arguments.input.leftBound as int

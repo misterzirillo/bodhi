@@ -14,21 +14,21 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "babel-core": "^6.23.1",
-    "babel-loader": "^6.3.2",
-    "babel-plugin-transform-class-properties": "^6.23.0",
-    "babel-preset-es2015": "^6.22.0",
-    "babel-preset-react": "^6.23.0",
-    "babel-preset-stage-0": "^6.22.0",
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
     "babel-relay-plugin": "^0.11.0",
-    "sync-request": "^3.0.1",
-    "webpack": "1.13.2"
+    "sync-request": "^4.0.3",
+    "webpack": "^2.6.1"
   },
   "dependencies": {
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-hotkeys": "^0.9.0",
-    "react-relay": "^0.10.0",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-hotkeys": "^0.10.0",
+    "react-relay": "^1.0.0",
     "react-remarkable": "^1.1.1"
   }
 }

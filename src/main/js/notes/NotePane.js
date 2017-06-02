@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import Relay from 'react-relay';
+import {
+  createFragmentContainer,
+  graphql,
+} from 'react-relay/compat';
 import bemTool from '../utility/BemTool';
 import Markdown from 'react-remarkable';
 import Editor from './NoteEditor';
 import NoteUpdateMutation from '../mutation/NoteUpdateMutation';
-import { HotKeys } from 'react-hotkeys';
 import MoveNodeMutation from '../mutation/MoveNodeMutation';
 
 class NotePane extends Component {
@@ -25,6 +27,8 @@ class NotePane extends Component {
 		};
 
 		if (props.selected || props.related) {
+// TODO props.relay.* APIs do not exist on compat containers
+// TODO needs manual handling
 			this.props.relay.setVariables({previewOnly: false});
 		}
 
@@ -35,6 +39,7 @@ class NotePane extends Component {
 		const becameSelected = this.props.selected !== nextProps.selected;
 		const becameRelated = this.props.related !== nextProps.related;
 
+// TODO props.relay.* APIs do not exist on compat containers
 		const differentRelay = this.props.relay.variables.previewOnly !== nextProps.relay.variables.previewOnly;
 		const differentId = this.props.node.id !== nextProps.node.id;
 
@@ -75,6 +80,7 @@ class NotePane extends Component {
 	}
 
 	componentDidUpdate() {
+// TODO props.relay.* APIs do not exist on compat containers
 		if (this.scrollAfterUpdate && !this.props.relay.variables.previewOnly && !this.props.isMoving) {
 			this.scrollAfterUpdate = false;
 			this._scrollToMe();
@@ -102,6 +108,7 @@ class NotePane extends Component {
 		} = this.props;
 
 		const { editing, dirty } = this.state;
+// TODO props.relay.* APIs do not exist on compat containers
 		const { previewOnly } = this.props.relay.variables;
 		const content = node ? node.content : '';
 
@@ -151,7 +158,10 @@ class NotePane extends Component {
 
 	//<editor-fold desc="Private">
 	_getFullContentIfNeeded = () => {
+// TODO props.relay.* APIs do not exist on compat containers
 		if (this.props.relay.variables.previewOnly) {
+// TODO props.relay.* APIs do not exist on compat containers
+// TODO needs manual handling
 			this.props.relay.setVariables({previewOnly: false});
 		}
 	};
@@ -164,6 +174,7 @@ class NotePane extends Component {
 					nodeId: this.props.node.id,
 					patch: this.editor.getValue()
 				});
+// TODO props.relay.* APIs do not exist on compat containers
 				this.props.relay.commitUpdate(mutation);
 			}
 		}
@@ -221,11 +232,11 @@ class NotePane extends Component {
 	//</editor-fold>
 }
 
-export default Relay.createContainer(NotePane, {
-	initialVariables: {
-		previewOnly: true
-	},
-	fragments: {
-		node: () => Relay.QL`fragment on NoteNode { id, content(preview: $previewOnly) }`
-	}
+export default createFragmentContainer(NotePane, {
+    /* TODO manually deal with:
+    initialVariables: {
+        previewOnly: true
+    }
+    */
+    node: () => Relay.QL`fragment on NoteNode { id, content(preview: $previewOnly) }`
 });

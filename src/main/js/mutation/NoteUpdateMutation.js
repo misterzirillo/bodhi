@@ -2,7 +2,7 @@
  * Created by mcirillo on 1/19/17.
  */
 
-import Relay, { Mutation } from 'react-relay';
+import Relay, { Mutation } from 'react-relay/classic';
 
 export default class NoteUpdateMutation extends Mutation {
 

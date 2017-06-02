@@ -1,5 +1,8 @@
 import React from 'react';
-import Relay from 'react-relay';
+import {
+  createFragmentContainer,
+  graphql,
+} from 'react-relay/compat';
 
 import NoteGroup from './notes/NoteGroup';
 import NotePane from './notes/NotePane';
@@ -202,6 +205,7 @@ class AppRoot extends React.Component {
 			movingNodeId: movingNode.id,
 			moveMode: moveMode
 		});
+// TODO props.relay.* APIs do not exist on compat containers
 		this.props.relay.commitUpdate(mutation);
 
 		this.setState({ selectedNodeId: movingNode.id, moveMode: null });
@@ -230,6 +234,7 @@ class AppRoot extends React.Component {
 				lastSelectedRoot: this.props.user.lastSelectedRoot,
 				type: AddDeleteNoteMutation.ADD
 			});
+// TODO props.relay.* APIs do not exist on compat containers
 			this.props.relay.commitUpdate(mutation);
 		}
 	};
@@ -242,6 +247,7 @@ class AppRoot extends React.Component {
 				lastSelectedRoot: this.props.user.lastSelectedRoot,
 				type: AddDeleteNoteMutation.ADD
 			});
+// TODO props.relay.* APIs do not exist on compat containers
 			this.props.relay.commitUpdate(mutation);
 		}
 	};
@@ -254,6 +260,7 @@ class AppRoot extends React.Component {
 				lastSelectedRoot: this.props.user.lastSelectedRoot,
 				type: AddDeleteNoteMutation.ADD
 			});
+// TODO props.relay.* APIs do not exist on compat containers
 			this.props.relay.commitUpdate(mutation);
 		}
 	};
@@ -266,6 +273,7 @@ class AppRoot extends React.Component {
 				lastSelectedRoot: this.props.user.lastSelectedRoot,
 				type: AddDeleteNoteMutation.DELETE
 			});
+// TODO props.relay.* APIs do not exist on compat containers
 			this.props.relay.commitUpdate(mutation);
 		}
 	};
@@ -332,6 +340,7 @@ class AppRoot extends React.Component {
 			lastSelectedRoot: this.props.user.lastSelectedRoot,
 			type: AddDeleteNoteMutation.ADD
 		});
+// TODO props.relay.* APIs do not exist on compat containers
 		this.props.relay.commitUpdate(mutation);
 	};
 	//</editor-fold>
@@ -355,32 +364,30 @@ class AppRoot extends React.Component {
 	//</editor-fold>
 }
 
-export default Relay.createContainer(AppRoot, {
-	fragments: {
-		user: () => Relay.QL`
-			fragment on User {
+export default createFragmentContainer(AppRoot, {
+    user: graphql`
+        fragment AppRoot_user on User {
 
-				${NavBar.getFragment('user')}
+            ...NavBar_user
 
-				lastSelectedRoot {
+            lastSelectedRoot {
 
-					${AddDeleteNoteMutation.getFragment('lastSelectedRoot')}
-					${MoveNodeMutation.getFragment('lastSelectedRoot')}
+                ...AddDeleteNoteMutation_lastSelectedRoot
+                ...MoveNodeMutation_lastSelectedRoot
 
-					lastEditedNode {
-						id,
-						leftBound,
-						rightBound,
-						content(preview: false)
-					},
+                lastEditedNode {
+                    id,
+                    leftBound,
+                    rightBound,
+                    content(preview: false)
+                },
 
-					nodes {
-						id,
-						leftBound,
-						rightBound,
-						${NotePane.getFragment('node')}
-					}
-				}
-			}`
-	}
+                nodes {
+                    id,
+                    leftBound,
+                    rightBound,
+                    ...NotePane_node
+                }
+            }
+        }`
 });

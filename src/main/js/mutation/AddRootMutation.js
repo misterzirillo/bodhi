@@ -2,7 +2,7 @@
  * Created by mcirillo on 3/21/17.
  */
 
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 
 export default class AddRootMutation extends Relay.Mutation {
 

@@ -1,7 +1,7 @@
 /**
  * Created by mcirillo on 1/19/17.
  */
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 
 export default class Route extends Relay.Route {
 	static path = '/';

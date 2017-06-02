@@ -2,7 +2,7 @@
  * Created by mcirillo on 2/19/17.
  */
 
-import Relay from 'react-relay';
+import Relay from 'react-relay/classic';
 
 export default class SwitchRootMutation extends Relay.Mutation {
 

@@ -2,7 +2,10 @@
  * Created by mcirillo on 2/19/17.
  */
 import React from 'react';
-import Relay from 'react-relay';
+import {
+  createFragmentContainer,
+  graphql,
+} from 'react-relay/compat';
 import bem from '../utility/BemTool';
 
 import NoteRootPicker from './NoteRootPicker';
@@ -24,15 +27,13 @@ const NavBar = ({ user }) => {
 	);
 };
 
-export default Relay.createContainer(NavBar, {
-	fragments: {
-		user: () => Relay.QL`
-			fragment on User { 
-			
-				username,
-				
-				${NoteRootPicker.getFragment('user')}
-				${UserMenu.getFragment('user')}
-			}`
-	}
+export default createFragmentContainer(NavBar, {
+    user: graphql`
+        fragment NavBar_user on User { 
+        
+            username,
+            
+            ...NoteRootPicker_user
+            ...UserMenu_user
+        }`
 });

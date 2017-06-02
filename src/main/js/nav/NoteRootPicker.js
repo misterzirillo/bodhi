@@ -3,7 +3,10 @@
  */
 
 import React from 'react';
-import Relay from 'react-relay';
+import {
+  createFragmentContainer,
+  graphql,
+} from 'react-relay/compat';
 import bem from '../utility/BemTool';
 
 import NavModal, { Position } from '../composable/NavModal';
@@ -38,6 +41,7 @@ class NoteRootPicker extends React.Component {
 
 	event_onClickRoot = (id) => {
 		const mutation = new SwitchRootMutation({ newRootId: id, currentUserId: this.props.user.id  });
+// TODO props.relay.* APIs do not exist on compat containers
 		this.props.relay.commitUpdate(mutation);
 	};
 
@@ -55,6 +59,7 @@ class NoteRootPicker extends React.Component {
 
 		if (newRootName) {
 			const mutation = new AddRootMutation({newRootName, newRootDescription, user: this.props.user});
+// TODO props.relay.* APIs do not exist on compat containers
 			this.props.relay.commitUpdate(mutation);
 			this.setState({
 				nameValue: '',
@@ -169,28 +174,24 @@ class NoteRootPicker extends React.Component {
 
 }
 
-export default Relay.createContainer(NoteRootPicker, {
-
-	fragments: {
-		user: () => Relay.QL`
-			fragment on User {
-			
-				id,
-				
-				${AddRootMutation.getFragment('user')}
-			
-				lastSelectedRoot {
-					name,
-					description
-				},
-				
-				rootNodes {
-					id,
-					name,
-					lastUpdated
-				}
-			}
-		`
-	}
-
+export default createFragmentContainer(NoteRootPicker, {
+    user: graphql`
+        fragment NoteRootPicker_user on User {
+        
+            id,
+            
+            ...AddRootMutation_user
+        
+            lastSelectedRoot {
+                name,
+                description
+            },
+            
+            rootNodes {
+                id,
+                name,
+                lastUpdated
+            }
+        }
+    `
 });

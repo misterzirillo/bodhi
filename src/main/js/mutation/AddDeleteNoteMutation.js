@@ -2,7 +2,7 @@
  * Created by mcirillo on 2/4/17.
  */
 
-import Relay, { Mutation } from 'react-relay';
+import Relay, { Mutation } from 'react-relay/classic';
 
 export default class AddDeleteNoteMutation extends Mutation {
 

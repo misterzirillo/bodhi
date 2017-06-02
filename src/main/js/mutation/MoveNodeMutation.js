@@ -2,7 +2,7 @@
  * Created by mcirillo on 3/3/17.
  */
 
-import Relay, { Mutation } from 'react-relay';
+import Relay, { Mutation } from 'react-relay/classic';
 
 export default class MoveNodeMutation extends Mutation {
 

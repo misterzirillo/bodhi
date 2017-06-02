@@ -3,7 +3,10 @@
  */
 
 import React from 'react';
-import Relay from 'react-relay';
+import {
+  createFragmentContainer,
+  graphql,
+} from 'react-relay/compat';
 import bem from '../utility/BemTool';
 
 import NavModal, { Position } from '../composable/NavModal';
@@ -56,12 +59,10 @@ class UserMenu extends React.Component {
 
 }
 
-export default Relay.createContainer(UserMenu, {
-	fragments: {
-		user: () => Relay.QL`
-			fragment on User {
-				username
-			}
-		`
-	}
+export default createFragmentContainer(UserMenu, {
+    user: graphql`
+        fragment UserMenu_user on User {
+            username
+        }
+    `
 });

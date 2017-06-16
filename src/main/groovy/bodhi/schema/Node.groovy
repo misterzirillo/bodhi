@@ -26,6 +26,9 @@ class Node {
 
 		field 'content', {
 			type GraphQLString
+
+			argument 'preview', GraphQLBoolean
+
 			fetcher { env ->
 				def doPreview = env.arguments.preview ?: false
 				def source = env.source as bodhi.Node

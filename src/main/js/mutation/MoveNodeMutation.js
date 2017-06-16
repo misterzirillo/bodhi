@@ -12,7 +12,7 @@ export default class MoveNodeMutation extends Mutation {
 	};
 
 	static fragments = {
-		lastSelectedRoot: () => Relay.QL`fragment on NoteRoot { id }`
+		lastSelectedRoot: () => Relay.QL`fragment on Root { id }`
 	};
 
 	getMutation() {

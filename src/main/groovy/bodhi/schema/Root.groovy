@@ -5,7 +5,6 @@ import bodhi.User
 import gql.DSL
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.util.Holders
-import graphql.Scalars
 import graphql.schema.GraphQLEnumType
 import graphql.schema.GraphQLFieldDefinition
 import graphql.schema.GraphQLList
@@ -28,7 +27,7 @@ class Root {
 		field 'lastEditedNode', Node.node
 
 		field 'lastUpdated', {
-			type Scalars.GraphQLLong
+			type GraphQLLong
 			fetcher { env ->
 				(env.source as bodhi.Root).lastUpdated.time
 			}

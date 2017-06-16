@@ -2,14 +2,13 @@ package bodhi.schema
 
 import bodhi.GraphQLHelpers
 import gql.DSL
-import graphql.Scalars
 import graphql.schema.DataFetchingEnvironment
 import graphql.schema.GraphQLFieldDefinition
 import graphql.schema.GraphQLInterfaceType
 import graphql.schema.GraphQLNonNull
 import graphql.schema.GraphQLSchema
 
-import static bodhi.schema.Node.getTextUpdate
+import static bodhi.schema.Node.*
 import static bodhi.schema.Root.*
 import static bodhi.schema.User.*
 
@@ -19,10 +18,13 @@ import static bodhi.schema.User.*
  */
 class Schema {
 
+	@Lazy
 	final static GraphQLSchema schema = DSL.schema {
 		queries {
 			addField userQuery
-			addField GraphQLHelpers.nodeField(nodeInterface, nodeDataFetcher)
+
+			// groovy bug? full (this) reference needed for local static fields when using @Lazy
+			addField GraphQLHelpers.nodeField(this.nodeInterface, this.nodeDataFetcher)
 		}
 
 		mutations {
@@ -35,20 +37,26 @@ class Schema {
 		}
 	}
 
-	@Lazy
 	final static GraphQLFieldDefinition idField = DSL.field('id') {
-		type new GraphQLNonNull(Scalars.GraphQLID)
+		type new GraphQLNonNull(GraphQLID)
 		fetcher { env ->
 			GraphQLHelpers.toGlobalId(env.getSource().class.simpleName, env.getSource().id as String)
 		}
 	}
 
-	@Lazy
 	final static GraphQLInterfaceType nodeInterface = GraphQLHelpers.nodeInterface { env ->
-		Schema."schema$env.fieldType.name"
+		switch (GraphQLHelpers.fromGlobalId(env.arguments.id).type) {
+			case "User":
+				return user
+			case "Root":
+				return root
+			case "Node":
+				return node
+			default:
+				throw new Error("Bad ID")
+		}
 	}
 
-	@Lazy
 	final static def nodeDataFetcher = { DataFetchingEnvironment environment ->
 		def decoded = GraphQLHelpers.fromGlobalId(environment.arguments.id as String)
 		def domainType
@@ -64,7 +72,7 @@ class Schema {
 				domainType = bodhi.Node
 				break
 			default:
-				throw new Exception("Bad type")
+				throw new Exception("Bad ID")
 		}
 
 		domainType.get(decoded.id)

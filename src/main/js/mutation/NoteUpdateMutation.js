@@ -27,7 +27,7 @@ export default class NoteUpdateMutation extends Mutation {
 
 	getFatQuery() {
 		return Relay.QL`
-		fragment on TextInputPayload { 
+		fragment on TextUpdatePayload { 
 			updatedNode { content(preview: false) }
 		}`;
 	}

@@ -7,6 +7,7 @@ import spock.lang.Specification
  * @author mcirillo
  */
 class SchemaTest extends Specification {
+
 	def "get schema"() {
 		expect:
 		Schema.schema != null

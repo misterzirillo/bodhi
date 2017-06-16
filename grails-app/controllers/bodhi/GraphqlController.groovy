@@ -12,8 +12,14 @@ class GraphqlController {
 		String query = request.JSON.query
 		Map vars = request.JSON.variables
 		def result = DSL.execute Schema.schema, query, vars
-
-		render(result as JSON)
+		def toJson = [:]
+		if (result.data) {
+			toJson.data = result.data
+		}
+		if (result.errors) {
+			toJson.errors = result.errors
+		}
+		render(toJson as JSON)
 	}
 
 	def introspect() {

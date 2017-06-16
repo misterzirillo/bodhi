@@ -18,9 +18,8 @@ import groovy.transform.CompileStatic
  */
 @CompileStatic
 class GraphQLHelpers {
-	private static Relay relay = new Relay()
 
-	public static final String DESCRIPTION_ID_ARGUMENT = 'The ID of an object'
+	private static Relay relay = new Relay()
 
 	static String toGlobalId(String type, String id) {
 		relay.toGlobalId(type, id)

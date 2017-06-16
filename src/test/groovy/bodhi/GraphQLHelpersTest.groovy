@@ -8,7 +8,7 @@ import spock.lang.Specification
  * bodhi
  * @author mcirillo
  */
-class GQLSchemaTest extends Specification {
+class GraphQLHelpersTest extends Specification {
 
 	def "EagerFetchStrings"() {
 

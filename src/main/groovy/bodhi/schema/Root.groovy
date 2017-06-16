@@ -18,14 +18,14 @@ import org.hibernate.FetchMode
  * bodhi
  * @author mcirillo
  */
-trait Root {
+class Root {
 
 	final static GraphQLObjectType root = DSL.type('Root') {
 
-		field 'nodes', new GraphQLList(Schema.node)
+		field 'nodes', new GraphQLList(Node.node)
 		field 'name', GraphQLString
 		field 'description', GraphQLString
-		field 'lastEditedNode', Schema.node
+		field 'lastEditedNode', Node.node
 
 		field 'lastUpdated', {
 			type Scalars.GraphQLLong
@@ -34,6 +34,7 @@ trait Root {
 			}
 		}
 
+		addField Schema.idField
 		addInterface Schema.nodeInterface
 	}
 
@@ -90,7 +91,7 @@ trait Root {
 		}
 	}
 
-	final static GraphQLEnumType gqlMoveMode = DSL.enum('MoveMode') {
+	final static GraphQLEnumType moveMode = DSL.enum('MoveMode') {
 		value 'Before', bodhi.Root.MoveMode.Before
 		value 'After', bodhi.Root.MoveMode.After
 	}
@@ -101,7 +102,7 @@ trait Root {
 			field 'clientMutationId', GraphQLString
 			field 'movingNodeId', new GraphQLNonNull(GraphQLID)
 			field 'targetNodeId', new GraphQLNonNull(GraphQLID)
-			field 'moveMode', new GraphQLNonNull(gqlMoveMode)
+			field 'moveMode', new GraphQLNonNull(moveMode)
 		}
 
 		type DSL.type('MoveNotePayload') {
@@ -117,8 +118,8 @@ trait Root {
 				fetchMode 'nodes', FetchMode.SELECT
 			}.first() as bodhi.Root
 
-			def movingNodeId = RelayHelpers.fromGlobalId(env.arguments.input.movingNodeId as String).id as long
-			def targetNodeId = RelayHelpers.fromGlobalId(env.arguments.input.targetNodeId as String).id as long
+			def movingNodeId = GraphQLHelpers.fromGlobalId(env.arguments.input.movingNodeId as String).id as long
+			def targetNodeId = GraphQLHelpers.fromGlobalId(env.arguments.input.targetNodeId as String).id as long
 			def moveMode = env.arguments.input.moveMode as bodhi.Root.MoveMode
 
 			lsr.moveNote movingNodeId, targetNodeId, moveMode

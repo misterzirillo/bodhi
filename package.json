@@ -9,7 +9,8 @@
     "bundle": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch --colors --progress",
-    "bundle-prod": "webpack --config webpack.production.config.js"
+    "bundle-prod": "webpack --config webpack.production.config.js",
+    "wp-version": "webpack --version"
   },
   "license": "ISC",
   "devDependencies": {

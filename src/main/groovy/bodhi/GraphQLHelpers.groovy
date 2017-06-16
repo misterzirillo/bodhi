@@ -5,7 +5,9 @@ import graphql.language.FragmentSpread
 import graphql.language.InlineFragment
 import graphql.language.SelectionSet
 import graphql.relay.Relay
+import graphql.schema.DataFetcher
 import graphql.schema.DataFetchingEnvironment
+import graphql.schema.GraphQLFieldDefinition
 import graphql.schema.GraphQLInterfaceType
 import graphql.schema.TypeResolver
 import groovy.transform.CompileStatic
@@ -30,6 +32,10 @@ class GraphQLHelpers {
 
 	static GraphQLInterfaceType nodeInterface(TypeResolver typeResolver) {
 		relay.nodeInterface(typeResolver)
+	}
+
+	static GraphQLFieldDefinition nodeField(GraphQLInterfaceType interfaceType, DataFetcher dataFetcher) {
+		relay.nodeField(interfaceType, dataFetcher)
 	}
 
 	static List<String> eagerFetchStrings(DataFetchingEnvironment env) {

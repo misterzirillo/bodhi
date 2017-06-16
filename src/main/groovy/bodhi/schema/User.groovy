@@ -1,7 +1,6 @@
 package bodhi.schema
 
 import bodhi.GraphQLHelpers
-import bodhi.Root
 import gql.DSL
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.util.Holders
@@ -11,22 +10,24 @@ import graphql.schema.GraphQLNonNull
 import graphql.schema.GraphQLObjectType
 import org.hibernate.FetchMode
 
+
 /**
  * bodhi
  * @author mcirillo
  */
-trait User {
+class User {
 
 	final static GraphQLObjectType user = DSL.type('User') {
 
 		field 'username', GraphQLString
-		field 'lastSelectedRoot', Schema.root
-		field 'rootNodes', new GraphQLList(Schema.root)
+		field 'lastSelectedRoot', Root.root
+		field 'rootNodes', new GraphQLList(Root.root)
 
+		addField Schema.idField
 		addInterface Schema.nodeInterface
 	}
 
-	final static GraphQLFieldDefinition gqlUserQuery = DSL.field('currentUser') {
+	final static GraphQLFieldDefinition userQuery = DSL.field('currentUser') {
 		type user
 		fetcher { env ->
 			def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
@@ -94,7 +95,7 @@ trait User {
 			def rootName = env.arguments.input.newRootName as String
 			def rootDescription = env.arguments.input.newRootDescription as String
 
-			def newRoot = new Root(owner: user, name: rootName, description: rootDescription).save()
+			def newRoot = new bodhi.Root(owner: user, name: rootName, description: rootDescription).save()
 			user.lastSelectedRoot = newRoot
 
 			return [

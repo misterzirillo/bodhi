@@ -10,9 +10,9 @@ import graphql.schema.GraphQLObjectType
  * bodhi
  * @author mcirillo
  */
-trait Node {
+class Node {
 
-	final static GraphQLObjectType node = DSL.type('Node') {
+	final static GraphQLObjectType node = DSL.type('NoteNode') {
 
 		field 'leftBound', GraphQLInt
 		field 'rightBound', GraphQLInt
@@ -37,6 +37,7 @@ trait Node {
 			}
 		}
 
+		addField Schema.idField
 		addInterface Schema.nodeInterface
 	}
 

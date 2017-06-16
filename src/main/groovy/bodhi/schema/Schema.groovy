@@ -1,6 +1,8 @@
 package bodhi.schema
 
 import bodhi.GraphQLHelpers
+import bodhi.NoteNode
+import bodhi.NoteRoot
 import gql.DSL
 import graphql.schema.DataFetchingEnvironment
 import graphql.schema.GraphQLFieldDefinition
@@ -48,9 +50,9 @@ class Schema {
 		switch (GraphQLHelpers.fromGlobalId(env.arguments.id).type) {
 			case "User":
 				return user
-			case "Root":
+			case "NoteRoot":
 				return root
-			case "Node":
+			case "NoteNode":
 				return node
 			default:
 				throw new Error("Bad ID")
@@ -65,11 +67,11 @@ class Schema {
 			case "User":
 				domainType = bodhi.User
 				break
-			case "Root":
-				domainType = bodhi.Root
+			case "NoteRoot":
+				domainType = NoteRoot
 				break
-			case "Node":
-				domainType = bodhi.Node
+			case "NoteNode":
+				domainType = NoteNode
 				break
 			default:
 				throw new Exception("Bad ID")

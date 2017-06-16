@@ -4,10 +4,10 @@ package bodhi
  * bodhi
  * @author mcirillo
  */
-class Root {
+class NoteRoot {
 
 	static belongsTo = [ owner: User ]
-	static hasMany = [ nodes: Node ]
+	static hasMany = [ nodes: NoteNode ]
 
 	static constraints = {
 		description nullable: true
@@ -16,13 +16,13 @@ class Root {
 
 	Date dateCreated, lastUpdated
 
-	Set<Node> nodes = []
+	Set<NoteNode> nodes = []
 
 	String name
 
 	String description
 
-	Node lastEditedNode
+	NoteNode lastEditedNode
 
 	enum MoveMode {
 		Before,
@@ -38,7 +38,7 @@ class Root {
 		}
 
 		def targetLeftBound = deletedNode.leftBound
-		def toEdit = Node.where {
+		def toEdit = NoteNode.where {
 			root == this
 			rightBound >= targetLeftBound
 		}.list(fetch: ['rightBound', 'leftBound'])
@@ -72,7 +72,7 @@ class Root {
 		def range = leftBound..Integer.MAX_VALUE
 		shiftBounds(range, 2)
 
-		def newNode = new Node(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this).save()
+		def newNode = new NoteNode(content: '', leftBound: leftBound, rightBound: leftBound + 1, root: this).save()
 		lastEditedNode = newNode
 		addToNodes(newNode)
 		lastUpdated = new Date()

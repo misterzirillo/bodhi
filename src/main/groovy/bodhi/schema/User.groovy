@@ -1,6 +1,7 @@
 package bodhi.schema
 
 import bodhi.GraphQLHelpers
+import bodhi.NoteRoot
 import gql.DSL
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.util.Holders
@@ -9,7 +10,6 @@ import graphql.schema.GraphQLList
 import graphql.schema.GraphQLNonNull
 import graphql.schema.GraphQLObjectType
 import org.hibernate.FetchMode
-
 
 /**
  * bodhi
@@ -95,7 +95,7 @@ class User {
 			def rootName = env.arguments.input.newRootName as String
 			def rootDescription = env.arguments.input.newRootDescription as String
 
-			def newRoot = new bodhi.Root(owner: user, name: rootName, description: rootDescription).save()
+			def newRoot = new NoteRoot(owner: user, name: rootName, description: rootDescription).save()
 			user.lastSelectedRoot = newRoot
 
 			return [

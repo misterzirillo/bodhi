@@ -51,31 +51,31 @@ class User implements Serializable {
 		rootNodes sort: 'lastUpdated', order: 'desc'
 	}
 
-	static hasMany = [ rootNodes: Root ]
+	static hasMany = [ rootNodes: NoteRoot ]
 
-	Root lastSelectedRoot
+	NoteRoot lastSelectedRoot
 
-	Set<Root> rootNodes
+	Set<NoteRoot> rootNodes
 
 	void createTutorial() {
 
-		def root =  new Root(owner: this, name: 'Tutorial', description: 'Introducing Bodhi').save()
+		def root =  new NoteRoot(owner: this, name: 'Tutorial', description: 'Introducing Bodhi').save()
 
-		def n1 = new Node(
+		def n1 = new NoteNode(
 				content: this.class.classLoader.getResourceAsStream("tutorial1.md").readLines().join('\n'),
 				root: root,
 				leftBound: 0,
 				rightBound: 3
 		).save()
 
-		def n2 = new Node(
+		def n2 = new NoteNode(
 				content: this.class.classLoader.getResourceAsStream("tutorial2.md").readLines().join('\n'),
 				root: root,
 				leftBound: 1,
 				rightBound: 2
 		).save()
 
-		def n3 = new Node(
+		def n3 = new NoteNode(
 				content: this.class.classLoader.getResourceAsStream("tutorial3.md").readLines().join('\n'),
 				root: root,
 				leftBound: 4,

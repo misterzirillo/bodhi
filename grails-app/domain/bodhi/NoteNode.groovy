@@ -1,6 +1,6 @@
 package bodhi
 
-class Node {
+class NoteNode {
 
 	static constraints = {
 		content nullable: true
@@ -11,7 +11,7 @@ class Node {
 	    content nullable: true
     }
 
-	static belongsTo = [ root: Root ]
+	static belongsTo = [ root: NoteRoot ]
 
 	String content
 	Date dateCreated, lastUpdated

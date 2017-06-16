@@ -1,6 +1,7 @@
 package bodhi.schema
 
 import bodhi.GraphQLHelpers
+import bodhi.NoteRoot
 import bodhi.User
 import gql.DSL
 import grails.plugin.springsecurity.SpringSecurityService
@@ -29,7 +30,7 @@ class Root {
 		field 'lastUpdated', {
 			type GraphQLLong
 			fetcher { env ->
-				(env.source as bodhi.Root).lastUpdated.time
+				(env.source as NoteRoot).lastUpdated.time
 			}
 		}
 
@@ -52,10 +53,10 @@ class Root {
 		fetcher { env ->
 			def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
 
-			def lsr = bodhi.Root.withCriteria {
+			def lsr = NoteRoot.withCriteria {
 				idEq(sss.currentUser.lastSelectedRoot.id)
 				fetchMode 'nodes', FetchMode.SELECT
-			}.first() as bodhi.Root
+			}.first() as NoteRoot
 
 			def leftBound = env.arguments.input.leftBound as int
 			lsr.addNoteHere(leftBound)
@@ -91,8 +92,8 @@ class Root {
 	}
 
 	final static GraphQLEnumType moveMode = DSL.enum('MoveMode') {
-		value 'Before', bodhi.Root.MoveMode.Before
-		value 'After', bodhi.Root.MoveMode.After
+		value 'Before', NoteRoot.MoveMode.Before
+		value 'After', NoteRoot.MoveMode.After
 	}
 
 	final static GraphQLFieldDefinition moveNote = DSL.field('moveNote') {
@@ -112,14 +113,14 @@ class Root {
 		fetcher { env ->
 			def sss = Holders.applicationContext.getBean('springSecurityService') as SpringSecurityService
 
-			def lsr = bodhi.Root.withCriteria {
+			def lsr = NoteRoot.withCriteria {
 				idEq(sss.currentUser.lastSelectedRoot.id)
 				fetchMode 'nodes', FetchMode.SELECT
-			}.first() as bodhi.Root
+			}.first() as NoteRoot
 
 			def movingNodeId = GraphQLHelpers.fromGlobalId(env.arguments.input.movingNodeId as String).id as long
 			def targetNodeId = GraphQLHelpers.fromGlobalId(env.arguments.input.targetNodeId as String).id as long
-			def moveMode = env.arguments.input.moveMode as bodhi.Root.MoveMode
+			def moveMode = env.arguments.input.moveMode as NoteRoot.MoveMode
 
 			lsr.moveNote movingNodeId, targetNodeId, moveMode
 

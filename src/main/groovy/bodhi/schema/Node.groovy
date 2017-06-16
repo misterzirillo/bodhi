@@ -1,6 +1,7 @@
 package bodhi.schema
 
 import bodhi.GraphQLHelpers
+import bodhi.NoteNode
 import gql.DSL
 import graphql.schema.GraphQLFieldDefinition
 import graphql.schema.GraphQLNonNull
@@ -20,7 +21,7 @@ class Node {
 		field 'lastUpdated', {
 			type GraphQLLong
 			fetcher { env ->
-				(env.source as bodhi.Node).lastUpdated.time
+				(env.source as NoteNode).lastUpdated.time
 			}
 		}
 
@@ -31,7 +32,7 @@ class Node {
 
 			fetcher { env ->
 				def doPreview = env.arguments.preview ?: false
-				def source = env.source as bodhi.Node
+				def source = env.source as NoteNode
 				if (doPreview) {
 					source.content?.readLines()?.take(10)?.join(System.lineSeparator()) ?: ''
 				} else {
@@ -58,7 +59,7 @@ class Node {
 
 		fetcher { env ->
 			long nodeId = GraphQLHelpers.fromGlobalId(env.arguments.input.nodeId as String).id as long
-			bodhi.Node node = bodhi.Node.get(nodeId)
+			NoteNode node = NoteNode.get(nodeId)
 			node.content = env.arguments.input.patch
 			node.root.lastEditedNode = node
 			node.root.lastUpdated = new Date()

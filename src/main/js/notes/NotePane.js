@@ -55,7 +55,7 @@ class NotePane extends Component {
 	componentWillReceiveProps(nextProps) {
 
 		// was saved by parent element
-		if (this.state.dirty && this.props.node.content != nextProps.node.content) {
+		if (this.state.dirty && this.props.node.content !== nextProps.node.content) {
 			this.setState({ dirty: false });
 		}
 
@@ -238,5 +238,5 @@ export default createFragmentContainer(NotePane, {
         previewOnly: true
     }
     */
-    node: () => Relay.QL`fragment on NoteNode { id, content(preview: $previewOnly) }`
+    node: graphql`fragment NotePane_node on NoteNode { id, content(preview: $previewOnly) }`
 });

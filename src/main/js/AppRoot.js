@@ -5,10 +5,10 @@ import {
 } from 'react-relay/compat';
 
 import NoteGroup from './notes/NoteGroup';
-import NotePane from './notes/NotePane';
 import { HotKeys } from 'react-hotkeys';
 import NavBar from './nav/NavBar';
 import InfinityPane from './composable/InfinityPane';
+import NotePane from './notes/NotePane';
 
 import MPTT from './utility/MPTT';
 import bem from './utility/BemTool';

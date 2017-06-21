@@ -2,9 +2,9 @@
  * Created by mcirillo on 2/4/17.
  */
 
-import Relay, { Mutation } from 'react-relay/classic';
+import Relay from 'react-relay/classic';
 
-export default class AddDeleteNoteMutation extends Mutation {
+export default class AddDeleteNoteMutation extends Relay.Mutation {
 
 	static ADD = "addNote";
 	static DELETE = "deleteNote";

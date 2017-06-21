@@ -10,6 +10,7 @@ buildscript {
         classpath "com.moowork.gradle:gradle-node-plugin:0.12"
         classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.11.6"
         classpath "org.grails.plugins:views-gradle:1.1.2"
+	    classpath 'com.github.grooviter:gql:0.1.8-alpha'
     }
 }
 
@@ -97,6 +98,17 @@ bootRun {
 //    dependsOn(['npmInstall', 'npm_run_webpack'])
 //}
 
+task exportSchema {
+	dependsOn jar
+	mustRunAfter jar
+	doLast {
+		this.class.classLoader.addURL(new File("./build/libs/${project.name}-${project.version}.jar").toURL())
+		def schema = Class.forName('bodhi.schema.Schema')
+		new File('./schema.json').text = schema.introspect()
+	}
+}
+
+jar.finalizedBy exportSchema
 
 //bootRun.dependsOn(['bundle'])
 //assetCompile.dependsOn(['bundle'])

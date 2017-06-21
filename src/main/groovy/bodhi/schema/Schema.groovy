@@ -9,6 +9,7 @@ import graphql.schema.GraphQLFieldDefinition
 import graphql.schema.GraphQLInterfaceType
 import graphql.schema.GraphQLNonNull
 import graphql.schema.GraphQLSchema
+import groovy.json.JsonOutput
 
 import static bodhi.schema.Node.*
 import static bodhi.schema.Root.*
@@ -78,6 +79,10 @@ class Schema {
 		}
 
 		domainType.get(decoded.id)
+	}
+
+	public static String introspect() {
+		JsonOutput.toJson DSL.execute(schema, GraphQLHelpers.INTROSPECTION_QUERY)
 	}
 }
 

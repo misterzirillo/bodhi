@@ -9,6 +9,8 @@
     "bundle": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch --colors --progress",
+    "relay": "relay-compiler --src ./src/main/js --schema ./schema.json",
+    "relay-watch": "relay-compiler --src ./src/main/js --schema ./schema.json",
     "bundle-prod": "webpack --config webpack.production.config.js",
     "wp-version": "webpack --version"
   },
@@ -16,10 +18,12 @@
   "devDependencies": {
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
+    "babel-plugin-relay": "^1.0.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.5.1",
     "babel-preset-react": "^6.24.1",
     "babel-relay-plugin": "^0.11.0",
+    "relay-compiler": "^1.0.0",
     "sync-request": "^4.0.3",
     "webpack": "^2.6.1"
   },

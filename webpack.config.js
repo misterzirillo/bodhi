@@ -1,5 +1,4 @@
 let path = require('path');
-let babelRelayPlugin = path.join(__dirname, 'src/main/js/utility/babelRelayPlugin');
 
 module.exports = {
     entry: {
@@ -20,7 +19,10 @@ module.exports = {
 					loader: 'babel-loader',
 					options: {
 						presets: ['env', 'react'],
-						plugins: [babelRelayPlugin, 'transform-class-properties']
+						plugins: [
+							['relay', {'compat': true,'schema': './schema.json'}],
+							'transform-class-properties'
+						]
 					}
 				},
 			}

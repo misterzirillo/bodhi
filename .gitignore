@@ -17,6 +17,7 @@ build/
 logs
 *.log
 npm-debug.log*
+/relay-codemod
 
 # Runtime data
 pids
